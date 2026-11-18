@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="vi" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Đạo Dịch Huyền Cơ Pháp - TIDS Quantum V2.0</title>
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#d97706">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='48' fill='%230b0f19' stroke='%23f59e0b' stroke-width='4'/><path d='M50,2 A48,48 0 0,1 50,98 A24,24 0 0,1 50,50 A24,24 0 0,0 50,2' fill='%23f59e0b'/><circle cx='50' cy='26' r='6' fill='%230b0f19'/><circle cx='50' cy='74' r='6' fill='%23f59e0b'/></svg>">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            daoGold: { 400: '#FBBF24', 500: '#F59E0B', 600: '#D97706', 700: '#B45309' },
+            daoDark: { 900: '#070A11', 850: '#0B0F19', 800: '#111827', 700: '#1F2937' },
+            daoGreen: '#10B981',
+            daoCyan: '#06B6D4',
+            daoRed: '#EF4444'
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #070A11; color: #F3F4F6; }
+    .gold-glow { text-shadow: 0 0 12px rgba(245, 158, 11, 0.4); }
+    .gold-box { box-shadow: 0 0 15px rgba(245, 158, 11, 0.15); }
+    .scrollbar-none::-webkit-scrollbar { display: none; }
+    .scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased select-none pb-12">
+
+  <!-- TOP APP BAR -->
+  <header class="sticky top-0 z-50 bg-daoDark-900/95 backdrop-blur-md border-b border-daoGold-600/30 px-4 py-3">
+    <div class="max-w-4xl mx-auto flex items-center justify-between">
+      <div class="flex items-center space-x-2">
+        <span class="text-2xl text-daoGold-500 animate-pulse">☯</span>
+        <div>
+          <h1 class="text-base font-bold tracking-wide text-daoGold-400 flex items-center gap-1.5">
+            ĐẠO DỊCH HUYỀN CƠ
+            <span class="text-[10px] bg-daoGold-600/30 text-daoGold-400 border border-daoGold-500/40 px-1.5 py-0.5 rounded">V2.0</span>
+          </h1>
+          <p class="text-[11px] text-gray-400 flex items-center gap-2" id="headerStatusText">
+            <span>Đang kết nối...</span>
+          </p>
+        </div>
+      </div>
+      <div class="flex items-center space-x-1">
+        <span id="regimeBadge" class="text-xs px-2.5 py-1 rounded-full font-medium bg-amber-950/60 text-amber-300 border border-amber-600/40">
+          Đang tính...
+        </span>
+      </div>
+    </div>
+  </header>
+
+  <!-- QUICK SUMMARY CHIP BAR -->
+  <div class="bg-daoDark-850 border-b border-gray-800/80 px-4 py-2">
+    <div class="max-w-4xl mx-auto flex items-center justify-between text-xs overflow-x-auto scrollbar-none gap-2">
+      <div class="flex items-center gap-1.5 whitespace-nowrap">
+        <span class="text-gray-400">Thiên Cơ Độ:</span>
+        <span id="qciVal" class="font-bold text-emerald-400">--%</span>
+      </div>
+      <div class="flex items-center gap-1.5 whitespace-nowrap">
+        <span class="text-gray-400">Kelly:</span>
+        <span id="kellyVal" class="font-bold text-daoGold-400">1.0x</span>
+      </div>
+      <div class="flex items-center gap-1.5 whitespace-nowrap">
+        <span class="text-gray-400">CSDL:</span>
+        <span id="recordsVal" class="font-semibold text-gray-200">8607 kỳ</span>
+      </div>
+      <div class="flex items-center gap-1.5 whitespace-nowrap">
+        <span class="text-gray-400">Gần nhất:</span>
+        <span id="lastDateVal" class="font-semibold text-cyan-400">--</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- NAVIGATION TABS -->
+  <nav class="max-w-4xl mx-auto w-full px-4 pt-3 pb-1">
+    <div class="grid grid-cols-4 bg-daoDark-800 p-1 rounded-xl border border-gray-800 text-xs font-medium text-center">
+      <button onclick="switchTab('tab-predict')" id="btn-tab-predict" class="py-2.5 rounded-lg transition-all font-semibold bg-daoGold-600 text-white shadow-sm">
+        🔮 Dự Báo
+      </button>
+      <button onclick="switchTab('tab-input')" id="btn-tab-input" class="py-2.5 rounded-lg transition-all text-gray-400 hover:text-gray-200">
+        📥 Nhập KQ
+      </button>
+      <button onclick="switchTab('tab-history')" id="btn-tab-history" class="py-2.5 rounded-lg transition-all text-gray-400 hover:text-gray-200">
+        📊 Đối Soát
+      </button>
+      <button onclick="switchTab('tab-manual')" id="btn-tab-manual" class="py-2.5 rounded-lg transition-all text-gray-400 hover:text-gray-200">
+        📜 Đạo Dịch
+      </button>
+    </div>
+  </nav>
+
+  <!-- MAIN CONTAINER -->
+  <main class="max-w-4xl mx-auto w-full px-4 pt-3 flex-1">
+
+    <!-- ============================================================== -->
+    <!-- TAB 1: DỰ BÁO & VỐN KELLY -->
+    <!-- ============================================================== -->
+    <div id="tab-predict" class="space-y-4">
+
+      <!-- NGÂN SÁCH ĐẦU TƯ -->
+      <section class="bg-daoDark-800 rounded-2xl p-4 border border-daoGold-600/30 gold-box">
+        <div class="flex items-center justify-between mb-3">
+          <label class="text-xs font-semibold text-daoGold-400 uppercase tracking-wider flex items-center gap-1.5">
+            <span>💰 Ngân Sách Đầu Tư Hôm Nay</span>
+          </label>
+          <span id="budgetDisplay" class="text-lg font-extrabold text-daoGold-400">500.000 VNĐ</span>
+        </div>
+
+        <!-- Quick Pills -->
+        <div class="grid grid-cols-5 gap-1.5 mb-3 text-xs">
+          <button onclick="setBudget(300000)" class="budget-pill py-1.5 rounded-lg border border-gray-700 bg-daoDark-850 hover:border-daoGold-500 font-medium">300k</button>
+          <button onclick="setBudget(500000)" class="budget-pill py-1.5 rounded-lg border border-daoGold-500 bg-daoGold-600/30 text-daoGold-300 font-bold">500k</button>
+          <button onclick="setBudget(1000000)" class="budget-pill py-1.5 rounded-lg border border-gray-700 bg-daoDark-850 hover:border-daoGold-500 font-medium">1 Tr</button>
+          <button onclick="setBudget(2000000)" class="budget-pill py-1.5 rounded-lg border border-gray-700 bg-daoDark-850 hover:border-daoGold-500 font-medium">2 Tr</button>
+          <button onclick="setBudget(3000000)" class="budget-pill py-1.5 rounded-lg border border-gray-700 bg-daoDark-850 hover:border-daoGold-500 font-medium">3 Tr</button>
+        </div>
+
+        <!-- Input Slider -->
+        <div class="flex items-center gap-3">
+          <input type="range" id="budgetRange" min="300000" max="5000000" step="100000" value="500000" oninput="onRangeChange(this.value)" class="w-full accent-amber-500 cursor-pointer">
+        </div>
+
+        <!-- ACTION BUTTONS 1-CLICK -->
+        <div class="grid grid-cols-2 gap-2 mt-4 pt-3 border-t border-gray-800">
+          <button onclick="copyZaloText()" class="flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-gradient-to-r from-daoGold-600 to-amber-600 hover:from-daoGold-500 hover:to-amber-500 text-white font-bold text-xs shadow-md active:scale-95 transition-transform">
+            <span>📱 Copy Gửi Zalo/Tin Nhắn</span>
+          </button>
+          <button onclick="copyGoogleSheetTsv()" class="flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-daoDark-700 hover:bg-daoDark-850 text-gray-200 border border-gray-700 font-semibold text-xs active:scale-95 transition-transform">
+            <span>📊 Copy Google Sheet</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- REGIME & COILING NOTIFICATION -->
+      <div id="coilingAlert" class="hidden p-3.5 rounded-xl bg-amber-950/50 border border-amber-600/50 text-xs text-amber-200 flex items-start gap-2.5">
+        <span class="text-xl">🟠</span>
+        <div>
+          <strong class="font-bold text-amber-300">THỊ TRƯỜNG PHỤC KHÍ (COILING NÉN LÒ XO):</strong>
+          <p class="mt-0.5 text-amber-100/90 leading-relaxed" id="coilingText">
+            Phát hiện nén lực hồi quy vĩ mô. Đã kích hoạt <strong>Huyền Thiên Giáp (65 số)</strong> bảo vệ vốn 100% và tăng điểm cược Song Thủ Lô!
+          </p>
+        </div>
+      </div>
+
+      <!-- TRỤC 1: ĐỊA LỢI (+EV CASH ENGINE) -->
+      <section class="bg-daoDark-800 rounded-2xl p-4 border border-emerald-500/30">
+        <div class="flex items-center justify-between border-b border-gray-800 pb-2 mb-3">
+          <div class="flex items-center gap-2">
+            <span class="text-sm font-extrabold text-emerald-400">TRỤC 1: ĐỊA LỢI (+EV)</span>
+            <span class="text-[10px] bg-emerald-950 text-emerald-300 border border-emerald-800/60 px-2 py-0.5 rounded-full">Động cơ dòng tiền</span>
+          </div>
+          <span id="costStlText" class="text-xs font-bold text-emerald-300">216.000 đ</span>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3 mb-3">
+          <div class="bg-daoDark-850 p-3 rounded-xl border border-gray-800 flex flex-col justify-between">
+            <span class="text-[11px] text-gray-400">Song Thủ Lô (Top 1 & Top 2)</span>
+            <div class="text-2xl font-black text-daoGold-400 my-1" id="stlDisplay">25 - 65</div>
+            <div class="text-[11px] text-emerald-400 font-medium flex items-center justify-between">
+              <span id="stlPtsDisplay">Cược 4 điểm/con</span>
+              <span class="text-[10px] text-gray-400">OOS 51%</span>
+            </div>
+          </div>
+
+          <div class="bg-daoDark-850 p-3 rounded-xl border border-gray-800 flex flex-col justify-between">
+            <span class="text-[11px] text-gray-400">Cặp Xiên 2 Song Thủ</span>
+            <div class="text-2xl font-black text-cyan-400 my-1" id="xienDisplay">(25 - 65)</div>
+            <div class="text-[11px] text-cyan-400 font-medium flex items-center justify-between">
+              <span id="costXienDisplay">Cược 25.000 đ</span>
+              <span class="text-[10px] text-gray-400">Ăn 1:16.5</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="text-[11px] text-gray-400 bg-daoDark-900/60 px-3 py-1.5 rounded-lg flex items-center justify-between">
+          <span>★ Bạch thủ Lô (Đáy thế năng): <strong class="text-daoGold-400" id="btlDisplay">25</strong></span>
+          <span class="text-emerald-400">Tỷ lệ nổ 1 con: 51.00%</span>
+        </div>
+      </section>
+
+      <!-- TRỤC 2: NHÂN HÒA (HỘ THÂN & CỬU CUNG THẦN TRẬN) -->
+      <section class="bg-daoDark-800 rounded-2xl p-4 border border-daoGold-600/30">
+        <div class="flex items-center justify-between border-b border-gray-800 pb-2 mb-3">
+          <div class="flex items-center gap-2">
+            <span class="text-sm font-extrabold text-daoGold-400">TRỤC 2: NHÂN HÒA (HỘ THÂN)</span>
+            <span class="text-[10px] bg-amber-950 text-daoGold-300 border border-amber-800/60 px-2 py-0.5 rounded-full">Bảo vệ vốn</span>
+          </div>
+          <span id="costDeTotalText" class="text-xs font-bold text-daoGold-300">184.000 đ</span>
+        </div>
+
+        <!-- Lô lót tứ thủ -->
+        <div class="bg-daoDark-850 p-3 rounded-xl border border-gray-800 mb-3 flex items-center justify-between">
+          <div>
+            <div class="text-xs font-semibold text-gray-200">Lô Lót Tứ Thủ Phòng Thủ</div>
+            <div class="text-sm font-bold text-gray-300 mt-0.5" id="loLotDisplay">67 - 27</div>
+          </div>
+          <div class="text-right">
+            <div class="text-xs font-bold text-amber-400" id="loLotPtsDisplay">1 điểm/con (54.000 đ)</div>
+            <div class="text-[10px] text-emerald-400">Hệ 4 số nổ ≥ 73%</div>
+          </div>
+        </div>
+
+        <!-- Cửu Cung Thần Trận (Đề Dàn Phân Tầng) -->
+        <div class="space-y-2">
+          <!-- E1 & E4 -->
+          <div class="grid grid-cols-2 gap-2">
+            <div class="bg-daoDark-850 p-2.5 rounded-xl border border-gray-800">
+              <span class="text-[10px] text-daoGold-400 font-bold uppercase">Thái Cực Nhất Điểm (E1)</span>
+              <div class="text-xl font-black text-daoGold-300" id="e1Display">71</div>
+              <div class="text-[10px] text-gray-400" id="e1CostDisplay">Tổng cược: 6.000 đ</div>
+            </div>
+            <div class="bg-daoDark-850 p-2.5 rounded-xl border border-gray-800">
+              <span class="text-[10px] text-daoGold-400 font-bold uppercase">Tứ Tượng Hội Tụ (E4)</span>
+              <div class="text-sm font-bold text-gray-200 mt-1" id="e4Display">71, 00, 68, 45</div>
+              <div class="text-[10px] text-gray-400" id="e4CostDisplay">Tổng cược: 4.000 đ/số</div>
+            </div>
+          </div>
+
+          <!-- E9 -->
+          <div class="bg-daoDark-850 p-2.5 rounded-xl border border-gray-800">
+            <div class="flex items-center justify-between mb-1">
+              <span class="text-[10px] text-daoGold-400 font-bold uppercase">Cửu Cung Lạc Thư (E9 - Hạt Nhân)</span>
+              <span class="text-[10px] text-gray-400" id="e9CostDisplay">Tổng cược: 3.000 đ/số</span>
+            </div>
+            <div class="text-xs font-semibold text-gray-200 tracking-wide" id="e9Display">
+              71, 00, 68, 45, 12, 06, 99, 60, 14
+            </div>
+          </div>
+
+          <!-- E50 & E65 -->
+          <div class="bg-daoDark-850 p-2.5 rounded-xl border border-gray-800">
+            <div class="flex items-center justify-between mb-1">
+              <span class="text-[10px] text-cyan-400 font-bold uppercase">Đại Diễn Thần Trận (E50) & Huyền Thiên Giáp (E65)</span>
+              <span class="text-[10px] text-gray-400" id="e50CostDisplay">2.000 đ/số & 1.000 đ/số</span>
+            </div>
+            <div class="text-[11px] text-gray-300 leading-snug line-clamp-2" id="e50Display">
+              00, 01, 02, 03, 06, 08, 10, 12, 14, 17, 18, 20, 21, 26, 29, 32, 33, 35, 36, 38, 39, 40, 41, 42, 45...
+            </div>
+            <div class="mt-1 text-[10px] text-amber-300/80 flex items-center justify-between">
+              <span>Huyền Thiên Giáp: 65 số (bảo hiểm toàn diện)</span>
+              <button onclick="toggleExpandDe()" class="underline text-daoGold-400">Xem tất cả</button>
+            </div>
+          </div>
+
+          <!-- Quy Nguyên Trận BSM -->
+          <div class="bg-daoDark-900/90 p-2.5 rounded-xl border border-amber-600/40">
+            <div class="flex items-center justify-between mb-1">
+              <span class="text-[10px] text-amber-400 font-bold uppercase">Quy Nguyên Trận [Chẵn-Chẵn] (10 số nén BSM)</span>
+              <span class="text-[10px] bg-amber-950 text-amber-300 px-1.5 py-0.5 rounded">Z = 2.98σ</span>
+            </div>
+            <div class="text-xs font-bold text-amber-200 tracking-wide" id="bsmCoilingDisplay">
+              00, 02, 06, 08, 42, 60, 66, 68, 80, 84
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TRỤC 3: THIÊN THỜI (ĐỘT BIẾN LỢI NHUẬN) -->
+      <section class="bg-daoDark-800 rounded-2xl p-4 border border-purple-500/30">
+        <div class="flex items-center justify-between border-b border-gray-800 pb-2 mb-3">
+          <div class="flex items-center gap-2">
+            <span class="text-sm font-extrabold text-purple-400">TRỤC 3: THIÊN THỜI (ĐỘT BIẾN)</span>
+            <span class="text-[10px] bg-purple-950 text-purple-300 border border-purple-800/60 px-2 py-0.5 rounded-full">Đòn bẩy 3D/4D</span>
+          </div>
+          <span id="cost3DText" class="text-xs font-bold text-purple-300">75.000 đ</span>
+        </div>
+
+        <div class="bg-daoDark-850 p-3 rounded-xl border border-gray-800 mb-2">
+          <div class="flex items-center justify-between mb-1">
+            <span class="text-xs font-semibold text-gray-300">Dàn 3 Càng Tinh Tuyển 12 Số</span>
+            <span class="text-[10px] text-purple-300" id="cost3DPerTicket">6.000 đ/vé (Ăn 1:960)</span>
+          </div>
+          <div class="text-xs font-bold text-purple-200 leading-relaxed" id="dan3DDisplay">
+            071, 000, 068, 045, 371, 300, 368, 345, 471, 400, 468, 445
+          </div>
+          <div class="mt-2 text-[11px] text-gray-400 pt-1.5 border-t border-gray-800 flex items-center justify-between">
+            <span>★ Bạch thủ 3 Càng: <strong class="text-daoGold-400 text-sm" id="bt3DDisplay">071</strong></span>
+            <span class="text-purple-300 font-semibold" id="costBt3DDisplay">Cược 9.000 đ</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- KỊCH BẢN THU HỒI VỐN -->
+      <section class="bg-daoDark-850 rounded-xl p-3 border border-gray-800 text-xs text-gray-400 space-y-1.5">
+        <div class="font-bold text-gray-200 mb-1">🎯 Kịch Bản Thu Hoàn Vốn Dự Kiến:</div>
+        <div class="flex justify-between"><span>• Nổ 1 con Lô STL (25 hoặc 65):</span> <strong class="text-emerald-400">Thu 396.000 đ (Thu hồi 79.2% vốn)</strong></div>
+        <div class="flex justify-between"><span>• Nổ 1 Lô STL + Ăn Đề Dàn 50:</span> <strong class="text-emerald-400">Thu 495.000 đ (LÃI THUẦN HÒA VỐN)</strong></div>
+        <div class="flex justify-between"><span>• STL nổ cả cặp + Nổ Xiên 2:</span> <strong class="text-daoGold-400">Thu 1.204.500 đ (ROI +140.9%)</strong></div>
+        <div class="flex justify-between"><span>• Nổ Bạch Thủ 3 Càng (071):</span> <strong class="text-purple-400">Thu 8.640.000 đ (ĐỘT BIẾN)</strong></div>
+      </section>
+
+    </div>
+
+    <!-- ============================================================== -->
+    <!-- TAB 2: CẬP NHẬT KẾT QUẢ MỚI (PASTE & PARSE) -->
+    <!-- ============================================================== -->
+    <div id="tab-input" class="hidden space-y-4">
+      <section class="bg-daoDark-800 rounded-2xl p-4 border border-daoGold-600/30">
+        <h2 class="text-sm font-bold text-daoGold-400 flex items-center gap-2 mb-2">
+          <span>📥 DÁN KẾT QUẢ XỔ SỐ MỚI</span>
+        </h2>
+        <p class="text-xs text-gray-400 mb-3">
+          Copy toàn bộ kết quả mở thưởng từ ketqua9.net, xosodaiphat, tin nhắn Zalo... rồi dán trực tiếp vào ô bên dưới. Hệ thống sẽ tự động bóc tách 27 giải và cập nhật CSDL.
+        </p>
+
+        <!-- DATE PICKER -->
+        <div class="grid grid-cols-2 gap-3 mb-3">
+          <div>
+            <label class="text-[11px] text-gray-400 block mb-1">Ngày mở thưởng:</label>
+            <input type="date" id="inputDrawDate" class="w-full bg-daoDark-850 border border-gray-700 rounded-lg px-3 py-2 text-xs text-gray-200 focus:outline-none focus:border-daoGold-500">
+          </div>
+          <div>
+            <label class="text-[11px] text-gray-400 block mb-1">Thứ:</label>
+            <input type="text" id="inputDayOfWeek" readonly class="w-full bg-daoDark-850/50 border border-gray-800 rounded-lg px-3 py-2 text-xs text-gray-400" value="Tự động tính">
+          </div>
+        </div>
+
+        <!-- PASTE TEXTAREA -->
+        <textarea id="rawLotteryText" rows="6" placeholder="Dán văn bản kết quả vào đây... Ví dụ:&#10;Đặc biệt: 21915&#10;Giải nhất: 47995&#10;Giải nhì: 98010 30414&#10;Giải ba: 27517 23814 75060 43299 53376 43402...&#10;Hoặc chỉ cần dán 27 số liên tiếp..." class="w-full bg-daoDark-850 border border-gray-700 rounded-xl p-3 text-xs text-gray-200 placeholder-gray-500 focus:outline-none focus:border-daoGold-500 font-mono"></textarea>
+
+        <div class="mt-3 flex gap-2">
+          <button onclick="parseRawText()" class="flex-1 py-2.5 rounded-xl bg-daoGold-600 hover:bg-daoGold-500 text-white font-bold text-xs active:scale-95 transition-transform flex items-center justify-center gap-1.5">
+            <span>🔍 Phân Tích & Bóc Tách Tự Động</span>
+          </button>
+          <button onclick="clearRawText()" class="py-2.5 px-3 rounded-xl bg-daoDark-700 hover:bg-daoDark-850 text-gray-400 text-xs">
+            Xóa
+          </button>
+        </div>
+      </section>
+
+      <!-- PREVIEW PARSED BOX -->
+      <section id="parsedPreviewSection" class="hidden bg-daoDark-800 rounded-2xl p-4 border border-cyan-500/40 space-y-3">
+        <div class="flex items-center justify-between border-b border-gray-800 pb-2">
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-bold text-cyan-400 uppercase">KẾT QUẢ GIẢI MÃ (XEM TRƯỚC)</span>
+            <span id="previewStatusBadge" class="text-[10px] px-2 py-0.5 rounded-full bg-emerald-950 text-emerald-300 border border-emerald-700">Đủ 27 giải</span>
+          </div>
+          <span id="previewDateText" class="text-xs font-semibold text-gray-300">--</span>
+        </div>
+
+        <!-- GĐB & ĐỀ SUMMARY -->
+        <div class="grid grid-cols-4 gap-2 text-center">
+          <div class="bg-daoDark-850 p-2 rounded-xl border border-gray-800">
+            <span class="text-[10px] text-gray-400">Giải ĐB</span>
+            <div class="text-base font-bold text-daoGold-400" id="previewGdb">--</div>
+          </div>
+          <div class="bg-daoDark-850 p-2 rounded-xl border border-gray-800">
+            <span class="text-[10px] text-gray-400">Số Đề (2D)</span>
+            <div class="text-base font-bold text-emerald-400" id="previewDe">--</div>
+          </div>
+          <div class="bg-daoDark-850 p-2 rounded-xl border border-gray-800">
+            <span class="text-[10px] text-gray-400">Đầu - Đuôi</span>
+            <div class="text-base font-bold text-cyan-400" id="previewDauDuoi">--</div>
+          </div>
+          <div class="bg-daoDark-850 p-2 rounded-xl border border-gray-800">
+            <span class="text-[10px] text-gray-400">Tổng</span>
+            <div class="text-base font-bold text-purple-400" id="previewTong">--</div>
+          </div>
+        </div>
+
+        <!-- 27 LÔ GIẢI MÃ -->
+        <div class="bg-daoDark-850 p-3 rounded-xl border border-gray-800">
+          <div class="text-[11px] text-gray-400 mb-1 flex justify-between">
+            <span>27 Lô giải mã theo thứ tự mở thưởng:</span>
+            <span id="previewLoCount" class="text-cyan-400 font-bold">27/27 giải</span>
+          </div>
+          <div id="preview27LoList" class="text-xs font-mono text-gray-200 leading-relaxed break-all">
+            --
+          </div>
+        </div>
+
+        <!-- NÚT LƯU CHÍNH THỨC -->
+        <button onclick="saveResultToDatabase()" id="btnSaveResult" class="w-full py-3 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-extrabold text-sm shadow-lg active:scale-95 transition-transform flex items-center justify-center gap-2">
+          <span>💾 LƯU KẾT QUẢ VÀO CSDL & TÁI HIỆU CHỈNH TOÀN BỘ HỆ THỐNG</span>
+        </button>
+      </section>
+    </div>
+
+    <!-- ============================================================== -->
+    <!-- TAB 3: ĐỐI SOÁT & LỊCH SỬ (15 NGÀY GẦN NHẤT) -->
+    <!-- ============================================================== -->
+    <div id="tab-history" class="hidden space-y-4">
+      <section class="bg-daoDark-800 rounded-2xl p-4 border border-daoGold-600/30">
+        <div class="flex items-center justify-between mb-3">
+          <h2 class="text-sm font-bold text-daoGold-400 flex items-center gap-1.5">
+            <span>📊 ĐỐI SOÁT KIỂM ĐỊNH WALK-FORWARD 15 NGÀY</span>
+          </h2>
+          <span class="text-[11px] text-gray-400">Tỷ lệ ngoài mẫu</span>
+        </div>
+
+        <div class="overflow-x-auto scrollbar-none">
+          <table class="w-full text-left text-xs border-collapse">
+            <thead>
+              <tr class="border-b border-gray-800 text-[11px] text-gray-400 uppercase">
+                <th class="py-2 px-1.5">Ngày</th>
+                <th class="py-2 px-1.5">GĐB</th>
+                <th class="py-2 px-1.5">Đề</th>
+                <th class="py-2 px-1.5">STL Dự Báo</th>
+                <th class="py-2 px-1.5">Kết Quả Lô</th>
+                <th class="py-2 px-1.5">Dàn Đề 50</th>
+                <th class="py-2 px-1.5">Giáp 65</th>
+              </tr>
+            </thead>
+            <tbody id="historyTableBody" class="divide-y divide-gray-800 text-gray-300 font-mono">
+              <tr>
+                <td colspan="7" class="py-4 text-center text-gray-500">Đang tải lịch sử đối soát...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+
+    <!-- ============================================================== -->
+    <!-- TAB 4: THƯ VIỆN & CẨM NANG ĐẠO DỊCH -->
+    <!-- ============================================================== -->
+    <div id="tab-manual" class="hidden space-y-4 text-xs leading-relaxed text-gray-300">
+      <section class="bg-daoDark-800 rounded-2xl p-4 border border-daoGold-600/30 space-y-3">
+        <h2 class="text-sm font-bold text-daoGold-400 flex items-center gap-1.5">
+          <span>☯ TRIẾT LÝ ĐẠO DỊCH HUYỀN CƠ PHÁP</span>
+        </h2>
+        <p>
+          Mô hình kết hợp quy luật Âm Dương Ngũ Hành, Kinh Dịch cùng phương trình vi phân ngẫu nhiên <strong>Black-Scholes-Merton (BSM)</strong> và trường thế năng hiệu dụng $V_{\text{eff}}$ trên đa tạp tô-pô.
+        </p>
+
+        <div class="space-y-2 pt-2 border-t border-gray-800">
+          <div class="font-bold text-daoGold-400">1. TỨ TƯỢNG THỊ TRƯỜNG (MARKET REGIMES):</div>
+          <div class="grid grid-cols-2 gap-2 text-[11px]">
+            <div class="p-2 rounded-lg bg-daoDark-850 border border-emerald-900/40">
+              <strong class="text-emerald-400">🟢 THÁI HÒA (Peak):</strong> Phong độ đỉnh cao, Full Kelly k=1.0x.
+            </div>
+            <div class="p-2 rounded-lg bg-daoDark-850 border border-cyan-900/40">
+              <strong class="text-cyan-400">🔵 KÝ TẾ (Convergent):</strong> Âm dương cân bằng, Kelly k=0.9x.
+            </div>
+            <div class="p-2 rounded-lg bg-daoDark-850 border border-amber-900/40">
+              <strong class="text-amber-400">🟠 PHỤC KHÍ (Coiling):</strong> Nén lò xo $Z \ge 2.5\sigma$, kích hoạt Huyền Thiên Giáp E65.
+            </div>
+            <div class="p-2 rounded-lg bg-daoDark-850 border border-rose-900/40">
+              <strong class="text-rose-400">🔴 BĨ CỰC (Chaos):</strong> Hỗn độn, Half-Kelly giảm 50% cược.
+            </div>
+          </div>
+        </div>
+
+        <div class="space-y-2 pt-2 border-t border-gray-800">
+          <div class="font-bold text-daoGold-400">2. CỬU CUNG THẦN TRẬN (7 CẤP ĐỘ DÀN ĐỀ):</div>
+          <p class="text-gray-400">
+            • <strong>Thái Cực ($E_1$)</strong>: 1 số cực đại (Bạch thủ).<br>
+            • <strong>Lưỡng Nghi ($E_2$)</strong>: 2 số giao hòa (Song thủ).<br>
+            • <strong>Tứ Tượng ($E_4$)</strong>: 4 số hạt nhân động lượng.<br>
+            • <strong>Cửu Cung ($E_9$)</strong>: 9 số bứt phá lợi nhuận.<br>
+            • <strong>Hà Đồ ($E_{25}$)</strong>: 25 số cốt lõi $5 \times 5$.<br>
+            • <strong>Đại Diễn ($E_{50}$)</strong>: 50 số cân bằng xác suất cổ điển.<br>
+            • <strong>Huyền Thiên Giáp ($E_{65}$)</strong>: 65 số đóng vai trò tấm giáp bảo hiểm vốn 100%.
+          </p>
+        </div>
+      </section>
+    </div>
+
+  </main>
+
+  <!-- TOAST NOTIFICATION -->
+  <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 px-4 py-2.5 bg-daoGold-500 text-daoDark-900 font-bold text-xs rounded-full shadow-2xl transition-all duration-300 opacity-0 pointer-events-none z-50 flex items-center gap-2">
+    <span>✔</span> <span id="toastMsg">Đã copy!</span>
+  </div>
+
+  <!-- JAVASCRIPT LOGIC -->
+  <script>
+    let currentBudget = 500000;
+    let predictData = null;
+    let statusData = null;
+    let parsedData = null;
+
+    // Khởi chạy khi load trang
+    window.addEventListener('DOMContentLoaded', () => {
+      fetchStatus();
+      fetchPredict(currentBudget);
+      fetchHistory(15);
+      setupNextDate();
+
+      // Đăng ký Service Worker cho PWA
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/sw.js').catch(() => {});
+      }
+    });
+
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      const toastMsg = document.getElementById('toastMsg');
+      toastMsg.innerText = msg;
+      toast.classList.remove('opacity-0', 'pointer-events-none');
+      toast.classList.add('opacity-100');
+      setTimeout(() => {
+        toast.classList.remove('opacity-100');
+        toast.classList.add('opacity-0', 'pointer-events-none');
+      }, 2500);
+    }
+
+    function switchTab(tabId) {
+      ['tab-predict', 'tab-input', 'tab-history', 'tab-manual'].forEach(id => {
+        const el = document.getElementById(id);
+        const btn = document.getElementById('btn-' + id);
+        if (id === tabId) {
+          el.classList.remove('hidden');
+          btn.className = 'py-2.5 rounded-lg transition-all font-semibold bg-daoGold-600 text-white shadow-sm';
+        } else {
+          el.classList.add('hidden');
+          btn.className = 'py-2.5 rounded-lg transition-all text-gray-400 hover:text-gray-200';
+        }
+      });
+    }
+
+    function setBudget(val) {
+      currentBudget = val;
+      document.getElementById('budgetRange').value = val;
+      onRangeChange(val);
+    }
+
+    function onRangeChange(val) {
+      currentBudget = parseInt(val);
+      document.getElementById('budgetDisplay').innerText = currentBudget.toLocaleString('vi-VN') + ' VNĐ';
+
+      // Cập nhật style pills
+      document.querySelectorAll('.budget-pill').forEach(btn => {
+        const text = btn.innerText.toLowerCase();
+        let bVal = 500000;
+        if (text.includes('300')) bVal = 300000;
+        else if (text.includes('500')) bVal = 500000;
+        else if (text.includes('1 tr')) bVal = 1000000;
+        else if (text.includes('2 tr')) bVal = 2000000;
+        else if (text.includes('3 tr')) bVal = 3000000;
+
+        if (bVal === currentBudget) {
+          btn.className = 'budget-pill py-1.5 rounded-lg border border-daoGold-500 bg-daoGold-600/30 text-daoGold-300 font-bold';
+        } else {
+          btn.className = 'budget-pill py-1.5 rounded-lg border border-gray-700 bg-daoDark-850 hover:border-daoGold-500 font-medium text-gray-300';
+        }
+      });
+
+      fetchPredict(currentBudget);
+    }
+
+    async function fetchStatus() {
+      try {
+        const res = await fetch('/api/status');
+        const data = await res.json();
+        statusData = data;
+
+        document.getElementById('headerStatusText').innerHTML = `
+          <span>Neo: ${data.latestDate} (${data.latestDayOfWeek})</span>
+          <span>•</span>
+          <span class="text-daoGold-400">GĐB: ${data.latestGdb} (${data.latestDe})</span>
+        `;
+        document.getElementById('qciVal').innerText = data.qciScore.toFixed(1) + '%';
+        document.getElementById('kellyVal').innerText = data.kellyMultiplier.toFixed(1) + 'x';
+        document.getElementById('recordsVal').innerText = data.totalRecords + ' kỳ';
+        document.getElementById('lastDateVal').innerText = data.latestDate;
+
+        const rBadge = document.getElementById('regimeBadge');
+        rBadge.innerText = data.regimeSymbol + ' ' + data.regimeName;
+        if (data.regimeName.includes('PHỤC KHÍ') || data.regimeName.includes('Coiling')) {
+          rBadge.className = 'text-xs px-2.5 py-1 rounded-full font-bold bg-amber-950/80 text-amber-300 border border-amber-600';
+          document.getElementById('coilingAlert').classList.remove('hidden');
+        } else if (data.regimeName.includes('THÁI HÒA') || data.regimeName.includes('Peak')) {
+          rBadge.className = 'text-xs px-2.5 py-1 rounded-full font-bold bg-emerald-950/80 text-emerald-300 border border-emerald-600';
+          document.getElementById('coilingAlert').classList.add('hidden');
+        } else {
+          rBadge.className = 'text-xs px-2.5 py-1 rounded-full font-medium bg-daoDark-800 text-gray-300 border border-gray-700';
+          document.getElementById('coilingAlert').classList.add('hidden');
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    async function fetchPredict(budget) {
+      try {
+        const res = await fetch('/api/predict?budget=' + budget);
+        const data = await res.json();
+        predictData = data;
+
+        // Trục 1
+        document.getElementById('stlDisplay').innerText = pad2(data.btLo) + ' - ' + pad2(data.stLo);
+        document.getElementById('stlPtsDisplay').innerText = `Cược ${data.stPts} điểm/con`;
+        document.getElementById('costStlText').innerText = data.costStLo.toLocaleString('vi-VN') + ' đ';
+        document.getElementById('xienDisplay').innerText = `(${pad2(data.btLo)} - ${pad2(data.stLo)})`;
+        document.getElementById('costXienDisplay').innerText = `Cược ${data.costXien.toLocaleString('vi-VN')} đ`;
+        document.getElementById('btlDisplay').innerText = pad2(data.btLo);
+
+        // Trục 2
+        document.getElementById('costDeTotalText').innerText = (data.costE65 + data.costE50 + data.costE9 + data.costE4 + data.costE1).toLocaleString('vi-VN') + ' đ';
+        document.getElementById('loLotDisplay').innerText = pad2(data.tuThuLo[2]) + ' - ' + pad2(data.tuThuLo[3]);
+        document.getElementById('loLotPtsDisplay').innerText = `${data.lotPts} điểm/con (${data.costLotLo.toLocaleString('vi-VN')} đ)`;
+
+        document.getElementById('e1Display').innerText = pad2(data.e1);
+        document.getElementById('e1CostDisplay').innerText = `Cược thêm: ${data.costE1.toLocaleString('vi-VN')} đ`;
+
+        document.getElementById('e4Display').innerText = data.e4.map(pad2).join(', ');
+        document.getElementById('e4CostDisplay').innerText = `Cược thêm: ${data.costE4.toLocaleString('vi-VN')} đ`;
+
+        document.getElementById('e9Display').innerText = data.e9.map(pad2).join(', ');
+        document.getElementById('e9CostDisplay').innerText = `Cược thêm: ${data.costE9.toLocaleString('vi-VN')} đ`;
+
+        document.getElementById('e50Display').innerText = data.e50.map(pad2).join(', ');
+        document.getElementById('e50CostDisplay').innerText = `Cược E50: ${data.costE50.toLocaleString('vi-VN')} đ | Giáp E65: ${data.costE65.toLocaleString('vi-VN')} đ`;
+
+        document.getElementById('bsmCoilingDisplay').innerText = data.bsmCoiling.map(pad2).join(', ');
+
+        // Trục 3
+        document.getElementById('cost3DText').innerText = data.cost3D.toLocaleString('vi-VN') + ' đ';
+        document.getElementById('dan3DDisplay').innerText = data.dan3D_12.join(', ');
+        document.getElementById('bt3DDisplay').innerText = data.bt3D;
+        document.getElementById('cost3DPerTicket').innerText = `${data.c3D_base.toLocaleString('vi-VN')} đ/vé (Ăn 1:960)`;
+        document.getElementById('costBt3DDisplay').innerText = `Cược ${data.c3D_bt.toLocaleString('vi-VN')} đ`;
+
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    async function fetchHistory(days) {
+      try {
+        const res = await fetch('/api/history?days=' + days);
+        const data = await res.json();
+        const tbody = document.getElementById('historyTableBody');
+        tbody.innerHTML = '';
+
+        data.reverse().forEach(row => {
+          const tr = document.createElement('tr');
+          tr.className = 'hover:bg-daoDark-850/60 transition-colors';
+
+          const stlBadge = row.hitStl 
+            ? `<span class="text-emerald-400 font-bold">✔ Ăn ${row.stlHits} nháy</span>` 
+            : `<span class="text-gray-500">Trượt</span>`;
+
+          const e50Badge = row.hitE50 
+            ? `<span class="text-emerald-400 font-bold">✔ Trúng E50</span>` 
+            : `<span class="text-gray-500">Trượt</span>`;
+
+          const e65Badge = row.hitE65 
+            ? `<span class="text-cyan-400 font-bold">✔ Giáp E65</span>` 
+            : `<span class="text-gray-500">Trượt</span>`;
+
+          tr.innerHTML = `
+            <td class="py-2.5 px-1.5 text-gray-300 font-sans">${row.date.substring(5)}</td>
+            <td class="py-2.5 px-1.5 text-daoGold-400 font-semibold">${row.gdb}</td>
+            <td class="py-2.5 px-1.5 text-gray-200 font-bold">${pad2(row.de)}</td>
+            <td class="py-2.5 px-1.5 text-cyan-300">${pad2(row.btLo)}-${pad2(row.stLo)}</td>
+            <td class="py-2.5 px-1.5">${stlBadge}</td>
+            <td class="py-2.5 px-1.5">${e50Badge}</td>
+            <td class="py-2.5 px-1.5">${e65Badge}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    function setupNextDate() {
+      const today = new Date();
+      const dateInput = document.getElementById('inputDrawDate');
+      dateInput.value = today.toISOString().split('T')[0];
+      updateDayOfWeekDisplay();
+      dateInput.addEventListener('change', updateDayOfWeekDisplay);
+    }
+
+    function updateDayOfWeekDisplay() {
+      const val = document.getElementById('inputDrawDate').value;
+      if (!val) return;
+      const d = new Date(val);
+      const days = ['Chủ nhật', 'Thứ hai', 'Thứ ba', 'Thứ tư', 'Thứ năm', 'Thứ sáu', 'Thứ bảy'];
+      document.getElementById('inputDayOfWeek').value = days[d.getDay()];
+    }
+
+    async function parseRawText() {
+      const text = document.getElementById('rawLotteryText').value.trim();
+      if (!text) {
+        alert('Vui lòng dán văn bản kết quả vào ô trước!');
+        return;
+      }
+
+      try {
+        const res = await fetch('/api/parse-result', {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain; charset=utf-8' },
+          body: text
+        });
+        const data = await res.json();
+        parsedData = data;
+
+        document.getElementById('parsedPreviewSection').classList.remove('hidden');
+        document.getElementById('previewDateText').innerText = data.date + ' (' + data.dayOfWeek + ')';
+        document.getElementById('previewGdb').innerText = data.gdb || '--';
+        document.getElementById('previewDe').innerText = data.de >= 0 ? pad2(data.de) : '--';
+        document.getElementById('previewDauDuoi').innerText = (data.dau >= 0 ? data.dau : '-') + ' / ' + (data.duoi >= 0 ? data.duoi : '-');
+        document.getElementById('previewTong').innerText = data.tong >= 0 ? data.tong : '--';
+        document.getElementById('previewLoCount').innerText = `${data.loCount}/27 giải`;
+        document.getElementById('preview27LoList').innerText = data.loList.map(pad2).join(', ');
+
+        // Update form date if parsed
+        if (data.date) {
+          document.getElementById('inputDrawDate').value = data.date;
+          document.getElementById('inputDayOfWeek').value = data.dayOfWeek;
+        }
+
+        const badge = document.getElementById('previewStatusBadge');
+        if (data.valid) {
+          badge.className = 'text-[10px] px-2 py-0.5 rounded-full bg-emerald-950 text-emerald-300 border border-emerald-700';
+          badge.innerText = '✔ Hợp lệ 27 giải';
+          document.getElementById('btnSaveResult').classList.remove('opacity-50', 'pointer-events-none');
+        } else {
+          badge.className = 'text-[10px] px-2 py-0.5 rounded-full bg-rose-950 text-rose-300 border border-rose-700';
+          badge.innerText = `Thiếu giải (${data.loCount}/27)`;
+        }
+      } catch (e) {
+        alert('Lỗi phân tích: ' + e.message);
+      }
+    }
+
+    function clearRawText() {
+      document.getElementById('rawLotteryText').value = '';
+      document.getElementById('parsedPreviewSection').classList.add('hidden');
+      parsedData = null;
+    }
+
+    async function saveResultToDatabase() {
+      if (!parsedData || !parsedData.valid) {
+        alert('Dữ liệu chưa đủ 27 giải hợp lệ!');
+        return;
+      }
+
+      // Đảm bảo ngày theo input date picker
+      parsedData.date = document.getElementById('inputDrawDate').value;
+      parsedData.dayOfWeek = document.getElementById('inputDayOfWeek').value;
+
+      try {
+        const res = await fetch('/api/save-result', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json; charset=utf-8' },
+          body: JSON.stringify(parsedData)
+        });
+        const result = await res.json();
+        if (result.success) {
+          showToast('Đã lưu kết quả & tái hiệu chỉnh hệ thống!');
+          alert(result.message);
+          clearRawText();
+
+          // Refresh toàn bộ app
+          await fetchStatus();
+          await fetchPredict(currentBudget);
+          await fetchHistory(15);
+
+          // Tự động chuyển về Tab Dự Báo
+          switchTab('tab-predict');
+        } else {
+          alert('Không thể lưu: ' + result.message);
+        }
+      } catch (e) {
+        alert('Lỗi khi lưu kết quả: ' + e.message);
+      }
+    }
+
+    function copyZaloText() {
+      if (!predictData || !predictData.copyZaloText) {
+        showToast('Đang tải dữ liệu...');
+        return;
+      }
+      navigator.clipboard.writeText(predictData.copyZaloText).then(() => {
+        showToast('Đã copy tin nhắn cược Zalo!');
+      });
+    }
+
+    function copyGoogleSheetTsv() {
+      // Gọi lệnh API sheet hoặc định dạng TSV
+      fetch('/api/predict?budget=' + currentBudget).then(r => r.json()).then(data => {
+        // Tự tạo TSV chuẩn
+        let tsv = "STT\tPhân Loại Trục\tHạng Mục Cược\tSố Lượng Số\tDanh Sách Số Đầy Đủ\tĐơn Vị\tMức Cược Mỗi Số\tTổng Tiền Cược (VNĐ)\tGhi Chú & Tỷ Trọng\n";
+        tsv += `1\tTrục 1: Địa Lợi (+EV)\tSong Thủ Lô (STL)\t2\t${pad2(data.btLo)}, ${pad2(data.stLo)}\tĐiểm/số\t${data.stPts}\t${data.costStLo}\tĐộng cơ dòng tiền (+EV) chính (27k/điểm)\n`;
+        tsv += `2\tTrục 1: Địa Lợi (+EV)\tBạch Thủ Lô (BTL)\t1\t${pad2(data.btLo)}\tĐiểm/số\t0\t0\tĐã nằm trong cặp Song Thủ Lô\n`;
+        tsv += `3\tTrục 2: Nhân Hòa (Hộ thân)\tLô Lót Tứ Thủ\t2\t${pad2(data.tuThuLo[2])}, ${pad2(data.tuThuLo[3])}\tĐiểm/số\t${data.lotPts}\t${data.costLotLo}\tLót phòng thủ bảo hiểm danh mục\n`;
+        tsv += `4\tTrục 1: Địa Lợi (+EV)\tCặp Xiên 2 Song Thủ\t1\t(${pad2(data.btLo)}-${pad2(data.stLo)})\tVNĐ/vé\t${data.costXien}\t${data.costXien}\tCược 1 vé Xiên 2 STL\n`;
+        tsv += `5\tTrục 2: Nhân Hòa (Hộ thân)\tĐại Diễn Thần Trận (E50)\t50\t${data.e50.map(pad2).join(', ')}\tVNĐ/số\t${data.c50}\t${data.costE50}\tLớp vỏ 50 số\n`;
+        if (data.costE65 > 0) {
+          tsv += `6\tTrục 2: Nhân Hòa (Hộ thân)\tHuyền Thiên Giáp (E65)\t65\t${data.e65.map(pad2).join(', ')}\tVNĐ/số\t${data.c65}\t${data.costE65}\tBảo hiểm nén thế năng Phục Khí\n`;
+        }
+        tsv += `7\tTrục 2: Nhân Hòa (Hộ thân)\tCửu Cung Lạc Thư (E9)\t9\t${data.e9.map(pad2).join(', ')}\tVNĐ/số\t${data.c9}\t${data.costE9}\tCược thêm 9 số hạt nhân\n`;
+        tsv += `8\tTrục 2: Nhân Hòa (Hộ thân)\tTứ Tượng Hội Tụ (E4)\t4\t${data.e4.map(pad2).join(', ')}\tVNĐ/số\t${data.c4}\t${data.costE4}\tCược thêm 4 số tứ thủ\n`;
+        tsv += `9\tTrục 2: Nhân Hòa (Hộ thân)\tThái Cực Nhất Điểm (E1)\t1\t${pad2(data.e1)}\tVNĐ/số\t${data.c1}\t${data.costE1}\tCược thêm Bạch thủ đề\n`;
+        tsv += `10\tTrục 3: Thiên Thời (Đột biến)\tDàn 3 Càng Tinh Tuyển 12 số\t12\t${data.dan3D_12.join(', ')}\tVNĐ/vé\t${data.c3D_base}\t${data.cost3D}\tĐòn bẩy 3D ăn 1:960\n`;
+        tsv += `TỔNG\tDANH MỤC KELLY\tTổng Ngân Sách Phân Bổ Ngày\t-\t-\t-\t-\t${data.actualTotal}\t100% Khớp Ngân Sách`;
+
+        navigator.clipboard.writeText(tsv).then(() => {
+          showToast('Đã copy bảng TSV Google Sheet!');
+        });
+      });
+    }
+
+    function toggleExpandDe() {
+      const el = document.getElementById('e50Display');
+      el.classList.toggle('line-clamp-2');
+    }
+
+    function pad2(num) {
+      return (num < 10 ? '0' : '') + num;
+    }
+  </script>
+</body>
+</html>
