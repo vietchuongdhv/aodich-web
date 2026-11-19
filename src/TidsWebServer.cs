@@ -413,6 +413,115 @@ namespace TidsTheory
 
             long actualTotal = costLotto + costXien + costDeTotal + cost3D;
 
+            // Xiên quay & 3D/4D mở rộng chuẩn lệnh Sheet 22 hạng mục
+            var xien2List = new List<string>
+            {
+                string.Format("{0}-{1}", btLo.ToString("D2"), stLo.ToString("D2")),
+                string.Format("{0}-{1}", btLo.ToString("D2"), tuThu3.ToString("D2")),
+                string.Format("{0}-{1}", btLo.ToString("D2"), tuThu4.ToString("D2")),
+                string.Format("{0}-{1}", stLo.ToString("D2"), tuThu3.ToString("D2")),
+                string.Format("{0}-{1}", stLo.ToString("D2"), tuThu4.ToString("D2")),
+                string.Format("{0}-{1}", tuThu3.ToString("D2"), tuThu4.ToString("D2"))
+            };
+
+            var xien3List = new List<string>
+            {
+                string.Format("{0}-{1}-{2}", btLo.ToString("D2"), stLo.ToString("D2"), tuThu3.ToString("D2")),
+                string.Format("{0}-{1}-{2}", btLo.ToString("D2"), stLo.ToString("D2"), tuThu4.ToString("D2")),
+                string.Format("{0}-{1}-{2}", btLo.ToString("D2"), tuThu3.ToString("D2"), tuThu4.ToString("D2")),
+                string.Format("{0}-{1}-{2}", stLo.ToString("D2"), tuThu3.ToString("D2"), tuThu4.ToString("D2"))
+            };
+
+            string xien4 = string.Format("{0}-{1}-{2}-{3}", btLo.ToString("D2"), stLo.ToString("D2"), tuThu3.ToString("D2"), tuThu4.ToString("D2"));
+
+            var dan9Tail = e9.ToArray();
+            var dan3D_27 = new List<string>();
+            foreach (int h in topD3)
+                foreach (int t in dan9Tail)
+                    dan3D_27.Add(h.ToString() + t.ToString("D2"));
+            dan3D_27.Sort();
+
+            int[] ganHead = new int[100];
+            for (int s = 0; s < 100; s++)
+            {
+                for (int i = n - 1; i >= 0; i--)
+                {
+                    if (localRecs[i].Head4D == s) break;
+                    ganHead[s]++;
+                }
+            }
+            int[] f30Head = new int[100];
+            for (int i = Math.Max(0, n - 30); i < n; i++) f30Head[localRecs[i].Head4D]++;
+            var headEnergies = new List<StateEnergy>();
+            for (int s = 0; s < 100; s++)
+            {
+                double rTerm = 0.0;
+                if (ganHead[s] == 0) rTerm = 2.0;
+                else if (ganHead[s] >= 8 && ganHead[s] <= 20) rTerm = -1.6 + (Math.Abs(ganHead[s] - 13) / 10.0);
+                else if (ganHead[s] > 30) rTerm = 1.0;
+                else rTerm = 0.0;
+                double kTerm = -0.5 * (f30Head[s] - 0.30);
+                double v = rTerm + kTerm;
+                headEnergies.Add(new StateEnergy { State = s, Potential = v, Gan = ganHead[s], F30 = f30Head[s] });
+            }
+            headEnergies = headEnergies.OrderBy(x => x.Potential).ToList();
+            var topHeads = headEnergies.Take(4).Select(x => x.State).ToArray();
+            string bt4D = topHeads[0].ToString("D2") + e1.ToString("D2");
+
+            var dan4D_16 = new List<string>();
+            foreach (int hd in topHeads)
+                foreach (int tl in e4)
+                    dan4D_16.Add(hd.ToString("D2") + tl.ToString("D2"));
+
+            var top9Heads = headEnergies.Take(9).Select(x => x.State).ToArray();
+            var dan4D_81 = new List<string>();
+            foreach (int hd in top9Heads)
+                foreach (int tl in dan9Tail)
+                    dan4D_81.Add(hd.ToString("D2") + tl.ToString("D2"));
+            dan4D_81.Sort();
+
+            // XÂY DỰNG DANH SÁCH 22 HẠNG MỤC CHUẨN LỆNH SHEET
+            var sheetRows = new List<string>();
+            Action<int, string, string, int, string, string, long, long, string> addRow = (stt, axis, cat, qty, nums, unit, rate, total, note) =>
+            {
+                var rowSb = new StringBuilder();
+                rowSb.Append("{");
+                rowSb.AppendFormat("\"stt\": {0},", stt);
+                rowSb.AppendFormat("\"axis\": \"{0}\",", EscapeJson(axis));
+                rowSb.AppendFormat("\"category\": \"{0}\",", EscapeJson(cat));
+                rowSb.AppendFormat("\"quantity\": {0},", qty);
+                rowSb.AppendFormat("\"numbers\": \"{0}\",", EscapeJson(nums));
+                rowSb.AppendFormat("\"unit\": \"{0}\",", EscapeJson(unit));
+                rowSb.AppendFormat("\"betPerUnit\": {0},", rate);
+                rowSb.AppendFormat("\"totalBet\": {0},", total);
+                rowSb.AppendFormat("\"note\": \"{0}\"", EscapeJson(note));
+                rowSb.Append("}");
+                sheetRows.Add(rowSb.ToString());
+            };
+
+            addRow(1, "Trục 1: Địa Lợi (+EV)", "Song Thủ Lô (STL)", 2, string.Format("{0}, {1}", btLo.ToString("D2"), stLo.ToString("D2")), "Điểm/số", stPts, costStLo, "Động cơ dòng tiền (+EV) chính (27k/điểm)");
+            addRow(2, "Trục 1: Địa Lợi (+EV)", "Bạch Thủ Lô (BTL)", 1, btLo.ToString("D2"), "Điểm/số", 0, 0, "Đã nằm trong cặp Song Thủ Lô (Vốn = 0 đ)");
+            addRow(3, "Trục 2: Nhân Hòa (Hộ thân)", "Lô Lót Tứ Thủ", 2, string.Format("{0}, {1}", tuThu3.ToString("D2"), tuThu4.ToString("D2")), "Điểm/số", lotPts, costLotLo, "Lót phòng thủ bảo hiểm danh mục (27k/điểm)");
+            addRow(4, "Trục 2: Nhân Hòa (Hộ thân)", "Trọn Bộ Tứ Thủ Lô", 4, string.Format("{0}, {1}, {2}, {3}", btLo.ToString("D2"), stLo.ToString("D2"), tuThu3.ToString("D2"), tuThu4.ToString("D2")), "Điểm/số", 0, 0, "Hệ 4 số bảo vệ (Đã phân bổ ở STL + Lót)");
+            addRow(5, "Trục 1: Địa Lợi (+EV)", "Cặp Xiên 2 Song Thủ", 1, string.Format("({0}-{1})", btLo.ToString("D2"), stLo.ToString("D2")), "VNĐ/vé", costXien, costXien, "Cược 1 vé Xiên 2 STL (Tỷ lệ ăn 1:16.5)");
+            addRow(6, "Trục 1: Địa Lợi (+EV)", "Bộ 6 Cặp Xiên 2 Tứ Thủ", 6, string.Join(", ", xien2List.Select(x => "(" + x + ")")), "VNĐ/vé", 0, 0, "Xiên quay dự phòng (Vốn = 0 đ)");
+            addRow(7, "Trục 3: Thiên Thời (Đột biến)", "Bộ 4 Xiên 3 Tứ Thủ", 4, string.Join(", ", xien3List.Select(x => "(" + x + ")")), "VNĐ/vé", 0, 0, "Xiên quay dự phòng (Vốn = 0 đ)");
+            addRow(8, "Trục 3: Thiên Thời (Đột biến)", "Bộ 1 Xiên 4 Tứ Thủ", 1, "(" + xien4 + ")", "VNĐ/vé", 0, 0, "Xiên 4 dự phòng (Vốn = 0 đ)");
+            addRow(9, "Trục 2: Nhân Hòa (Hộ thân)", "Đại Diễn Thần Trận (E50)", 50, string.Join(", ", e50.Select(x => x.ToString("D2"))), "VNĐ/số", c50, costE50, string.Format("Lớp vỏ 50 số (Tổng cược: {0:N0} đ/số)", c65 + c50));
+            addRow(10, "Trục 2: Nhân Hòa (Hộ thân)", "Huyền Thiên Giáp (E65)", 65, string.Join(", ", e65.Select(x => x.ToString("D2"))), "VNĐ/số", c65, costE65, (costE65 > 0) ? string.Format("Kích hoạt bảo hiểm nén thế năng PHỤC KHÍ ({0:N0} đ/số)", c65) : "Dự phòng kích hoạt khi có trượt kép (Vốn = 0 đ)");
+            addRow(11, "Trục 2: Nhân Hòa (Hộ thân)", string.Format("Quy Nguyên Trận [{0}]", regime.CompressedFactor), bsmCoiling.Count, string.Join(", ", bsmCoiling.Select(x => x.ToString("D2"))), "VNĐ/số", 0, 0, (regime.Regime == MarketRegimeType.Coiling) ? string.Format("10 số đáy thế năng cụm nén {0} (Vốn = 0 đ - Tùy chọn lót)", regime.CompressedFactor) : "Dự phòng săn điểm nổ vĩ mô (Vốn = 0 đ)");
+            addRow(12, "Trục 2: Nhân Hòa (Hộ thân)", "Hà Đồ Tự Nhiên (E25)", 25, string.Join(", ", e25.Select(x => x.ToString("D2"))), "VNĐ/số", c25, costE25, (costE25 > 0) ? string.Format("Cược thêm cho 25 số lõi (Tổng cược: {0:N0} đ/số)", c65 + c50 + c25) : "Dự phòng chế độ Thị Trường Phù Hợp (Vốn = 0 đ)");
+            addRow(13, "Trục 2: Nhân Hòa (Hộ thân)", "Cửu Cung Lạc Thư (E9)", 9, string.Join(", ", e9.Select(x => x.ToString("D2"))), "VNĐ/số", c9, costE9, string.Format("Cược thêm cho 9 số hạt nhân (Tổng cược: {0:N0} đ/số)", c65 + c50 + c25 + c9));
+            addRow(14, "Trục 2: Nhân Hòa (Hộ thân)", "Tứ Tượng Hội Tụ (E4)", 4, string.Join(", ", e4.Select(x => x.ToString("D2"))), "VNĐ/số", c4, costE4, string.Format("Cược thêm cho 4 số tứ thủ (Tổng cược: {0:N0} đ/số)", c65 + c50 + c25 + c9 + c4));
+            addRow(15, "Trục 2: Nhân Hòa (Hộ thân)", "Thái Cực Nhất Điểm (E1)", 1, e1.ToString("D2"), "VNĐ/số", c1, costE1, string.Format("Cược thêm cho Bạch thủ đề (Tổng cược: {0:N0} đ)", c65 + c50 + c25 + c9 + c4 + c1));
+            addRow(16, "Trục 2: Nhân Hòa (Hộ thân)", "Lưỡng Nghi Đồng Quy (E2)", 2, string.Join(", ", e2.Select(x => x.ToString("D2"))), "VNĐ/số", 0, 0, "Đã nằm trong Tứ thủ E4 (Vốn = 0 đ)");
+            addRow(17, "Trục 3: Thiên Thời (Đột biến)", "Dàn 3 Càng Tinh Tuyển 12 số (3D)", 12, string.Join(", ", dan3D_12), "VNĐ/vé", c3D_base, cost3D, string.Format("Đòn bẩy 3D ăn 1:960 (Riêng BT {0} cược {1:N0} đ)", bt3D, c3D_bt));
+            addRow(18, "Trục 3: Thiên Thời (Đột biến)", "Bạch Thủ 3 Càng (3D)", 1, bt3D, "VNĐ/vé", 0, 0, "Đã gộp vốn vào Dàn 12 số (Vốn = 0 đ)");
+            addRow(19, "Trục 3: Thiên Thời (Đột biến)", "Dàn 3 Càng Phổ 27 số (3D)", 27, string.Join(", ", dan3D_27), "VNĐ/vé", 0, 0, "Dự phòng mở rộng (Vốn = 0 đ)");
+            addRow(20, "Trục 3: Thiên Thời (Đột biến)", "Bạch Thủ 4 Càng (4D)", 1, bt4D, "VNĐ/vé", 0, 0, "Dự phòng siêu đòn bẩy (Vốn = 0 đ)");
+            addRow(21, "Trục 3: Thiên Thời (Đột biến)", "Dàn 4 Càng Trọng Tâm 16 số (4D)", 16, string.Join(", ", dan4D_16), "VNĐ/vé", 0, 0, "Dự phòng siêu đòn bẩy (Vốn = 0 đ)");
+            addRow(22, "Trục 3: Thiên Thời (Đột biến)", "Dàn 4 Càng Mở Rộng 81 số (4D)", 81, string.Join(", ", dan4D_81), "VNĐ/vé", 0, 0, "Dự phòng siêu đòn bẩy (Vốn = 0 đ)");
+
             // Xây dựng chuỗi Copy Zalo / Tin nhắn
             var copyZaloSb = new StringBuilder();
             copyZaloSb.AppendLine(string.Format("--- ĐẠO DỊCH HUYỀN CƠ PHÁP (VỐN {0:N0} Đ) ---", budget));
@@ -471,7 +580,8 @@ namespace TidsTheory
             sb.AppendFormat("\"c3D_bt\": {0},", c3D_bt);
             sb.AppendFormat("\"c3D_base\": {0},", c3D_base);
 
-            sb.AppendFormat("\"copyZaloText\": \"{0}\"", EscapeJson(copyZaloSb.ToString()));
+            sb.AppendFormat("\"copyZaloText\": \"{0}\",", EscapeJson(copyZaloSb.ToString()));
+            sb.AppendFormat("\"sheetItems\": [{0}]", string.Join(",", sheetRows));
             sb.Append("}");
 
             byte[] buf = Encoding.UTF8.GetBytes(sb.ToString());
@@ -504,41 +614,144 @@ namespace TidsTheory
 
                 var marginal1D = Program.Compute1DMarginals(past);
                 var deEnergies = Program.ComputeUnifiedPotentials2D(past, marginal1D);
-                var e50 = Program.SelectFactorNeutralDeSet(deEnergies, 50);
                 var e65 = Program.SelectFactorNeutralDeSet(deEnergies, 65);
+                var e50 = Program.SelectFactorNeutralDeSet(deEnergies, 50);
+                var e25 = Program.SelectFactorNeutralDeSet(deEnergies, 25);
                 var e9 = Program.SelectFactorNeutralDeSet(deEnergies, 9);
                 var e4 = Program.SelectFactorNeutralDeSet(deEnergies, 4);
+                int e1 = deEnergies[0].State;
 
+                // Lô
                 bool hitStl = actual.UniqueLo.Contains(top4[0]) || actual.UniqueLo.Contains(top4[1]);
-                bool hitTuThu = hitStl || actual.UniqueLo.Contains(top4[2]) || actual.UniqueLo.Contains(top4[3]);
-                bool hitE50 = e50.Contains(actual.De);
-                bool hitE65 = e65.Contains(actual.De);
-                bool hitE9 = e9.Contains(actual.De);
-                bool hitE4 = e4.Contains(actual.De);
-
                 int stlHits = 0;
                 foreach (var lo in actual.LoList)
                 {
                     if (lo == top4[0] || lo == top4[1]) stlHits++;
                 }
 
-                var sb = new StringBuilder();
-                sb.Append("{");
-                sb.AppendFormat("\"date\": \"{0}\",", actual.Date);
-                sb.AppendFormat("\"dayOfWeek\": \"{0}\",", EscapeJson(actual.DayOfWeek));
-                sb.AppendFormat("\"gdb\": \"{0}\",", actual.Gdb);
-                sb.AppendFormat("\"de\": {0},", actual.De);
-                sb.AppendFormat("\"btLo\": {0},", top4[0]);
-                sb.AppendFormat("\"stLo\": {0},", top4[1]);
-                sb.AppendFormat("\"hitStl\": {0},", hitStl.ToString().ToLower());
-                sb.AppendFormat("\"stlHits\": {0},", stlHits);
-                sb.AppendFormat("\"hitTuThu\": {0},", hitTuThu.ToString().ToLower());
-                sb.AppendFormat("\"hitE50\": {0},", hitE50.ToString().ToLower());
-                sb.AppendFormat("\"hitE65\": {0},", hitE65.ToString().ToLower());
-                sb.AppendFormat("\"hitE9\": {0},", hitE9.ToString().ToLower());
-                sb.AppendFormat("\"hitE4\": {0}", hitE4.ToString().ToLower());
-                sb.Append("}");
-                list.Add(sb.ToString());
+                bool hitXien2 = actual.UniqueLo.Contains(top4[0]) && actual.UniqueLo.Contains(top4[1]);
+
+                int tuThuHits = 0;
+                foreach (var lo in actual.LoList)
+                {
+                    if (lo == top4[0] || lo == top4[1] || lo == top4[2] || lo == top4[3]) tuThuHits++;
+                }
+                bool hitTuThu = tuThuHits > 0;
+
+                // Đề
+                bool hitE65 = e65.Contains(actual.De);
+                bool hitE50 = e50.Contains(actual.De);
+                bool hitE25 = e25.Contains(actual.De);
+                bool hitE9 = e9.Contains(actual.De);
+                bool hitE4 = e4.Contains(actual.De);
+                bool hitE1 = (e1 == actual.De);
+
+                // 3D
+                int[] ganD3 = new int[10];
+                for (int d = 0; d < 10; d++)
+                {
+                    for (int i = k - 1; i >= 0; i--)
+                    {
+                        if (past[i].Digits5[2] == d) break;
+                        ganD3[d]++;
+                    }
+                }
+                int[] f30D3 = new int[10];
+                for (int i = Math.Max(0, k - 30); i < k; i++) f30D3[past[i].Digits5[2]]++;
+                var d3List = new List<Tuple<int, double>>();
+                for (int d = 0; d < 10; d++)
+                {
+                    double rTerm = (ganD3[d] >= 8 && ganD3[d] <= 20) ? -1.5 : (ganD3[d] == 0 ? 1.5 : 0.0);
+                    double kTerm = -0.3 * (f30D3[d] - 3.0);
+                    d3List.Add(new Tuple<int, double>(d, rTerm + kTerm));
+                }
+                var topD3 = d3List.OrderBy(x => x.Item2).Take(3).Select(x => x.Item1).ToArray();
+                var dan3D_12 = new List<string>();
+                foreach (int h in topD3)
+                    foreach (int t in e4)
+                        dan3D_12.Add(h.ToString() + t.ToString("D2"));
+
+                var dan3D_27 = new List<string>();
+                foreach (int h in topD3)
+                    foreach (int t in e9)
+                        dan3D_27.Add(h.ToString() + t.ToString("D2"));
+
+                string actual3D = (actual.Gdb != null && actual.Gdb.Length >= 3) ? actual.Gdb.Substring(actual.Gdb.Length - 3) : "";
+                bool hit3D = !string.IsNullOrEmpty(actual3D) && dan3D_12.Contains(actual3D);
+                bool hit3D_27 = !string.IsNullOrEmpty(actual3D) && dan3D_27.Contains(actual3D);
+
+                // 4D Tensor
+                int[] ganHead = new int[100];
+                for (int s = 0; s < 100; s++)
+                {
+                    for (int i = k - 1; i >= 0; i--)
+                    {
+                        if (past[i].Head4D == s) break;
+                        ganHead[s]++;
+                    }
+                }
+                int[] f30Head = new int[100];
+                for (int i = Math.Max(0, k - 30); i < k; i++) f30Head[past[i].Head4D]++;
+                var headEnergies = new List<StateEnergy>();
+                for (int s = 0; s < 100; s++)
+                {
+                    double rTerm = 0.0;
+                    if (ganHead[s] == 0) rTerm = 2.0;
+                    else if (ganHead[s] >= 8 && ganHead[s] <= 20) rTerm = -1.6 + (Math.Abs(ganHead[s] - 13) / 10.0);
+                    else if (ganHead[s] > 30) rTerm = 1.0;
+                    else rTerm = 0.0;
+                    double kTerm = -0.5 * (f30Head[s] - 0.30);
+                    double v = rTerm + kTerm;
+                    headEnergies.Add(new StateEnergy { State = s, Potential = v, Gan = ganHead[s], F30 = f30Head[s] });
+                }
+                headEnergies = headEnergies.OrderBy(x => x.Potential).ToList();
+                var topHeads = headEnergies.Take(4).Select(x => x.State).ToArray();
+                var top9Heads = headEnergies.Take(9).Select(x => x.State).ToArray();
+
+                var dan4D_16 = new List<string>();
+                foreach (int hd in topHeads)
+                    foreach (int tl in e4)
+                        dan4D_16.Add(hd.ToString("D2") + tl.ToString("D2"));
+
+                var dan4D_81 = new List<string>();
+                foreach (int hd in top9Heads)
+                    foreach (int tl in e9)
+                        dan4D_81.Add(hd.ToString("D2") + tl.ToString("D2"));
+
+                string actual4D = (actual.Gdb != null && actual.Gdb.Length >= 4) ? actual.Gdb.Substring(actual.Gdb.Length - 4) : "";
+                bool hit4D_16 = !string.IsNullOrEmpty(actual4D) && dan4D_16.Contains(actual4D);
+                bool hit4D_81 = !string.IsNullOrEmpty(actual4D) && dan4D_81.Contains(actual4D);
+
+                var sbRow = new StringBuilder();
+                sbRow.Append("{");
+                sbRow.AppendFormat("\"date\": \"{0}\",", actual.Date);
+                sbRow.AppendFormat("\"dayOfWeek\": \"{0}\",", EscapeJson(actual.DayOfWeek));
+                sbRow.AppendFormat("\"gdb\": \"{0}\",", actual.Gdb);
+                sbRow.AppendFormat("\"de\": {0},", actual.De);
+                sbRow.AppendFormat("\"actual3D\": \"{0}\",", actual3D);
+                sbRow.AppendFormat("\"actual4D\": \"{0}\",", actual4D);
+                sbRow.AppendFormat("\"btLo\": {0},", top4[0]);
+                sbRow.AppendFormat("\"stLo\": {0},", top4[1]);
+                sbRow.AppendFormat("\"tuThu3\": {0},", top4[2]);
+                sbRow.AppendFormat("\"tuThu4\": {0},", top4[3]);
+                sbRow.AppendFormat("\"hitStl\": {0},", hitStl.ToString().ToLower());
+                sbRow.AppendFormat("\"stlHits\": {0},", stlHits);
+                sbRow.AppendFormat("\"hitTuThu\": {0},", hitTuThu.ToString().ToLower());
+                sbRow.AppendFormat("\"tuThuHits\": {0},", tuThuHits);
+                sbRow.AppendFormat("\"hitXien2\": {0},", hitXien2.ToString().ToLower());
+                sbRow.AppendFormat("\"hitE65\": {0},", hitE65.ToString().ToLower());
+                sbRow.AppendFormat("\"hitE50\": {0},", hitE50.ToString().ToLower());
+                sbRow.AppendFormat("\"hitE25\": {0},", hitE25.ToString().ToLower());
+                sbRow.AppendFormat("\"hitE9\": {0},", hitE9.ToString().ToLower());
+                sbRow.AppendFormat("\"hitE4\": {0},", hitE4.ToString().ToLower());
+                sbRow.AppendFormat("\"hitE1\": {0},", hitE1.ToString().ToLower());
+                sbRow.AppendFormat("\"e1\": {0},", e1);
+                sbRow.AppendFormat("\"hit3D\": {0},", hit3D.ToString().ToLower());
+                sbRow.AppendFormat("\"hit3D_27\": {0},", hit3D_27.ToString().ToLower());
+                sbRow.AppendFormat("\"hit4D_16\": {0},", hit4D_16.ToString().ToLower());
+                sbRow.AppendFormat("\"hit4D_81\": {0}", hit4D_81.ToString().ToLower());
+                sbRow.Append("}");
+                list.Add(sbRow.ToString());
             }
 
             string json = "[" + string.Join(",", list) + "]";
