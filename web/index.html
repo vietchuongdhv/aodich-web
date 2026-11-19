@@ -448,22 +448,71 @@
     </div>
 
     <!-- ============================================================== -->
-    <!-- TAB 3: ĐỐI SOÁT & LỊCH SỬ (15 NGÀY GẦN NHẤT) -->
+    <!-- TAB 3: ĐỐI SOÁT & LỊCH SỬ (TÙY BIẾN SỐ NGÀY) -->
     <!-- ============================================================== -->
     <div id="tab-history" class="hidden space-y-3.5">
       <section class="bg-daoDark-800 rounded-2xl p-3.5 border border-daoGold-600/30">
         <div class="flex items-center justify-between mb-2">
           <div class="flex items-center gap-1.5">
             <h2 class="text-xs font-bold text-daoGold-400 flex items-center gap-1">
-              <span>📊 ĐỐI SOÁT TOÀN DIỆN WALK-FORWARD 15 NGÀY</span>
+              <span>📊 ĐỐI SOÁT TOÀN DIỆN WALK-FORWARD</span>
             </h2>
             <span class="text-[9px] bg-daoGold-600/20 text-daoGold-300 border border-daoGold-500/30 px-1 py-0.2 rounded font-bold">OOS</span>
           </div>
           <span class="text-[10px] text-gray-400">Cuộn ngang xem đủ các cột ➔</span>
         </div>
-        <p class="text-[10px] text-gray-400 mb-2 leading-relaxed">
-          Kiểm thử ngoài mẫu (Walk-forward out-of-sample). Cột GĐB làm nổi bật 2 số đuôi (Đề).
-        </p>
+
+        <!-- BỘ CHỌN SỐ NGÀY ĐỐI SOÁT TÙY BIẾN -->
+        <div class="bg-daoDark-850 p-2.5 rounded-xl border border-gray-800 mb-3 space-y-2">
+          <div class="flex items-center justify-between text-[11px]">
+            <span class="text-gray-300 font-semibold flex items-center gap-1">
+              <span>📅 Phạm vi kiểm thử:</span>
+              <strong id="historyRangeText" class="text-daoGold-400">15 ngày gần nhất</strong>
+            </span>
+            <span id="historyRecordCount" class="text-[10px] text-gray-400 font-mono">Đang tải...</span>
+          </div>
+
+          <!-- Nút chọn nhanh (Preset Pills) -->
+          <div class="grid grid-cols-6 gap-1 text-[11px]" id="historyPresetPills">
+            <button onclick="setHistoryDays(7)" class="hist-pill py-1 rounded-lg border border-gray-700 bg-daoDark-900 hover:border-daoGold-500 text-gray-300 text-center font-medium">7 N</button>
+            <button onclick="setHistoryDays(15)" class="hist-pill py-1 rounded-lg border border-daoGold-500 bg-daoGold-600/30 text-daoGold-300 text-center font-bold">15 N</button>
+            <button onclick="setHistoryDays(30)" class="hist-pill py-1 rounded-lg border border-gray-700 bg-daoDark-900 hover:border-daoGold-500 text-gray-300 text-center font-medium">30 N</button>
+            <button onclick="setHistoryDays(60)" class="hist-pill py-1 rounded-lg border border-gray-700 bg-daoDark-900 hover:border-daoGold-500 text-gray-300 text-center font-medium">60 N</button>
+            <button onclick="setHistoryDays(90)" class="hist-pill py-1 rounded-lg border border-gray-700 bg-daoDark-900 hover:border-daoGold-500 text-gray-300 text-center font-medium">90 N</button>
+            <button onclick="setHistoryDays(180)" class="hist-pill py-1 rounded-lg border border-gray-700 bg-daoDark-900 hover:border-daoGold-500 text-gray-300 text-center font-medium">180 N</button>
+          </div>
+
+          <!-- Ô nhập số ngày tùy ý (Custom Days) -->
+          <div class="flex items-center gap-1.5 pt-1.5 border-t border-gray-800/80">
+            <span class="text-[10px] text-gray-400 whitespace-nowrap">Nhập số ngày tùy ý:</span>
+            <input type="number" id="customDaysInput" min="1" max="8000" placeholder="Số ngày..." value="15" 
+                   onkeydown="if(event.key==='Enter') applyCustomDays()" 
+                   class="w-24 bg-daoDark-900 border border-gray-700 rounded-lg px-2 py-1 text-xs text-gray-200 text-center focus:outline-none focus:border-daoGold-500 font-mono">
+            <button onclick="applyCustomDays()" class="py-1 px-3 rounded-lg bg-daoGold-600 hover:bg-daoGold-500 text-white font-bold text-[11px] active:scale-95 transition-transform flex-1 text-center">
+              🔍 Xem Đối Soát
+            </button>
+          </div>
+
+          <!-- Dải Chip Tóm Tắt Tỷ Lệ Trúng Thực Chiến -->
+          <div id="historyStatsBar" class="pt-1.5 border-t border-gray-800/80 grid grid-cols-4 gap-1 text-center text-[10px]">
+            <div class="bg-daoDark-900/90 py-1 px-1 rounded border border-gray-800">
+              <span class="text-gray-400 block text-[9px]">STL nổ:</span>
+              <strong id="statStl" class="text-emerald-400">--%</strong>
+            </div>
+            <div class="bg-daoDark-900/90 py-1 px-1 rounded border border-gray-800">
+              <span class="text-gray-400 block text-[9px]">Tứ thủ nổ:</span>
+              <strong id="statTuThu" class="text-emerald-400">--%</strong>
+            </div>
+            <div class="bg-daoDark-900/90 py-1 px-1 rounded border border-gray-800">
+              <span class="text-gray-400 block text-[9px]">Giáp E65:</span>
+              <strong id="statE65" class="text-cyan-400">--%</strong>
+            </div>
+            <div class="bg-daoDark-900/90 py-1 px-1 rounded border border-gray-800">
+              <span class="text-gray-400 block text-[9px]">Dàn E50:</span>
+              <strong id="statE50" class="text-daoGold-400">--%</strong>
+            </div>
+          </div>
+        </div>
 
         <div class="overflow-x-auto scrollbar-none rounded-xl border border-gray-800 bg-daoDark-900/60">
           <table class="w-full text-left text-[11px] border-collapse min-w-[920px]">
@@ -774,12 +823,77 @@
       }
     }
 
+    let currentHistoryDays = 15;
+
+    function setHistoryDays(days) {
+      currentHistoryDays = days;
+      document.getElementById('customDaysInput').value = days;
+      updateHistoryPillStyles(days);
+      fetchHistory(days);
+    }
+
+    function applyCustomDays() {
+      const input = document.getElementById('customDaysInput');
+      let val = parseInt(input.value);
+      if (isNaN(val) || val < 1) {
+        alert('Vui lòng nhập số ngày hợp lệ (≥ 1)!');
+        return;
+      }
+      if (val > 8600) val = 8600;
+      currentHistoryDays = val;
+      updateHistoryPillStyles(val);
+      fetchHistory(val);
+    }
+
+    function updateHistoryPillStyles(activeDays) {
+      const pills = document.querySelectorAll('#historyPresetPills button');
+      pills.forEach(btn => {
+        const d = parseInt(btn.innerText);
+        if (d === activeDays) {
+          btn.className = 'hist-pill py-1 rounded-lg border border-daoGold-500 bg-daoGold-600/30 text-daoGold-300 text-center font-bold';
+        } else {
+          btn.className = 'hist-pill py-1 rounded-lg border border-gray-700 bg-daoDark-900 hover:border-daoGold-500 text-gray-300 text-center font-medium';
+        }
+      });
+    }
+
     async function fetchHistory(days) {
       try {
+        const rangeText = document.getElementById('historyRangeText');
+        if (rangeText) rangeText.innerText = `${days} ngày gần nhất`;
+
         const res = await fetch('/api/history?days=' + days);
         const data = await res.json();
         const tbody = document.getElementById('historyTableBody');
         tbody.innerHTML = '';
+
+        const recCount = document.getElementById('historyRecordCount');
+        if (recCount) recCount.innerText = `${data.length} kỳ OOS`;
+
+        // Tính toán thống kê tỷ lệ trúng thực chiến cho X ngày
+        let hitStlCount = 0;
+        let hitTuThuCount = 0;
+        let hitE65Count = 0;
+        let hitE50Count = 0;
+
+        data.forEach(row => {
+          if (row.hitStl) hitStlCount++;
+          if (row.hitTuThu) hitTuThuCount++;
+          if (row.hitE65) hitE65Count++;
+          if (row.hitE50) hitE50Count++;
+        });
+
+        const n = data.length;
+        if (n > 0) {
+          const elStl = document.getElementById('statStl');
+          const elTuThu = document.getElementById('statTuThu');
+          const elE65 = document.getElementById('statE65');
+          const elE50 = document.getElementById('statE50');
+          if (elStl) elStl.innerText = `${((hitStlCount/n)*100).toFixed(1)}% (${hitStlCount}/${n})`;
+          if (elTuThu) elTuThu.innerText = `${((hitTuThuCount/n)*100).toFixed(1)}% (${hitTuThuCount}/${n})`;
+          if (elE65) elE65.innerText = `${((hitE65Count/n)*100).toFixed(1)}% (${hitE65Count}/${n})`;
+          if (elE50) elE50.innerText = `${((hitE50Count/n)*100).toFixed(1)}% (${hitE50Count}/${n})`;
+        }
 
         data.reverse().forEach(row => {
           const tr = document.createElement('tr');
