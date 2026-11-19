@@ -31,9 +31,23 @@
     .gold-box { box-shadow: 0 0 15px rgba(245, 158, 11, 0.12); }
     .scrollbar-none::-webkit-scrollbar { display: none; }
     .scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }
+    /* Hỗ trợ bôi đen copy mượt mà trên mobile và desktop */
+    body, p, span, div, td, th, pre, code {
+      -webkit-user-select: text;
+      user-select: text;
+    }
+    button, nav, .btn, .no-select {
+      -webkit-user-select: none !important;
+      user-select: none !important;
+    }
+    .copyable-num {
+      -webkit-user-select: all !important;
+      user-select: all !important;
+      cursor: text;
+    }
   </style>
 </head>
-<body class="min-h-screen flex flex-col antialiased select-none pb-12">
+<body class="min-h-screen flex flex-col antialiased pb-12 select-text">
 
   <!-- TOP APP BAR (MOBILE FIRST COMPACT) -->
   <header class="sticky top-0 z-50 bg-daoDark-900/98 backdrop-blur-md border-b border-daoGold-600/30 px-3 py-2.5">
@@ -312,6 +326,40 @@
         <div class="flex justify-between"><span>• Nổ Bạch Thủ 3 Càng (071):</span> <strong class="text-purple-400" id="scen4Text">Thu 8.640.000 đ (ĐỘT BIẾN)</strong></div>
       </section>
 
+      <!-- BẢNG TỔNG HỢP TOÀN BỘ 22 HẠNG MỤC DỰ BÁO (CHUẨN LỆNH SHEET) -->
+      <section class="bg-daoDark-800 rounded-2xl p-3.5 border border-daoGold-600/30">
+        <div class="flex items-center justify-between mb-2">
+          <div class="flex items-center gap-1.5">
+            <h2 class="text-xs font-bold text-daoGold-400 uppercase tracking-wide">📋 TOÀN BỘ 22 HẠNG MỤC DỰ BÁO</h2>
+            <span class="text-[9px] bg-daoGold-600/20 text-daoGold-300 border border-daoGold-500/30 px-1.5 py-0.2 rounded font-bold">Lệnh Sheet</span>
+          </div>
+          <span class="text-[10px] text-gray-400">Chạm giữ để bôi đen copy</span>
+        </div>
+        <p class="text-[10px] text-gray-400 mb-2.5 leading-relaxed">
+          Liệt kê đầy đủ 22 hạng mục của mô hình. Dàn không phân bổ vốn theo Kelly ngày hôm nay được ghi rõ mức cược <strong>0 VNĐ</strong>.
+        </p>
+
+        <div class="overflow-x-auto scrollbar-none rounded-xl border border-gray-800 bg-daoDark-900/60">
+          <table class="w-full text-left text-[11px] border-collapse min-w-[620px]">
+            <thead>
+              <tr class="bg-daoDark-900 border-b border-gray-800 text-[10px] text-gray-400 uppercase">
+                <th class="py-2 px-1.5 w-7 text-center">STT</th>
+                <th class="py-2 px-2 w-44">Hạng Mục & Phân Loại</th>
+                <th class="py-2 px-1 text-center w-8">SL</th>
+                <th class="py-2 px-2">Dãy Số Đầy Đủ (Bôi đen copy)</th>
+                <th class="py-2 px-2 text-right w-20">Mức Cược</th>
+                <th class="py-2 px-2 text-right w-24">Tổng Tiền</th>
+              </tr>
+            </thead>
+            <tbody id="sheetTableBody" class="divide-y divide-gray-800/80 text-gray-300 font-mono">
+              <tr>
+                <td colspan="6" class="py-4 text-center text-gray-500 font-sans">Đang tải toàn bộ 22 hạng mục...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
     </div>
 
     <!-- ============================================================== -->
@@ -405,28 +453,42 @@
     <div id="tab-history" class="hidden space-y-3.5">
       <section class="bg-daoDark-800 rounded-2xl p-3.5 border border-daoGold-600/30">
         <div class="flex items-center justify-between mb-2">
-          <h2 class="text-xs font-bold text-daoGold-400 flex items-center gap-1">
-            <span>📊 ĐỐI SOÁT WALK-FORWARD 15 NGÀY</span>
-          </h2>
-          <span class="text-[10px] text-gray-400">Ngoài mẫu OOS</span>
+          <div class="flex items-center gap-1.5">
+            <h2 class="text-xs font-bold text-daoGold-400 flex items-center gap-1">
+              <span>📊 ĐỐI SOÁT TOÀN DIỆN WALK-FORWARD 15 NGÀY</span>
+            </h2>
+            <span class="text-[9px] bg-daoGold-600/20 text-daoGold-300 border border-daoGold-500/30 px-1 py-0.2 rounded font-bold">OOS</span>
+          </div>
+          <span class="text-[10px] text-gray-400">Cuộn ngang xem đủ các cột ➔</span>
         </div>
+        <p class="text-[10px] text-gray-400 mb-2 leading-relaxed">
+          Kiểm thử ngoài mẫu (Walk-forward out-of-sample). Cột GĐB làm nổi bật 2 số đuôi (Đề).
+        </p>
 
-        <div class="overflow-x-auto scrollbar-none">
-          <table class="w-full text-left text-[11px] border-collapse">
+        <div class="overflow-x-auto scrollbar-none rounded-xl border border-gray-800 bg-daoDark-900/60">
+          <table class="w-full text-left text-[11px] border-collapse min-w-[920px]">
             <thead>
-              <tr class="border-b border-gray-800 text-[10px] text-gray-400 uppercase">
-                <th class="py-1.5 px-1">Ngày</th>
-                <th class="py-1.5 px-1">GĐB</th>
-                <th class="py-1.5 px-1">Đề</th>
-                <th class="py-1.5 px-1">STL Dự Báo</th>
-                <th class="py-1.5 px-1">KQ Lô</th>
-                <th class="py-1.5 px-1">Dàn 50</th>
-                <th class="py-1.5 px-1">Giáp 65</th>
+              <tr class="bg-daoDark-900 border-b border-gray-800 text-[10px] text-gray-400 uppercase">
+                <th class="py-2 px-2 whitespace-nowrap">Ngày</th>
+                <th class="py-2 px-2 whitespace-nowrap">GĐB (Đề)</th>
+                <th class="py-2 px-1.5 whitespace-nowrap text-center">STL</th>
+                <th class="py-2 px-1.5 whitespace-nowrap text-center">Tứ Thủ</th>
+                <th class="py-2 px-1.5 whitespace-nowrap text-center">Xiên 2</th>
+                <th class="py-2 px-1.5 whitespace-nowrap text-center">Giáp 65</th>
+                <th class="py-2 px-1.5 whitespace-nowrap text-center">Dàn 50</th>
+                <th class="py-2 px-1.5 whitespace-nowrap text-center">Hà Đồ 25</th>
+                <th class="py-2 px-1.5 whitespace-nowrap text-center">Cửu Cung 9</th>
+                <th class="py-2 px-1.5 whitespace-nowrap text-center">Tứ Tượng 4</th>
+                <th class="py-2 px-1.5 whitespace-nowrap text-center">Bạch Thủ E1</th>
+                <th class="py-2 px-1.5 whitespace-nowrap text-center">3D (12s)</th>
+                <th class="py-2 px-1.5 whitespace-nowrap text-center">3D (27s)</th>
+                <th class="py-2 px-1.5 whitespace-nowrap text-center">4D Tinh Chọn (16s)</th>
+                <th class="py-2 px-1.5 whitespace-nowrap text-center">4D Mở Rộng (81s)</th>
               </tr>
             </thead>
-            <tbody id="historyTableBody" class="divide-y divide-gray-800 text-gray-300 font-mono">
+            <tbody id="historyTableBody" class="divide-y divide-gray-800/80 text-gray-300 font-mono">
               <tr>
-                <td colspan="7" class="py-4 text-center text-gray-500">Đang tải lịch sử đối soát...</td>
+                <td colspan="15" class="py-4 text-center text-gray-500 font-sans">Đang tải lịch sử đối soát...</td>
               </tr>
             </tbody>
           </table>
@@ -660,6 +722,53 @@
         const winBt3D = Math.floor(data.c3D_bt * 960);
         document.getElementById('scen4Text').innerText = `Thu ${winBt3D.toLocaleString('vi-VN')} đ (ĐỘT BIẾN)`;
 
+        // Render Bảng Toàn Bộ 22 Hạng Mục Dự Báo (Chuẩn lệnh Sheet)
+        const sheetBody = document.getElementById('sheetTableBody');
+        if (sheetBody && data.sheetItems && data.sheetItems.length > 0) {
+          sheetBody.innerHTML = '';
+          data.sheetItems.forEach(item => {
+            const tr = document.createElement('tr');
+            tr.className = item.totalBet > 0 
+              ? 'hover:bg-daoDark-850/80 transition-colors' 
+              : 'hover:bg-daoDark-850/40 opacity-75 transition-colors';
+
+            let axisBadge = '';
+            if (item.axis.includes('Địa Lợi')) {
+              axisBadge = `<span class="text-[9px] px-1 py-0.2 rounded bg-emerald-950/80 text-emerald-300 border border-emerald-800/60 font-semibold mr-1">T1</span>`;
+            } else if (item.axis.includes('Nhân Hòa')) {
+              axisBadge = `<span class="text-[9px] px-1 py-0.2 rounded bg-amber-950/80 text-amber-300 border border-amber-800/60 font-semibold mr-1">T2</span>`;
+            } else {
+              axisBadge = `<span class="text-[9px] px-1 py-0.2 rounded bg-purple-950/80 text-purple-300 border border-purple-800/60 font-semibold mr-1">T3</span>`;
+            }
+
+            const betRateText = item.betPerUnit > 0 
+              ? (item.unit.includes('Điểm') ? `${item.betPerUnit} đ/con` : `${item.betPerUnit.toLocaleString('vi-VN')} đ`)
+              : `<span class="text-gray-500">0</span>`;
+
+            const totalText = item.totalBet > 0
+              ? `<span class="text-daoGold-400 font-bold">${item.totalBet.toLocaleString('vi-VN')} đ</span>`
+              : `<span class="text-gray-500 font-medium">0 VNĐ</span>`;
+
+            tr.innerHTML = `
+              <td class="py-2 px-1.5 text-center text-gray-400 font-sans">${item.stt}</td>
+              <td class="py-2 px-2">
+                <div class="flex items-center">${axisBadge}<span class="font-bold text-gray-200 text-[11px]">${item.category}</span></div>
+                <div class="text-[9px] text-gray-400 font-sans mt-0.5">${item.note}</div>
+              </td>
+              <td class="py-2 px-1 text-center font-bold text-gray-300">${item.quantity}</td>
+              <td class="py-2 px-2">
+                <div class="relative group">
+                  <div class="bg-daoDark-900 border border-gray-800 p-1.5 rounded text-[11px] text-gray-200 font-mono tracking-wide break-words select-all copyable-num" title="Chạm giữ để bôi đen hoặc click copy">${item.numbers}</div>
+                  <button onclick="copySingleNumbers('${escape(item.numbers)}')" class="absolute top-1 right-1 opacity-60 hover:opacity-100 text-[9px] bg-daoDark-800 border border-gray-700 px-1 py-0.5 rounded text-gray-300 hover:text-daoGold-400 transition-opacity" title="Copy dàn này">📋</button>
+                </div>
+              </td>
+              <td class="py-2 px-2 text-right whitespace-nowrap text-[10px]">${betRateText}</td>
+              <td class="py-2 px-2 text-right whitespace-nowrap text-[11px]">${totalText}</td>
+            `;
+            sheetBody.appendChild(tr);
+          });
+        }
+
       } catch (e) {
         console.error(e);
       }
@@ -677,31 +786,93 @@
           tr.className = 'hover:bg-daoDark-850/60 transition-colors';
 
           const stlBadge = row.hitStl 
-            ? `<span class="text-emerald-400 font-bold">✔ Ăn ${row.stlHits}n</span>` 
+            ? `<span class="text-emerald-400 font-bold">✔ ${row.stlHits}n</span>` 
             : `<span class="text-gray-500">-</span>`;
 
-          const e50Badge = row.hitE50 
-            ? `<span class="text-emerald-400 font-bold">✔ E50</span>` 
+          const tuThuBadge = row.hitTuThu 
+            ? `<span class="text-emerald-400 font-bold">✔ ${row.tuThuHits}n</span>` 
+            : `<span class="text-gray-500">-</span>`;
+
+          const xien2Badge = row.hitXien2 
+            ? `<span class="text-daoGold-400 font-black px-1 rounded bg-amber-950/80 border border-amber-600/50">✔ NỔ X2</span>` 
             : `<span class="text-gray-500">-</span>`;
 
           const e65Badge = row.hitE65 
-            ? `<span class="text-cyan-400 font-bold">✔ E65</span>` 
+            ? `<span class="text-cyan-400 font-bold">✔</span>` 
             : `<span class="text-gray-500">-</span>`;
 
+          const e50Badge = row.hitE50 
+            ? `<span class="text-emerald-400 font-bold">✔</span>` 
+            : `<span class="text-gray-500">-</span>`;
+
+          const e25Badge = row.hitE25 
+            ? `<span class="text-daoGold-400 font-bold">✔</span>` 
+            : `<span class="text-gray-500">-</span>`;
+
+          const e9Badge = row.hitE9 
+            ? `<span class="text-amber-400 font-bold">✔</span>` 
+            : `<span class="text-gray-500">-</span>`;
+
+          const e4Badge = row.hitE4 
+            ? `<span class="text-rose-400 font-bold">✔</span>` 
+            : `<span class="text-gray-500">-</span>`;
+
+          const e1Badge = row.hitE1 
+            ? `<span class="text-yellow-300 font-black px-1 rounded bg-yellow-950/90 border border-yellow-500/60 animate-pulse">💥 ĂN BT</span>` 
+            : `<span class="text-gray-500">-</span>`;
+
+          const d3Badge = row.hit3D 
+            ? `<span class="text-purple-300 font-black px-1 rounded bg-purple-950/90 border border-purple-500/60">💎 ĂN 3D</span>` 
+            : `<span class="text-gray-500">-</span>`;
+
+          const d3_27Badge = row.hit3D_27 
+            ? `<span class="text-purple-400 font-bold">✔ 27s</span>` 
+            : `<span class="text-gray-500">-</span>`;
+
+          const d4_16Badge = row.hit4D_16 
+            ? `<span class="text-fuchsia-300 font-black px-1 rounded bg-fuchsia-950/90 border border-fuchsia-500/60 animate-pulse">👑 ĂN 4D</span>` 
+            : `<span class="text-gray-500">-</span>`;
+
+          const d4_81Badge = row.hit4D_81 
+            ? `<span class="text-fuchsia-400 font-bold">✔ 81s</span>` 
+            : `<span class="text-gray-500">-</span>`;
+
+          let gdbHtml = '--';
+          if (row.gdb) {
+            const prefix = row.gdb.length > 2 ? row.gdb.substring(0, row.gdb.length - 2) : '';
+            const deTail = pad2(row.de);
+            gdbHtml = `<span class="text-gray-400">${prefix}</span><span class="text-daoGold-400 font-black text-xs ml-0.5">${deTail}</span>`;
+          }
+
           tr.innerHTML = `
-            <td class="py-2 px-1 text-gray-300 font-sans">${row.date.substring(5)}</td>
-            <td class="py-2 px-1 text-daoGold-400 font-semibold">${row.gdb}</td>
-            <td class="py-2 px-1 text-gray-200 font-bold">${pad2(row.de)}</td>
-            <td class="py-2 px-1 text-cyan-300">${pad2(row.btLo)}-${pad2(row.stLo)}</td>
-            <td class="py-2 px-1">${stlBadge}</td>
-            <td class="py-2 px-1">${e50Badge}</td>
-            <td class="py-2 px-1">${e65Badge}</td>
+            <td class="py-2 px-2 text-gray-300 font-sans whitespace-nowrap">${row.date.substring(5)}</td>
+            <td class="py-2 px-2 whitespace-nowrap">${gdbHtml}</td>
+            <td class="py-2 px-1.5 text-center">${stlBadge}</td>
+            <td class="py-2 px-1.5 text-center">${tuThuBadge}</td>
+            <td class="py-2 px-1.5 text-center">${xien2Badge}</td>
+            <td class="py-2 px-1.5 text-center">${e65Badge}</td>
+            <td class="py-2 px-1.5 text-center">${e50Badge}</td>
+            <td class="py-2 px-1.5 text-center">${e25Badge}</td>
+            <td class="py-2 px-1.5 text-center">${e9Badge}</td>
+            <td class="py-2 px-1.5 text-center">${e4Badge}</td>
+            <td class="py-2 px-1.5 text-center">${e1Badge}</td>
+            <td class="py-2 px-1.5 text-center">${d3Badge}</td>
+            <td class="py-2 px-1.5 text-center">${d3_27Badge}</td>
+            <td class="py-2 px-1.5 text-center">${d4_16Badge}</td>
+            <td class="py-2 px-1.5 text-center">${d4_81Badge}</td>
           `;
           tbody.appendChild(tr);
         });
       } catch (e) {
         console.error(e);
       }
+    }
+
+    function copySingleNumbers(encText) {
+      const text = unescape(encText);
+      navigator.clipboard.writeText(text).then(() => {
+        showToast('Đã copy dàn số: ' + text.substring(0, 20) + (text.length > 20 ? '...' : ''));
+      });
     }
 
     function setupNextDate() {
@@ -815,25 +986,17 @@
     }
 
     function copyGoogleSheetTsv() {
-      fetch('/api/predict?budget=' + currentBudget).then(r => r.json()).then(data => {
-        let tsv = "STT\tPhân Loại Trục\tHạng Mục Cược\tSố Lượng Số\tDanh Sách Số Đầy Đủ\tĐơn Vị\tMức Cược Mỗi Số\tTổng Tiền Cược (VNĐ)\tGhi Chú & Tỷ Trọng\n";
-        tsv += `1\tTrục 1: Địa Lợi (+EV)\tSong Thủ Lô (STL)\t2\t${pad2(data.btLo)}, ${pad2(data.stLo)}\tĐiểm/số\t${data.stPts}\t${data.costStLo}\tĐộng cơ dòng tiền (+EV) chính (27k/điểm)\n`;
-        tsv += `2\tTrục 1: Địa Lợi (+EV)\tBạch Thủ Lô (BTL)\t1\t${pad2(data.btLo)}\tĐiểm/số\t0\t0\tĐã nằm trong cặp Song Thủ Lô\n`;
-        tsv += `3\tTrục 2: Nhân Hòa (Hộ thân)\tLô Lót Tứ Thủ\t2\t${pad2(data.tuThuLo[2])}, ${pad2(data.tuThuLo[3])}\tĐiểm/số\t${data.lotPts}\t${data.costLotLo}\tLót phòng thủ bảo hiểm danh mục\n`;
-        tsv += `4\tTrục 1: Địa Lợi (+EV)\tCặp Xiên 2 Song Thủ\t1\t(${pad2(data.btLo)}-${pad2(data.stLo)})\tVNĐ/vé\t${data.costXien}\t${data.costXien}\tCược 1 vé Xiên 2 STL\n`;
-        tsv += `5\tTrục 2: Nhân Hòa (Hộ thân)\tĐại Diễn Thần Trận (E50)\t50\t${data.e50.map(pad2).join(', ')}\tVNĐ/số\t${data.c50}\t${data.costE50}\tLớp vỏ 50 số\n`;
-        if (data.costE65 > 0) {
-          tsv += `6\tTrục 2: Nhân Hòa (Hộ thân)\tHuyền Thiên Giáp (E65)\t65\t${data.e65.map(pad2).join(', ')}\tVNĐ/số\t${data.c65}\t${data.costE65}\tBảo hiểm nén thế năng Phục Khí\n`;
-        }
-        tsv += `7\tTrục 2: Nhân Hòa (Hộ thân)\tCửu Cung Lạc Thư (E9)\t9\t${data.e9.map(pad2).join(', ')}\tVNĐ/số\t${data.c9}\t${data.costE9}\tCược thêm 9 số hạt nhân\n`;
-        tsv += `8\tTrục 2: Nhân Hòa (Hộ thân)\tTứ Tượng Hội Tụ (E4)\t4\t${data.e4.map(pad2).join(', ')}\tVNĐ/số\t${data.c4}\t${data.costE4}\tCược thêm 4 số tứ thủ\n`;
-        tsv += `9\tTrục 2: Nhân Hòa (Hộ thân)\tThái Cực Nhất Điểm (E1)\t1\t${pad2(data.e1)}\tVNĐ/số\t${data.c1}\t${data.costE1}\tCược thêm Bạch thủ đề\n`;
-        tsv += `10\tTrục 3: Thiên Thời (Đột biến)\tDàn 3 Càng Tinh Tuyển 12 số\t12\t${data.dan3D_12.join(', ')}\tVNĐ/vé\t${data.c3D_base}\t${data.cost3D}\tĐòn bẩy 3D ăn 1:960\n`;
-        tsv += `TỔNG\tDANH MỤC KELLY\tTổng Ngân Sách Phân Bổ Ngày\t-\t-\t-\t-\t${data.actualTotal}\t100% Khớp Ngân Sách`;
-
-        navigator.clipboard.writeText(tsv).then(() => {
-          showToast('Đã copy bảng TSV Google Sheet!');
-        });
+      if (!predictData || !predictData.sheetItems) {
+        showToast('Đang tải dữ liệu...');
+        return;
+      }
+      let tsv = "STT\tPhân Loại Trục\tHạng Mục Cược\tSố Lượng Số\tDanh Sách Số Đầy Đủ\tĐơn Vị\tMức Cược Mỗi Số\tTổng Tiền Cược (VNĐ)\tGhi Chú & Tỷ Trọng\n";
+      predictData.sheetItems.forEach(item => {
+        tsv += `${item.stt}\t${item.axis}\t${item.category}\t${item.quantity}\t${item.numbers}\t${item.unit}\t${item.betPerUnit}\t${item.totalBet}\t${item.note}\n`;
+      });
+      tsv += `TỔNG\tDANH MỤC KELLY\tTổng Ngân Sách Phân Bổ Ngày\t-\t-\t-\t-\t${predictData.actualTotal}\t100% Khớp Ngân Sách`;
+      navigator.clipboard.writeText(tsv).then(() => {
+        showToast('Đã copy toàn bộ 22 hạng mục ra bảng Google Sheet!');
       });
     }
 
