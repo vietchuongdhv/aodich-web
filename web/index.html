@@ -331,14 +331,96 @@
         </div>
       </section>
 
-      <!-- KỊCH BẢN THU HỒI VỐN -->
-      <section class="bg-daoDark-850 rounded-xl p-3 border border-gray-800 text-[11px] text-gray-400 space-y-1">
-        <div class="font-bold text-gray-200 mb-0.5 text-xs">🎯 Kịch Bản Thu Hoàn Vốn Dự Kiến:</div>
-        <div class="flex justify-between"><span id="scen1Label">• Nổ 1 con Lô STL:</span> <strong class="text-emerald-400" id="scen1Text">--</strong></div>
-        <div class="flex justify-between"><span id="scen2Label">• Nổ 1 Lô STL + Ăn Đề Kiềng 42:</span> <strong class="text-emerald-400" id="scen2Text">--</strong></div>
-        <div class="flex justify-between"><span id="scen3Label">• STL nổ cả cặp + Nổ Xiên 2:</span> <strong class="text-daoGold-400" id="scen3Text">--</strong></div>
-        <div class="flex justify-between"><span id="scen4Label">• Nổ Bạch Thủ 3 Càng:</span> <strong class="text-purple-400" id="scen4Text">--</strong></div>
-        <div class="flex justify-between"><span id="scen5Label">• Nổ Đề Dàn Gối Đầu 18s (ROI Max):</span> <strong class="text-amber-400" id="scen5Text">--</strong></div>
+      <!-- MA TRẬN KỊCH BẢN THU HOÀN VỐN & SINH LỜI (KELLY DYNAMIC SCENARIOS - PHƯƠNG ÁN 2: CHIẾN THUẬT ĐẠO DỊCH) -->
+      <section class="bg-daoDark-800 rounded-2xl p-3.5 border border-daoGold-600/30 space-y-2.5">
+        <div class="flex items-center justify-between border-b border-gray-800 pb-2">
+          <div class="flex items-center gap-1.5">
+            <span class="text-xs font-black text-daoGold-400 uppercase tracking-wide">🎯 KỊCH BẢN TÀI CHÍNH DỰ KIẾN</span>
+          </div>
+          <span class="text-[9px] text-gray-400 bg-daoDark-900 px-1.5 py-0.5 rounded border border-gray-800">Thang 65%</span>
+        </div>
+
+        <div class="space-y-2 text-[11px]">
+          <!-- Kịch bản 1: Cân Bằng (Hòa vốn an toàn - Dễ đạt nhất) -->
+          <div class="bg-daoDark-850 p-2.5 rounded-xl border border-emerald-900/60 flex items-center justify-between">
+            <div>
+              <div class="font-bold text-gray-200 flex items-center gap-1">
+                <span class="text-emerald-400 text-[10px]">⚖️ KB1 - CÂN BẰNG:</span>
+                <span id="scen1Label">1 Lô STL (60 hoặc 63) + Ăn Đề Kiềng 42</span>
+              </div>
+              <div class="text-[9px] text-gray-400">Hòa vốn an toàn danh mục (Dễ đạt nhất)</div>
+            </div>
+            <div class="text-right">
+              <strong class="text-emerald-400 text-xs block" id="scen1Text">Thu 495.000 đ</strong>
+              <span class="text-[9px] text-emerald-400 font-semibold" id="scen1Sub">Hòa vốn (Thu 99.0%)</span>
+            </div>
+          </div>
+
+          <!-- Kịch bản 2: Đắc Lợi (Đơn trục nổ độc lập) -->
+          <div class="bg-daoDark-850 p-2.5 rounded-xl border border-amber-900/60 flex items-center justify-between">
+            <div>
+              <div class="font-bold text-gray-200 flex items-center gap-1">
+                <span class="text-amber-400 text-[10px]">💰 KB2 - ĐẮC LỢI:</span>
+                <span id="scen2Label">Ăn Đề Dàn Lõi 18s (hoặc STL 2 nháy)</span>
+              </div>
+              <div class="text-[9px] text-gray-400">Đơn trục nổ độc lập (Lãi ròng kể cả Lô trượt)</div>
+            </div>
+            <div class="text-right">
+              <strong class="text-amber-400 text-xs block" id="scen2Text">Thu 594.000 đ</strong>
+              <span class="text-[9px] text-amber-400 font-semibold" id="scen2Sub">Lãi +94.000 đ (ROI +18.8%)</span>
+            </div>
+          </div>
+
+          <!-- Kịch bản 3: Song Toàn (Thắng kép Lô & Đề) -->
+          <div class="bg-daoDark-850 p-2.5 rounded-xl border border-cyan-900/60 flex items-center justify-between">
+            <div>
+              <div class="font-bold text-gray-200 flex items-center gap-1">
+                <span class="text-cyan-400 text-[10px]">📈 KB3 - SONG TOÀN:</span>
+                <span id="scen3Label">1 Lô STL + Ăn Đề Dàn Lõi 18s</span>
+              </div>
+              <div class="text-[9px] text-gray-400">Cả 2 trục Địa Lợi & Nhân Hòa cùng nổ</div>
+            </div>
+            <div class="text-right">
+              <strong class="text-cyan-400 text-xs block" id="scen3Text">Thu 891.000 đ</strong>
+              <span class="text-[9px] text-cyan-400 font-semibold" id="scen3Sub">Lãi +391.000 đ (ROI +78.2%)</span>
+            </div>
+          </div>
+
+          <!-- Kịch bản 4: Đại Thắng (STL cả cặp + Xiên 2) -->
+          <div class="bg-daoDark-850 p-2.5 rounded-xl border border-daoGold-600/40 bg-gradient-to-r from-daoDark-850 to-daoGold-950/20 flex items-center justify-between">
+            <div>
+              <div class="font-bold text-daoGold-300 flex items-center gap-1">
+                <span class="text-daoGold-400 text-[10px]">🔥 KB4 - ĐẠI THẮNG:</span>
+                <span id="scen4Label">STL nổ cả cặp + Nổ Xiên 2</span>
+              </div>
+              <div class="text-[9px] text-gray-400">Động cơ +EV Trục 1 bùng nổ toàn diện</div>
+            </div>
+            <div class="text-right">
+              <strong class="text-daoGold-400 text-xs block" id="scen4Text">Thu 1.006.500 đ</strong>
+              <span class="text-[9px] text-daoGold-400 font-semibold" id="scen4Sub">Lãi +506.500 đ (ROI +101.3%)</span>
+            </div>
+          </div>
+
+          <!-- Kịch bản 5: Thiên Thời (Nổ 3 Càng Đột Biến) -->
+          <div class="bg-daoDark-850 p-2.5 rounded-xl border border-purple-500/40 bg-gradient-to-r from-daoDark-850 to-purple-950/20 flex items-center justify-between">
+            <div>
+              <div class="font-bold text-purple-300 flex items-center gap-1">
+                <span class="text-purple-400 text-[10px]">💎 KB5 - THIÊN THỜI:</span>
+                <span id="scen5Label">Nổ Bạch Thủ 3 Càng (089)</span>
+              </div>
+              <div class="text-[9px] text-gray-400">Siêu đòn bẩy Trục 3 (3 Càng + Bạch Thủ Đề)</div>
+            </div>
+            <div class="text-right">
+              <strong class="text-purple-300 text-xs block" id="scen5Text">Thu 7.908.000 đ</strong>
+              <span class="text-[9px] text-purple-400 font-semibold" id="scen5Sub">Lãi +7.41 Tr (ROI +1481%)</span>
+            </div>
+          </div>
+
+          <!-- Ghi chú bảo hiểm sàn -->
+          <div class="text-[9px] text-gray-400 italic text-center pt-0.5">
+            * Bảo hiểm sàn: Chỉ nổ 1 con Lô STL (Đề trượt) vẫn thu về 297.000 đ (~60% vốn bảo toàn).
+          </div>
+        </div>
       </section>
 
       <!-- BẢNG TỔNG HỢP TOÀN BỘ 22 HẠNG MỤC DỰ BÁO (CHUẨN LỆNH SHEET) -->
@@ -833,37 +915,78 @@
         document.getElementById('cost3DPerTicket').innerText = `${data.c3D_base.toLocaleString('vi-VN')} đ/vé (Ăn 1:960)`;
         document.getElementById('costBt3DDisplay').innerText = `Cược ${data.c3D_bt.toLocaleString('vi-VN')} đ`;
 
-        // Kịch bản thu hồi vốn động (Thang 65% Realtime)
+        // MA TRẬN KỊCH BẢN THU HOÀN VỐN & SINH LỜI (PHƯƠNG ÁN 2: CHIẾN THUẬT ĐẠO DỊCH)
         const win1Lo = Math.floor(data.stPts * 99000);
-        
-        const elScen1Label = document.getElementById('scen1Label');
-        if (elScen1Label) elScen1Label.innerText = `• Nổ 1 con Lô STL (${pad2(data.btLo)} hoặc ${pad2(data.stLo)}):`;
-        document.getElementById('scen1Text').innerText = `Thu ${win1Lo.toLocaleString('vi-VN')} đ (${((win1Lo/budget)*100).toFixed(1)}% vốn)`;
-        
-        const rateDe42 = (data.c42 || (data.costE42 ? data.costE42 / 42 : (data.costE50 / 50)) || 0);
-        const rateDe65 = (data.c65 || (data.costE65 ? data.costE65 / 65 : 0) || 0);
+        const rateDe42 = (data.c42 || (data.costE42 ? Math.floor(data.costE42 / 42) : Math.floor(data.costE50 / 50)) || 0);
+        const rateDe65 = (data.c65 || (data.costE65 ? Math.floor(data.costE65 / 65) : 0) || 0);
         const winDe42Total = Math.floor((rateDe42 + rateDe65) * 99);
-        const winLoDe = win1Lo + winDe42Total;
+
+        // 1. Kịch bản 1: CÂN BẰNG (1 Lô STL + Đề Kiềng 42) - DỄ HÒA VỐN NHẤT
+        const winKB1 = win1Lo + winDe42Total;
+        const elScen1Label = document.getElementById('scen1Label');
+        if (elScen1Label) elScen1Label.innerText = `1 Lô STL (${pad2(data.btLo)} hoặc ${pad2(data.stLo)}) + Ăn Đề Kiềng 42`;
+        const elScen1Text = document.getElementById('scen1Text');
+        if (elScen1Text) elScen1Text.innerText = `Thu ${winKB1.toLocaleString('vi-VN')} đ`;
+        const elScen1Sub = document.getElementById('scen1Sub');
+        if (elScen1Sub) {
+          const diff1 = winKB1 - budget;
+          elScen1Sub.innerText = diff1 >= 0 ? `Lãi +${diff1.toLocaleString('vi-VN')} đ` : `Hòa vốn (Thu ${((winKB1/budget)*100).toFixed(1)}%)`;
+        }
+
+        // 2. Kịch bản 2: ĐẮC LỢI (Đề Dàn Lõi 18s hoặc STL 2 nháy - Lãi ròng độc lập)
+        const rate18 = ((data.c18 || (data.costE18 ? Math.floor(data.costE18 / 18) : 0)) + (data.c27 || 0) + rateDe42 + rateDe65);
+        const win18 = Math.floor(rate18 * 99);
         const elScen2Label = document.getElementById('scen2Label');
-        if (elScen2Label) elScen2Label.innerText = `• Nổ 1 Lô STL + Ăn Đề Kiềng 42:`;
-        document.getElementById('scen2Text').innerText = `Thu ${winLoDe.toLocaleString('vi-VN')} đ (${winLoDe >= budget ? 'CÓ LÃI' : 'HÒA VỐN'})`;
+        if (elScen2Label) elScen2Label.innerText = `Ăn Đề Dàn Lõi 18s (hoặc STL 2 nháy)`;
+        const elScen2Text = document.getElementById('scen2Text');
+        if (elScen2Text) elScen2Text.innerText = `Thu ${win18.toLocaleString('vi-VN')} đ`;
+        const elScen2Sub = document.getElementById('scen2Sub');
+        if (elScen2Sub) {
+          const diff2 = win18 - budget;
+          const roi2 = ((diff2 / budget) * 100).toFixed(1);
+          elScen2Sub.innerText = diff2 >= 0 ? `Lãi +${diff2.toLocaleString('vi-VN')} đ (ROI +${roi2}%)` : `Bảo toàn vốn danh mục`;
+        }
 
-        const win2LoXien = (win1Lo * 2) + Math.floor(data.costXien * 16.5);
+        // 3. Kịch bản 3: SONG TOÀN (Thắng kép cả Lô và Đề 18s)
+        const winKB3 = win1Lo + win18;
         const elScen3Label = document.getElementById('scen3Label');
-        if (elScen3Label) elScen3Label.innerText = `• STL nổ cả cặp (${pad2(data.btLo)}-${pad2(data.stLo)}) + Xiên 2:`;
-        const diff3 = win2LoXien - budget;
-        document.getElementById('scen3Text').innerText = `Thu ${win2LoXien.toLocaleString('vi-VN')} đ (Lãi +${diff3.toLocaleString('vi-VN')} đ)`;
+        if (elScen3Label) elScen3Label.innerText = `1 Lô STL (${pad2(data.btLo)} hoặc ${pad2(data.stLo)}) + Ăn Đề 18s`;
+        const elScen3Text = document.getElementById('scen3Text');
+        if (elScen3Text) elScen3Text.innerText = `Thu ${winKB3.toLocaleString('vi-VN')} đ`;
+        const elScen3Sub = document.getElementById('scen3Sub');
+        if (elScen3Sub) {
+          const diff3 = winKB3 - budget;
+          const roi3 = ((diff3 / budget) * 100).toFixed(1);
+          elScen3Sub.innerText = `Lãi +${diff3.toLocaleString('vi-VN')} đ (ROI +${roi3}%)`;
+        }
 
-        const winBt3D = Math.floor(data.c3D_bt * 960);
+        // 4. Kịch bản 4: ĐẠI THẮNG (STL Nổ Cả Cặp + Xiên 2)
+        const win2LoXien = (win1Lo * 2) + Math.floor(data.costXien * 16.5);
         const elScen4Label = document.getElementById('scen4Label');
-        if (elScen4Label) elScen4Label.innerText = `• Nổ Bạch Thủ 3 Càng (${data.bt3D}):`;
-        document.getElementById('scen4Text').innerText = `Thu ${winBt3D.toLocaleString('vi-VN')} đ (ĐỘT BIẾN)`;
+        if (elScen4Label) elScen4Label.innerText = `STL Nổ Cả Cặp (${pad2(data.btLo)}-${pad2(data.stLo)}) + Xiên 2`;
+        const elScen4Text = document.getElementById('scen4Text');
+        if (elScen4Text) elScen4Text.innerText = `Thu ${win2LoXien.toLocaleString('vi-VN')} đ`;
+        const elScen4Sub = document.getElementById('scen4Sub');
+        if (elScen4Sub) {
+          const diff4 = win2LoXien - budget;
+          const roi4 = ((diff4 / budget) * 100).toFixed(1);
+          elScen4Sub.innerText = `Lãi +${diff4.toLocaleString('vi-VN')} đ (ROI +${roi4}%)`;
+        }
 
-        const elScen5 = document.getElementById('scen5Text');
-        if (elScen5) {
-          const rate18 = ((data.c18 || (data.costE18 ? data.costE18 / 18 : 0)) + rateDe42 + rateDe65);
-          const win18 = Math.floor(rate18 * 99);
-          elScen5.innerText = `Thu ${win18.toLocaleString('vi-VN')} đ (${win18 >= budget ? 'CÓ LÃI' : 'BẢO HIỂM'})`;
+        // 5. Kịch bản 5: THIÊN THỜI (Nổ Bạch Thủ 3 Càng + Bạch Thủ Đề)
+        const rateBtDe = rate18 + (data.c4 || 0) + (data.c1 || 0);
+        const winBtDe = Math.floor(rateBtDe * 99);
+        const winBt3D = Math.floor(data.c3D_bt * 960);
+        const winKB5 = winBt3D + winBtDe;
+        const elScen5Label = document.getElementById('scen5Label');
+        if (elScen5Label) elScen5Label.innerText = `Nổ Bạch Thủ 3 Càng (${data.bt3D})`;
+        const elScen5Text = document.getElementById('scen5Text');
+        if (elScen5Text) elScen5Text.innerText = `Thu ${winKB5.toLocaleString('vi-VN')} đ`;
+        const elScen5Sub = document.getElementById('scen5Sub');
+        if (elScen5Sub) {
+          const diff5 = winKB5 - budget;
+          const roi5 = ((diff5 / budget) * 100).toFixed(0);
+          elScen5Sub.innerText = `Lãi +${(diff5/1000000).toFixed(2)} Tr (ROI +${roi5}%)`;
         }
 
         // Render Bảng Toàn Bộ 22 Hạng Mục Dự Báo (Chuẩn lệnh Sheet)
