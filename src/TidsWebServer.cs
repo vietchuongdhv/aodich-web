@@ -354,11 +354,8 @@ namespace TidsTheory
                 d3List.Add(new Tuple<int, double>(d, rTerm + kTerm));
             }
             var topD3 = d3List.OrderBy(x => x.Item2).Take(3).Select(x => x.Item1).ToArray();
-            var dan3D_12 = new List<string>();
-            foreach (int h in topD3)
-                foreach (int t in e4)
-                    dan3D_12.Add(h.ToString() + t.ToString("D2"));
             string bt3D = topD3[0].ToString() + e1.ToString("D2");
+            var dan3D_12 = Program.ComputeDan3D_12_Recursive(localRecs, localRecs[n - 1].DayOfWeek, bt3D, e4);
 
             // Phân bổ vốn Kelly
             long costPerPoint = 27000;
@@ -466,44 +463,11 @@ namespace TidsTheory
                     dan3D_27.Add(h.ToString() + t.ToString("D2"));
             dan3D_27.Sort();
 
-            int[] ganHead = new int[100];
-            for (int s = 0; s < 100; s++)
-            {
-                for (int i = n - 1; i >= 0; i--)
-                {
-                    if (localRecs[i].Head4D == s) break;
-                    ganHead[s]++;
-                }
-            }
-            int[] f30Head = new int[100];
-            for (int i = Math.Max(0, n - 30); i < n; i++) f30Head[localRecs[i].Head4D]++;
-            var headEnergies = new List<StateEnergy>();
-            for (int s = 0; s < 100; s++)
-            {
-                double rTerm = 0.0;
-                if (ganHead[s] == 0) rTerm = 2.0;
-                else if (ganHead[s] >= 8 && ganHead[s] <= 20) rTerm = -1.6 + (Math.Abs(ganHead[s] - 13) / 10.0);
-                else if (ganHead[s] > 30) rTerm = 1.0;
-                else rTerm = 0.0;
-                double kTerm = -0.5 * (f30Head[s] - 0.30);
-                double v = rTerm + kTerm;
-                headEnergies.Add(new StateEnergy { State = s, Potential = v, Gan = ganHead[s], F30 = f30Head[s] });
-            }
-            headEnergies = headEnergies.OrderBy(x => x.Potential).ToList();
-            var topHeads = headEnergies.Take(4).Select(x => x.State).ToArray();
-            string bt4D = topHeads[0].ToString("D2") + e1.ToString("D2");
-
-            var dan4D_16 = new List<string>();
-            foreach (int hd in topHeads)
-                foreach (int tl in e4)
-                    dan4D_16.Add(hd.ToString("D2") + tl.ToString("D2"));
-
-            var top9Heads = headEnergies.Take(9).Select(x => x.State).ToArray();
-            var dan4D_81 = new List<string>();
-            foreach (int hd in top9Heads)
-                foreach (int tl in dan9Tail)
-                    dan4D_81.Add(hd.ToString("D2") + tl.ToString("D2"));
-            dan4D_81.Sort();
+            // 4 CÀNG (4D): Tích Tensor 1D Tối ưu (d4 x d3 x Đề)
+            string bt4D;
+            List<string> dan4D_16;
+            List<string> dan4D_81;
+            Program.Compute4D_TensorOptimal(localRecs, e4.ToArray(), dan9Tail, e1, out bt4D, out dan4D_16, out dan4D_81);
 
             // XÂY DỰNG DANH SÁCH 22 HẠNG MỤC CHUẨN LỆNH SHEET
             var sheetRows = new List<string>();
@@ -624,6 +588,10 @@ namespace TidsTheory
             sb.AppendFormat("\"c3D_bt\": {0},", c3D_bt);
             sb.AppendFormat("\"c3D_base\": {0},", c3D_base);
 
+            sb.AppendFormat("\"bt4D\": \"{0}\",", bt4D);
+            sb.AppendFormat("\"dan4D_16\": [{0}],", string.Join(",", dan4D_16.Select(x => "\"" + x + "\"")));
+            sb.AppendFormat("\"dan4D_81\": [{0}],", string.Join(",", dan4D_81.Select(x => "\"" + x + "\"")));
+
             sb.AppendFormat("\"copyZaloText\": \"{0}\",", EscapeJson(copyZaloSb.ToString()));
             sb.AppendFormat("\"sheetItems\": [{0}]", string.Join(",", sheetRows));
             sb.Append("}");
@@ -716,10 +684,8 @@ namespace TidsTheory
                     d3List.Add(new Tuple<int, double>(d, rTerm + kTerm));
                 }
                 var topD3 = d3List.OrderBy(x => x.Item2).Take(3).Select(x => x.Item1).ToArray();
-                var dan3D_12 = new List<string>();
-                foreach (int h in topD3)
-                    foreach (int t in e4)
-                        dan3D_12.Add(h.ToString() + t.ToString("D2"));
+                string bt3D = topD3[0].ToString() + e1.ToString("D2");
+                var dan3D_12 = Program.ComputeDan3D_12_Recursive(past, past[k - 1].DayOfWeek, bt3D, e4);
 
                 var dan3D_27 = new List<string>();
                 foreach (int h in topD3)
@@ -730,43 +696,11 @@ namespace TidsTheory
                 bool hit3D = !string.IsNullOrEmpty(actual3D) && dan3D_12.Contains(actual3D);
                 bool hit3D_27 = !string.IsNullOrEmpty(actual3D) && dan3D_27.Contains(actual3D);
 
-                // 4D Tensor
-                int[] ganHead = new int[100];
-                for (int s = 0; s < 100; s++)
-                {
-                    for (int i = k - 1; i >= 0; i--)
-                    {
-                        if (past[i].Head4D == s) break;
-                        ganHead[s]++;
-                    }
-                }
-                int[] f30Head = new int[100];
-                for (int i = Math.Max(0, k - 30); i < k; i++) f30Head[past[i].Head4D]++;
-                var headEnergies = new List<StateEnergy>();
-                for (int s = 0; s < 100; s++)
-                {
-                    double rTerm = 0.0;
-                    if (ganHead[s] == 0) rTerm = 2.0;
-                    else if (ganHead[s] >= 8 && ganHead[s] <= 20) rTerm = -1.6 + (Math.Abs(ganHead[s] - 13) / 10.0);
-                    else if (ganHead[s] > 30) rTerm = 1.0;
-                    else rTerm = 0.0;
-                    double kTerm = -0.5 * (f30Head[s] - 0.30);
-                    double v = rTerm + kTerm;
-                    headEnergies.Add(new StateEnergy { State = s, Potential = v, Gan = ganHead[s], F30 = f30Head[s] });
-                }
-                headEnergies = headEnergies.OrderBy(x => x.Potential).ToList();
-                var topHeads = headEnergies.Take(4).Select(x => x.State).ToArray();
-                var top9Heads = headEnergies.Take(9).Select(x => x.State).ToArray();
-
-                var dan4D_16 = new List<string>();
-                foreach (int hd in topHeads)
-                    foreach (int tl in e4)
-                        dan4D_16.Add(hd.ToString("D2") + tl.ToString("D2"));
-
-                var dan4D_81 = new List<string>();
-                foreach (int hd in top9Heads)
-                    foreach (int tl in e9)
-                        dan4D_81.Add(hd.ToString("D2") + tl.ToString("D2"));
+                // 4D Tensor Optimal
+                string bt4D;
+                List<string> dan4D_16;
+                List<string> dan4D_81;
+                Program.Compute4D_TensorOptimal(past, e4.ToArray(), e9.ToArray(), e1, out bt4D, out dan4D_16, out dan4D_81);
 
                 string actual4D = (actual.Gdb != null && actual.Gdb.Length >= 4) ? actual.Gdb.Substring(actual.Gdb.Length - 4) : "";
                 bool hit4D_16 = !string.IsNullOrEmpty(actual4D) && dan4D_16.Contains(actual4D);

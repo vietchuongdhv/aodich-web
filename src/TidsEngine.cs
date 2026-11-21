@@ -1169,15 +1169,12 @@ namespace TidsTheory
             var tuThuTail = deEnergies.Take(4).Select(x => x.State).ToArray();
             var dan9Tail = deEnergies.Take(9).Select(x => x.State).ToArray();
             int btTail = tuThuTail[0];
-            int btHead = topHeads[0];
             int btD3 = topD3[0];
 
-            Console.WriteLine(">> 1. BẠCH THỦ 3 CÀNG (3D TENSOR):      " + btD3 + btTail.ToString("D2") + " (Càng " + btD3 + " + Đáy Đề " + btTail.ToString("D2") + ")");
+            string bt3D = btD3.ToString() + btTail.ToString("D2");
+            Console.WriteLine(">> 1. BẠCH THỦ 3 CÀNG (3D TENSOR):      " + bt3D + " (Càng " + btD3 + " + Đáy Đề " + btTail.ToString("D2") + ")");
 
-            var dan3D_12 = new List<string>();
-            foreach (int h in topD3)
-                foreach (int t in tuThuTail)
-                    dan3D_12.Add(h.ToString() + t.ToString("D2"));
+            var dan3D_12 = ComputeDan3D_12_Recursive(records, records[n - 1].DayOfWeek, bt3D, tuThuTail.ToList());
             Console.WriteLine(">> 2. DÀN 3 CÀNG TINH TUYỂN 12 SỐ (3D): " + string.Join(", ", dan3D_12));
 
             // DÀN 3 CÀNG 27 SỐ (3 CÀNG x 9 ĐỀ HẠT NHÂN = 27 SỐ)
@@ -1193,22 +1190,15 @@ namespace TidsTheory
                 Console.WriteLine("      " + string.Join(", ", slice) + (r < 2 ? "," : ""));
             }
 
-            Console.WriteLine();
-            Console.WriteLine(">> 4. BẠCH THỦ 4 CÀNG (4D TENSOR):      " + btHead.ToString("D2") + btTail.ToString("D2"));
+            // 4D TENSOR TỐI ƯU (ĐẦY ĐỦ TỔ HỢP CHÉO: 16s & 81s)
+            string bt4D;
+            List<string> dan4D_16, dan4D_81;
+            Compute4D_TensorOptimal(records, tuThuTail, dan9Tail, btTail, out bt4D, out dan4D_16, out dan4D_81);
 
-            var dan4D_16 = new List<string>();
-            foreach (int hd in topHeads)
-                foreach (int tl in tuThuTail)
-                    dan4D_16.Add(hd.ToString("D2") + tl.ToString("D2"));
+            Console.WriteLine();
+            Console.WriteLine(">> 4. BẠCH THỦ 4 CÀNG (4D TENSOR):      " + bt4D);
             Console.WriteLine(">> 5. DÀN 4 CÀNG TRỌNG TÂM 16 SỐ (4D):  " + string.Join(", ", dan4D_16));
 
-            // DÀN 4 CÀNG 81 SỐ (9 ĐẦU 4D x 9 ĐUÔI ĐỀ = 81 SỐ HYPERCUBE TENSOR)
-            var top9Heads = headEnergies.Take(9).Select(x => x.State).ToArray();
-            var dan4D_81 = new List<string>();
-            foreach (int hd in top9Heads)
-                foreach (int tl in dan9Tail)
-                    dan4D_81.Add(hd.ToString("D2") + tl.ToString("D2"));
-            dan4D_81.Sort();
             Console.WriteLine(">> 6. DÀN 4 CÀNG MỞ RỘNG 81 SỐ (4D HYPERCUBE):");
             for (int r = 0; r < 9; r++)
             {
@@ -1802,11 +1792,8 @@ namespace TidsTheory
             }
             var topD3 = d3List.OrderBy(x => x.Item2).Take(3).Select(x => x.Item1).ToArray();
 
-            var dan3D_12 = new List<string>();
-            foreach (int h in topD3)
-                foreach (int t in tuThuDe)
-                    dan3D_12.Add(h.ToString() + t.ToString("D2"));
             string bt3D = topD3[0].ToString() + btDe.ToString("D2");
+            var dan3D_12 = ComputeDan3D_12_Recursive(records, records[n - 1].DayOfWeek, bt3D, tuThuDe);
 
             long costPerPoint = 27000; // Chuẩn XSMB 27 giải: 1 điểm = 27.000 VNĐ
             double lottoRatio = 0.40;
@@ -2058,10 +2045,7 @@ namespace TidsTheory
             var tuThuDe = unifiedEnergies.Take(4).Select(x => x.State).ToList();
 
             string bt3D = topD3[0].ToString() + btDe.ToString("D2");
-            var dan3D_12 = new List<string>();
-            foreach (int h in topD3)
-                foreach (int t in tuThuDe)
-                    dan3D_12.Add(h.ToString() + t.ToString("D2"));
+            var dan3D_12 = ComputeDan3D_12_Recursive(records, records[n - 1].DayOfWeek, bt3D, tuThuDe);
 
             var dan9Tail = unifiedEnergies.Take(9).Select(x => x.State).ToArray();
             var dan3D_27 = new List<string>();
@@ -2070,45 +2054,10 @@ namespace TidsTheory
                     dan3D_27.Add(h.ToString() + t.ToString("D2"));
             dan3D_27.Sort();
 
-            // 4D
-            int[] ganHead = new int[100];
-            for (int s = 0; s < 100; s++)
-            {
-                for (int i = n - 1; i >= 0; i--)
-                {
-                    if (records[i].Head4D == s) break;
-                    ganHead[s]++;
-                }
-            }
-            int[] f30Head = new int[100];
-            for (int i = Math.Max(0, n - 30); i < n; i++) f30Head[records[i].Head4D]++;
-            var headEnergies = new List<StateEnergy>();
-            for (int s = 0; s < 100; s++)
-            {
-                double rTerm = 0.0;
-                if (ganHead[s] == 0) rTerm = 2.0;
-                else if (ganHead[s] >= 8 && ganHead[s] <= 20) rTerm = -1.6 + (Math.Abs(ganHead[s] - 13) / 10.0);
-                else if (ganHead[s] > 30) rTerm = 1.0;
-                else rTerm = 0.0;
-                double kTerm = -0.5 * (f30Head[s] - 0.30);
-                double v = rTerm + kTerm;
-                headEnergies.Add(new StateEnergy { State = s, Potential = v, Gan = ganHead[s], F30 = f30Head[s] });
-            }
-            headEnergies = headEnergies.OrderBy(x => x.Potential).ToList();
-            var topHeads = headEnergies.Take(4).Select(x => x.State).ToArray();
-            string bt4D = topHeads[0].ToString("D2") + btDe.ToString("D2");
-
-            var dan4D_16 = new List<string>();
-            foreach (int hd in topHeads)
-                foreach (int tl in tuThuDe)
-                    dan4D_16.Add(hd.ToString("D2") + tl.ToString("D2"));
-
-            var top9Heads = headEnergies.Take(9).Select(x => x.State).ToArray();
-            var dan4D_81 = new List<string>();
-            foreach (int hd in top9Heads)
-                foreach (int tl in dan9Tail)
-                    dan4D_81.Add(hd.ToString("D2") + tl.ToString("D2"));
-            dan4D_81.Sort();
+            // 4D TENSOR TỐI ƯU (ĐẦY ĐỦ TỔ HỢP CHÉO: 16s & 81s)
+            string bt4D;
+            List<string> dan4D_16, dan4D_81;
+            Compute4D_TensorOptimal(records, tuThuDe.ToArray(), dan9Tail, btDe, out bt4D, out dan4D_16, out dan4D_81);
 
             // PHÂN BỔ VỐN THEO CHUẨN KELLY PORTFOLIO & REGIME ĐỘNG
             long costPerPoint = 27000;
@@ -3605,6 +3554,177 @@ namespace TidsTheory
         private static int GetBestSpectralLoQuiet(List<LotteryRecord> records)
         {
             return GetSpectralRankedLoDecay(records)[0];
+        }
+
+        public static List<string> ComputeDan3D_12_Recursive(List<LotteryRecord> past, string dow, string bt3D, List<int> tuThuDe)
+        {
+            int n = past.Count;
+            int[] ganD3 = new int[10]; int[] ganD2 = new int[10]; int[] ganD1 = new int[10];
+            int[] f30D3 = new int[10]; int[] f30D2 = new int[10]; int[] f30D1 = new int[10];
+            for (int d = 0; d < 10; d++)
+            {
+                for (int i = n - 1; i >= 0; i--) { if (past[i].Digits5[2] == d) break; ganD3[d]++; }
+                for (int i = n - 1; i >= 0; i--) { if (past[i].Digits5[3] == d) break; ganD2[d]++; }
+                for (int i = n - 1; i >= 0; i--) { if (past[i].Digits5[4] == d) break; ganD1[d]++; }
+            }
+            for (int i = Math.Max(0, n - 30); i < n; i++)
+            {
+                f30D3[past[i].Digits5[2]]++; f30D2[past[i].Digits5[3]]++; f30D1[past[i].Digits5[4]]++;
+            }
+
+            double[] vD3 = new double[10]; double[] vD2 = new double[10]; double[] vD1 = new double[10];
+            for (int d = 0; d < 10; d++)
+            {
+                vD3[d] = ((ganD3[d] >= 8 && ganD3[d] <= 20) ? -1.5 : (ganD3[d] == 0 ? 1.5 : (ganD3[d] > 35 ? 1.2 : 0.0))) - 0.4 * (f30D3[d] - 3.0);
+                vD2[d] = ((ganD2[d] >= 8 && ganD2[d] <= 20) ? -1.5 : (ganD2[d] == 0 ? 1.5 : (ganD2[d] > 35 ? 1.2 : 0.0))) - 0.4 * (f30D2[d] - 3.0);
+                vD1[d] = ((ganD1[d] >= 8 && ganD1[d] <= 20) ? -1.5 : (ganD1[d] == 0 ? 1.5 : (ganD1[d] > 35 ? 1.2 : 0.0))) - 0.4 * (f30D1[d] - 3.0);
+            }
+
+            int lookback = Math.Min(100, n);
+            double expected = (double)lookback / 100.0;
+            int[,] f32 = new int[10, 10]; int[,] f21 = new int[10, 10];
+            for (int i = n - lookback; i < n; i++)
+            {
+                f32[past[i].Digits5[2], past[i].Digits5[3]]++;
+                f21[past[i].Digits5[3], past[i].Digits5[4]]++;
+            }
+            double[,] w32 = new double[10, 10]; double[,] w21 = new double[10, 10];
+            for (int a = 0; a < 10; a++)
+                for (int b = 0; b < 10; b++)
+                {
+                    w32[a, b] = -0.3 * (f32[a, b] - expected);
+                    w21[a, b] = -0.3 * (f21[a, b] - expected);
+                }
+
+            var pool3D = Enumerable.Range(0, 1000).ToList();
+
+            // Gọt Bậc 1 -> 650: Lọc theo thế năng 1D tổng hợp
+            pool3D = pool3D.OrderBy(s => {
+                int d3 = s / 100; int d2 = (s / 10) % 10; int d1 = s % 10;
+                return vD3[d3] + vD2[d2] + vD1[d1] + 0.5 * w32[d3, d2] + 0.5 * w21[d2, d1];
+            }).Take(650).ToList();
+
+            // Gọt Bậc 2 -> 420: Lọc theo Parity 8
+            int[] parCount = new int[8];
+            for (int i = Math.Max(0, n - 30); i < n; i++) {
+                int pIdx = ((past[i].Digits5[2] % 2) << 2) | ((past[i].Digits5[3] % 2) << 1) | (past[i].Digits5[4] % 2);
+                parCount[pIdx]++;
+            }
+            pool3D = pool3D.OrderBy(s => {
+                int d3 = s / 100; int d2 = (s / 10) % 10; int d1 = s % 10;
+                int pIdx = ((d3 % 2) << 2) | ((d2 % 2) << 1) | (d1 % 2);
+                double parPenalty = parCount[pIdx] == 0 ? 1.0 : (parCount[pIdx] > 8 ? 0.8 : -0.3);
+                return vD3[d3] + vD2[d2] + vD1[d1] + parPenalty;
+            }).Take(420).ToList();
+
+            // Gọt Bậc 3 -> 270: Lọc theo Tổng 3 Càng mod 10
+            int[] sumCount = new int[10];
+            for (int i = Math.Max(0, n - 50); i < n; i++) {
+                int sm = (past[i].Digits5[2] + past[i].Digits5[3] + past[i].Digits5[4]) % 10;
+                sumCount[sm]++;
+            }
+            pool3D = pool3D.OrderBy(s => {
+                int d3 = s / 100; int d2 = (s / 10) % 10; int d1 = s % 10;
+                int sm = (d3 + d2 + d1) % 10;
+                double sumPenalty = (sumCount[sm] < 2) ? 1.2 : -0.4;
+                return vD3[d3] + vD2[d2] + vD1[d1] + 0.5 * w32[d3, d2] + 0.5 * w21[d2, d1] + sumPenalty;
+            }).Take(270).ToList();
+
+            // Gọt Bậc 4 -> 175
+            pool3D = pool3D.OrderBy(s => {
+                int d3 = s / 100; int d2 = (s / 10) % 10; int d1 = s % 10;
+                return 0.7 * (vD3[d3] + vD2[d2] + vD1[d1]) + 0.8 * (w32[d3, d2] + w21[d2, d1]);
+            }).Take(175).ToList();
+
+            // Gọt Bậc 5 -> 115
+            pool3D = pool3D.OrderBy(s => {
+                int d3 = s / 100; int d2 = (s / 10) % 10; int d1 = s % 10;
+                double bonus = (d3 == d1) ? -0.5 : (d3 == d2 || d2 == d1 ? -0.3 : 0.0);
+                return vD3[d3] + vD2[d2] + vD1[d1] + bonus;
+            }).Take(115).ToList();
+
+            // Gọt Bậc 6 -> 75
+            pool3D = pool3D.OrderBy(s => {
+                int d3 = s / 100; int d2 = (s / 10) % 10; int d1 = s % 10;
+                return vD3[d3] + vD2[d2] + vD1[d1] + w32[d3, d2] + w21[d2, d1];
+            }).Take(75).ToList();
+
+            // Gọt Bậc 7 -> 49
+            pool3D = pool3D.OrderBy(s => {
+                int d3 = s / 100; int d2 = (s / 10) % 10; int d1 = s % 10;
+                return vD3[d3] + vD2[d2] + vD1[d1] + 1.2 * w32[d3, d2] + 1.2 * w21[d2, d1];
+            }).Take(49).ToList();
+
+            // Gọt Bậc 8 -> 12 số Tinh Tuyển
+            var top12List = pool3D.Take(12).Select(s => s.ToString("D3")).ToList();
+            if (!string.IsNullOrEmpty(bt3D) && !top12List.Contains(bt3D))
+            {
+                top12List[top12List.Count - 1] = bt3D; // Luôn đảm bảo có con Bạch Thủ 3D
+            }
+            return top12List;
+        }
+
+        public static void Compute4D_TensorOptimal(
+            List<LotteryRecord> past, 
+            int[] tuThuDe, 
+            int[] dan9Tail, 
+            int btDe,
+            out string bt4D, 
+            out List<string> dan4D_16, 
+            out List<string> dan4D_81)
+        {
+            int n = past.Count;
+            // 1. Tính thế năng Càng d4 (Hàng Ngàn: 0..9)
+            int[] ganD4 = new int[10]; int[] f30D4 = new int[10];
+            for (int d = 0; d < 10; d++)
+            {
+                for (int i = n - 1; i >= 0; i--) { if (past[i].Digits5[1] == d) break; ganD4[d]++; }
+            }
+            for (int i = Math.Max(0, n - 30); i < n; i++) f30D4[past[i].Digits5[1]]++;
+
+            var d4List = new List<Tuple<int, double>>();
+            for (int d = 0; d < 10; d++)
+            {
+                double r = (ganD4[d] >= 8 && ganD4[d] <= 20) ? -1.5 : (ganD4[d] == 0 ? 1.5 : 0.0);
+                double k = -0.3 * (f30D4[d] - 3.0);
+                d4List.Add(new Tuple<int, double>(d, r + k));
+            }
+            var topD4 = d4List.OrderBy(x => x.Item2).Take(3).Select(x => x.Item1).ToArray();
+
+            // 2. Tính thế năng Càng d3 (Hàng Trăm: 0..9)
+            int[] ganD3 = new int[10]; int[] f30D3 = new int[10];
+            for (int d = 0; d < 10; d++)
+            {
+                for (int i = n - 1; i >= 0; i--) { if (past[i].Digits5[2] == d) break; ganD3[d]++; }
+            }
+            for (int i = Math.Max(0, n - 30); i < n; i++) f30D3[past[i].Digits5[2]]++;
+
+            var d3List = new List<Tuple<int, double>>();
+            for (int d = 0; d < 10; d++)
+            {
+                double r = (ganD3[d] >= 8 && ganD3[d] <= 20) ? -1.5 : (ganD3[d] == 0 ? 1.5 : 0.0);
+                double k = -0.3 * (f30D3[d] - 3.0);
+                d3List.Add(new Tuple<int, double>(d, r + k));
+            }
+            var topD3 = d3List.OrderBy(x => x.Item2).Take(3).Select(x => x.Item1).ToArray();
+
+            // Bạch thủ 4D = Top 1 d4 x Top 1 d3 x Bạch thủ Đề
+            bt4D = topD4[0].ToString() + topD3[0].ToString() + btDe.ToString("D2");
+
+            // Dàn 16 số = Top 2 d4 x Top 2 d3 x Top 4 Đề (2 x 2 x 4 = 16 số đầy đủ tổ hợp chéo)
+            dan4D_16 = new List<string>();
+            for (int i = 0; i < 2; i++)
+                for (int j = 0; j < 2; j++)
+                    for (int t = 0; t < tuThuDe.Length && t < 4; t++)
+                        dan4D_16.Add(topD4[i].ToString() + topD3[j].ToString() + tuThuDe[t].ToString("D2"));
+
+            // Dàn 81 số = Top 3 d4 x Top 3 d3 x Top 9 Đề (3 x 3 x 9 = 81 số đầy đủ tổ hợp chéo)
+            dan4D_81 = new List<string>();
+            for (int i = 0; i < 3; i++)
+                for (int j = 0; j < 3; j++)
+                    for (int t = 0; t < dan9Tail.Length && t < 9; t++)
+                        dan4D_81.Add(topD4[i].ToString() + topD3[j].ToString() + dan9Tail[t].ToString("D2"));
+            dan4D_81.Sort();
         }
     }
 }
