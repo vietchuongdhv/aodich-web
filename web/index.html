@@ -293,11 +293,11 @@
           <!-- Quy Nguyên Trận BSM -->
           <div class="bg-daoDark-900/90 p-2.5 rounded-xl border border-amber-600/40">
             <div class="flex items-center justify-between mb-0.5">
-              <span class="text-[9px] text-amber-400 font-bold uppercase">Quy Nguyên Trận [Chẵn-Chẵn] (10 số nén)</span>
-              <span class="text-[9px] bg-amber-950 text-amber-300 px-1 py-0.2 rounded font-bold">Z = 2.98σ</span>
+              <span class="text-[9px] text-amber-400 font-bold uppercase" id="bsmFactorTitle">Quy Nguyên Trận (10 số nén)</span>
+              <span class="text-[9px] bg-amber-950 text-amber-300 px-1 py-0.2 rounded font-bold" id="bsmZVal">Z = --σ</span>
             </div>
             <div class="text-[11px] font-bold text-amber-200 tracking-wide" id="bsmCoilingDisplay">
-              00, 02, 06, 08, 42, 60, 66, 68, 80, 84
+              --
             </div>
           </div>
         </div>
@@ -815,6 +815,14 @@
         if (elE42) elE42.innerText = e42.map(pad2).join(', ');
         const elE42Cost = document.getElementById('e42CostDisplay');
         if (elE42Cost) elE42Cost.innerText = `E42: ${(costE42/1000)}k | E65: ${(data.costE65/1000)}k`;
+
+        // Quy Nguyên Trận BSM Realtime đồng bộ với Bảng 22 Hạng Mục
+        const factorName = data.regimeCompressedFactor || (statusData && statusData.regimeCompressedFactor) || 'Xỉu (00-49)';
+        const zScore = data.regimeZ !== undefined ? data.regimeZ : (statusData && statusData.regimeZ !== undefined ? statusData.regimeZ : 0.83);
+        const elBsmTitle = document.getElementById('bsmFactorTitle');
+        if (elBsmTitle) elBsmTitle.innerText = `Quy Nguyên Trận [${factorName}] (10 số nén)`;
+        const elBsmZ = document.getElementById('bsmZVal');
+        if (elBsmZ) elBsmZ.innerText = `Z = ${typeof zScore === 'number' ? zScore.toFixed(2) : zScore}σ`;
 
         document.getElementById('bsmCoilingDisplay').innerText = data.bsmCoiling.map(pad2).join(', ');
 
