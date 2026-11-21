@@ -114,10 +114,13 @@ namespace TidsTheory
             var req = context.Request;
             var res = context.Response;
 
-            // Thiết lập Headers CORS và UTF-8
+            // Thiết lập Headers CORS, UTF-8 và Chống Cache triệt để cho mọi thiết bị di động
             res.Headers.Add("Access-Control-Allow-Origin", "*");
             res.Headers.Add("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
             res.Headers.Add("Access-Control-Allow-Headers", "Content-Type");
+            res.Headers.Add("Cache-Control", "no-cache, no-store, must-revalidate, max-age=0");
+            res.Headers.Add("Pragma", "no-cache");
+            res.Headers.Add("Expires", "0");
             res.ContentEncoding = Encoding.UTF8;
 
             if (req.HttpMethod == "OPTIONS")
@@ -312,15 +315,20 @@ namespace TidsTheory
             int tuThu3 = top4Lo[2];
             int tuThu4 = top4Lo[3];
 
-            // Cấu trúc Đề
+            // Cấu trúc Đề theo Thang 65% (E65, E42, E27, E18, E4, E1)
             var e65 = Program.SelectFactorNeutralDeSet(deEnergies, 65);
-            var e50 = Program.SelectFactorNeutralDeSet(deEnergies, 50);
-            var e25 = Program.SelectFactorNeutralDeSet(deEnergies, 25);
-            var e9 = Program.SelectFactorNeutralDeSet(deEnergies, 9);
+            var e42 = Program.SelectFactorNeutralDeSet(deEnergies, 42);
+            var e27 = Program.SelectFactorNeutralDeSet(deEnergies, 27);
+            var e18 = Program.SelectFactorNeutralDeSet(deEnergies, 18);
             var e4 = Program.SelectFactorNeutralDeSet(deEnergies, 4);
             var e2 = Program.SelectFactorNeutralDeSet(deEnergies, 2);
             int e1 = deEnergies[0].State;
             var bsmCoiling = Program.ExtractBsmCoilingCluster(deEnergies, regime, 10);
+
+            // Tương thích ngược cho các phiên bản cũ
+            var e50 = Program.SelectFactorNeutralDeSet(deEnergies, 50);
+            var e25 = Program.SelectFactorNeutralDeSet(deEnergies, 25);
+            var e9 = Program.SelectFactorNeutralDeSet(deEnergies, 9);
 
             // 3D Tensor
             int[] ganD3 = new int[10];
@@ -374,36 +382,49 @@ namespace TidsTheory
             }
 
             long remainDeBudget = Math.Max(0, remainForDeAnd3D - costE65);
-            long c50 = (long)Math.Max(1000, Math.Floor((remainDeBudget * 0.45) / (50 * 1000)) * 1000);
-            long costE50 = 50 * c50;
+            // Dàn chân kiềng E42
+            long c42 = (long)Math.Max(1000, Math.Floor((remainDeBudget * 0.45) / (42 * 1000)) * 1000);
+            long costE42 = 42 * c42;
 
-            long c25 = 0;
-            if (regime.Regime == MarketRegimeType.Peak)
+            // Dàn tấn công E27
+            long c27 = 0;
+            if (regime.Regime == MarketRegimeType.Peak || regime.Regime == MarketRegimeType.Steady || regime.Regime == MarketRegimeType.Convergent)
             {
-                c25 = (long)Math.Max(1000, Math.Floor((remainDeBudget * 0.25) / (25 * 1000)) * 1000);
+                c27 = (long)Math.Max(1000, Math.Floor((remainDeBudget * 0.25) / (27 * 1000)) * 1000);
             }
-            long costE25 = 25 * c25;
+            long costE27 = 27 * c27;
 
-            long c9 = (long)Math.Max(1000, Math.Floor(c50 / 1000.0) * 1000);
-            long costE9 = 9 * c9;
+            // Dàn gối đầu E18
+            long c18 = (long)Math.Max(1000, Math.Floor(c42 / 1000.0) * 1000);
+            long costE18 = 18 * c18;
 
-            long c4 = (long)Math.Max(1000, Math.Floor(c50 / 1000.0) * 1000);
+            // Tứ thủ E4
+            long c4 = (long)Math.Max(1000, Math.Floor(c42 / 1000.0) * 1000);
             long costE4 = 4 * c4;
 
-            long c1 = (long)Math.Max(2000, Math.Floor((c50 * 2) / 1000.0) * 1000);
+            // Bạch thủ E1
+            long c1 = (long)Math.Max(2000, Math.Floor((c42 * 2) / 1000.0) * 1000);
             long costE1 = c1;
 
-            long costDeTotal = costE65 + costE50 + costE25 + costE9 + costE4 + costE1;
+            long costDeTotal = costE65 + costE42 + costE27 + costE18 + costE4 + costE1;
             long remainFor3D = Math.Max(12000, budget - costLotto - costXien - costDeTotal);
-            while (remainFor3D < 12000 && (c25 > 0 || c1 > 1000 || c4 > 1000 || c50 > 1000))
+            while (remainFor3D < 12000 && (c27 > 0 || c1 > 1000 || c4 > 1000 || c42 > 1000))
             {
-                if (c25 > 0) { c25 = 0; costE25 = 0; }
+                if (c27 > 0) { c27 = 0; costE27 = 0; }
                 else if (c1 > 1000) { c1 -= 1000; costE1 -= 1000; }
                 else if (c4 > 1000) { c4 -= 1000; costE4 -= 4000; }
-                else if (c50 > 1000) { c50 -= 1000; costE50 -= 50000; }
-                costDeTotal = costE65 + costE50 + costE25 + costE9 + costE4 + costE1;
+                else if (c42 > 1000) { c42 -= 1000; costE42 -= 42000; }
+                costDeTotal = costE65 + costE42 + costE27 + costE18 + costE4 + costE1;
                 remainFor3D = budget - costLotto - costXien - costDeTotal;
             }
+
+            // Gán tương thích cho các client cũ (E50, E25, E9)
+            long c50 = c42;
+            long costE50 = costE42;
+            long c25 = c27;
+            long costE25 = costE27;
+            long c9 = c18;
+            long costE9 = costE18;
 
             long c3D_base = (long)Math.Max(1000, Math.Floor(remainFor3D / (12 * 1000.0)) * 1000);
             long cost3D_total = 12 * c3D_base;
@@ -507,13 +528,13 @@ namespace TidsTheory
             addRow(6, "Trục 1: Địa Lợi (+EV)", "Bộ 6 Cặp Xiên 2 Tứ Thủ", 6, string.Join(", ", xien2List.Select(x => "(" + x + ")")), "VNĐ/vé", 0, 0, "Xiên quay dự phòng (Vốn = 0 đ)");
             addRow(7, "Trục 3: Thiên Thời (Đột biến)", "Bộ 4 Xiên 3 Tứ Thủ", 4, string.Join(", ", xien3List.Select(x => "(" + x + ")")), "VNĐ/vé", 0, 0, "Xiên quay dự phòng (Vốn = 0 đ)");
             addRow(8, "Trục 3: Thiên Thời (Đột biến)", "Bộ 1 Xiên 4 Tứ Thủ", 1, "(" + xien4 + ")", "VNĐ/vé", 0, 0, "Xiên 4 dự phòng (Vốn = 0 đ)");
-            addRow(9, "Trục 2: Nhân Hòa (Hộ thân)", "Đại Diễn Thần Trận (E50)", 50, string.Join(", ", e50.Select(x => x.ToString("D2"))), "VNĐ/số", c50, costE50, string.Format("Lớp vỏ 50 số (Tổng cược: {0:N0} đ/số)", c65 + c50));
+            addRow(9, "Trục 2: Nhân Hòa (Hộ thân)", "Dàn Chân Kiềng (E42)", 42, string.Join(", ", e42.Select(x => x.ToString("D2"))), "VNĐ/số", c42, costE42, string.Format("Dàn cốt lõi 42 số thang 65% (Tổng cược: {0:N0} đ/số)", c65 + c42));
             addRow(10, "Trục 2: Nhân Hòa (Hộ thân)", "Huyền Thiên Giáp (E65)", 65, string.Join(", ", e65.Select(x => x.ToString("D2"))), "VNĐ/số", c65, costE65, (costE65 > 0) ? string.Format("Kích hoạt bảo hiểm nén thế năng PHỤC KHÍ ({0:N0} đ/số)", c65) : "Dự phòng kích hoạt khi có trượt kép (Vốn = 0 đ)");
             addRow(11, "Trục 2: Nhân Hòa (Hộ thân)", string.Format("Quy Nguyên Trận [{0}]", regime.CompressedFactor), bsmCoiling.Count, string.Join(", ", bsmCoiling.Select(x => x.ToString("D2"))), "VNĐ/số", 0, 0, (regime.Regime == MarketRegimeType.Coiling) ? string.Format("10 số đáy thế năng cụm nén {0} (Vốn = 0 đ - Tùy chọn lót)", regime.CompressedFactor) : "Dự phòng săn điểm nổ vĩ mô (Vốn = 0 đ)");
-            addRow(12, "Trục 2: Nhân Hòa (Hộ thân)", "Hà Đồ Tự Nhiên (E25)", 25, string.Join(", ", e25.Select(x => x.ToString("D2"))), "VNĐ/số", c25, costE25, (costE25 > 0) ? string.Format("Cược thêm cho 25 số lõi (Tổng cược: {0:N0} đ/số)", c65 + c50 + c25) : "Dự phòng chế độ Thị Trường Phù Hợp (Vốn = 0 đ)");
-            addRow(13, "Trục 2: Nhân Hòa (Hộ thân)", "Cửu Cung Lạc Thư (E9)", 9, string.Join(", ", e9.Select(x => x.ToString("D2"))), "VNĐ/số", c9, costE9, string.Format("Cược thêm cho 9 số hạt nhân (Tổng cược: {0:N0} đ/số)", c65 + c50 + c25 + c9));
-            addRow(14, "Trục 2: Nhân Hòa (Hộ thân)", "Tứ Tượng Hội Tụ (E4)", 4, string.Join(", ", e4.Select(x => x.ToString("D2"))), "VNĐ/số", c4, costE4, string.Format("Cược thêm cho 4 số tứ thủ (Tổng cược: {0:N0} đ/số)", c65 + c50 + c25 + c9 + c4));
-            addRow(15, "Trục 2: Nhân Hòa (Hộ thân)", "Thái Cực Nhất Điểm (E1)", 1, e1.ToString("D2"), "VNĐ/số", c1, costE1, string.Format("Cược thêm cho Bạch thủ đề (Tổng cược: {0:N0} đ)", c65 + c50 + c25 + c9 + c4 + c1));
+            addRow(12, "Trục 2: Nhân Hòa (Hộ thân)", "Dàn Tấn Công (E27)", 27, string.Join(", ", e27.Select(x => x.ToString("D2"))), "VNĐ/số", c27, costE27, (costE27 > 0) ? string.Format("Cược thêm cho 27 số tấn công (Tổng cược: {0:N0} đ/số)", c65 + c42 + c27) : "Dự phòng chế độ Thị Trường Phù Hợp (Vốn = 0 đ)");
+            addRow(13, "Trục 2: Nhân Hòa (Hộ thân)", "Dàn Gối Đầu (E18)", 18, string.Join(", ", e18.Select(x => x.ToString("D2"))), "VNĐ/số", c18, costE18, string.Format("Cược thêm cho 18 số hạt nhân (Tổng cược: {0:N0} đ/số)", c65 + c42 + c27 + c18));
+            addRow(14, "Trục 2: Nhân Hòa (Hộ thân)", "Tứ Tượng Hội Tụ (E4)", 4, string.Join(", ", e4.Select(x => x.ToString("D2"))), "VNĐ/số", c4, costE4, string.Format("Cược thêm cho 4 số tứ thủ (Tổng cược: {0:N0} đ/số)", c65 + c42 + c27 + c18 + c4));
+            addRow(15, "Trục 2: Nhân Hòa (Hộ thân)", "Thái Cực Nhất Điểm (E1)", 1, e1.ToString("D2"), "VNĐ/số", c1, costE1, string.Format("Cược thêm cho Bạch thủ đề (Tổng cược: {0:N0} đ)", c65 + c42 + c27 + c18 + c4 + c1));
             addRow(16, "Trục 2: Nhân Hòa (Hộ thân)", "Lưỡng Nghi Đồng Quy (E2)", 2, string.Join(", ", e2.Select(x => x.ToString("D2"))), "VNĐ/số", 0, 0, "Đã nằm trong Tứ thủ E4 (Vốn = 0 đ)");
             addRow(17, "Trục 3: Thiên Thời (Đột biến)", "Dàn 3 Càng Tinh Tuyển 12 số (3D)", 12, string.Join(", ", dan3D_12), "VNĐ/vé", c3D_base, cost3D, string.Format("Đòn bẩy 3D ăn 1:960 (Riêng BT {0} cược {1:N0} đ)", bt3D, c3D_bt));
             addRow(18, "Trục 3: Thiên Thời (Đột biến)", "Bạch Thủ 3 Càng (3D)", 1, bt3D, "VNĐ/vé", 0, 0, "Đã gộp vốn vào Dàn 12 số (Vốn = 0 đ)");
@@ -531,11 +552,13 @@ namespace TidsTheory
             copyZaloSb.AppendLine(string.Format("3. Xiên 2 STL: ({0:D2}-{1:D2}) x {2:N0}k", btLo, stLo, costXien / 1000));
             if (costE65 > 0)
                 copyZaloSb.AppendLine(string.Format("4. Dàn Giáp 65s x {0:N0}k (Bảo hiểm Coiling)", c65 / 1000));
-            copyZaloSb.AppendLine(string.Format("5. Dàn Đề 50s x {0:N0}k", (c50 + c65) / 1000));
-            copyZaloSb.AppendLine(string.Format("6. Ép Dàn 9s ({0}) x thêm {1:N0}k", string.Join(",", e9.Select(x => x.ToString("D2"))), c9 / 1000));
-            copyZaloSb.AppendLine(string.Format("7. Tứ Thủ Đề ({0}) x thêm {1:N0}k", string.Join(",", e4.Select(x => x.ToString("D2"))), c4 / 1000));
-            copyZaloSb.AppendLine(string.Format("8. Bạch Thủ Đề: {0:D2} (Tổng đánh {1:N0}k)", e1, (c65 + c50 + c9 + c4 + c1) / 1000));
-            copyZaloSb.AppendLine(string.Format("9. 3 Càng BT: {0} x {1:N0}k; Dàn 11s ({2}) x {3:N0}k", bt3D, c3D_bt / 1000, string.Join(",", dan3D_12.Where(x => x != bt3D).Take(6)), c3D_base / 1000));
+            copyZaloSb.AppendLine(string.Format("5. Dàn Đề Chân Kiềng 42s x {0:N0}k", (c42 + c65) / 1000));
+            if (c27 > 0)
+                copyZaloSb.AppendLine(string.Format("6. Dàn Tấn Công 27s x thêm {0:N0}k", c27 / 1000));
+            copyZaloSb.AppendLine(string.Format("7. Dàn Gối Đầu 18s ({0}) x thêm {1:N0}k", string.Join(",", e18.Take(6).Select(x => x.ToString("D2"))), c18 / 1000));
+            copyZaloSb.AppendLine(string.Format("8. Tứ Thủ Đề ({0}) x thêm {1:N0}k", string.Join(",", e4.Select(x => x.ToString("D2"))), c4 / 1000));
+            copyZaloSb.AppendLine(string.Format("9. Bạch Thủ Đề: {0:D2} (Tổng đánh {1:N0}k)", e1, (c65 + c42 + c27 + c18 + c4 + c1) / 1000));
+            copyZaloSb.AppendLine(string.Format("10. 3 Càng BT: {0} x {1:N0}k; Dàn 11s ({2}) x {3:N0}k", bt3D, c3D_bt / 1000, string.Join(",", dan3D_12.Where(x => x != bt3D).Take(6)), c3D_base / 1000));
             copyZaloSb.AppendLine("--------------------------------------------------");
 
             // Xây dựng JSON
@@ -555,23 +578,37 @@ namespace TidsTheory
             sb.AppendFormat("\"e1\": {0},", e1);
             sb.AppendFormat("\"e2\": [{0}],", string.Join(",", e2));
             sb.AppendFormat("\"e4\": [{0}],", string.Join(",", e4));
-            sb.AppendFormat("\"e9\": [{0}],", string.Join(",", e9));
-            sb.AppendFormat("\"e25\": [{0}],", string.Join(",", e25));
-            sb.AppendFormat("\"e50\": [{0}],", string.Join(",", e50));
+            sb.AppendFormat("\"e18\": [{0}],", string.Join(",", e18));
+            sb.AppendFormat("\"e27\": [{0}],", string.Join(",", e27));
+            sb.AppendFormat("\"e42\": [{0}],", string.Join(",", e42));
             sb.AppendFormat("\"e65\": [{0}],", string.Join(",", e65));
             sb.AppendFormat("\"bsmCoiling\": [{0}],", string.Join(",", bsmCoiling));
 
+            // Tương thích ngược
+            sb.AppendFormat("\"e9\": [{0}],", string.Join(",", e9));
+            sb.AppendFormat("\"e25\": [{0}],", string.Join(",", e25));
+            sb.AppendFormat("\"e50\": [{0}],", string.Join(",", e50));
+
             sb.AppendFormat("\"c65\": {0},", c65);
-            sb.AppendFormat("\"c50\": {0},", c50);
-            sb.AppendFormat("\"c25\": {0},", c25);
-            sb.AppendFormat("\"c9\": {0},", c9);
+            sb.AppendFormat("\"c42\": {0},", c42);
+            sb.AppendFormat("\"c27\": {0},", c27);
+            sb.AppendFormat("\"c18\": {0},", c18);
             sb.AppendFormat("\"c4\": {0},", c4);
             sb.AppendFormat("\"c1\": {0},", c1);
 
+            // Tương thích ngược
+            sb.AppendFormat("\"c50\": {0},", c50);
+            sb.AppendFormat("\"c25\": {0},", c25);
+            sb.AppendFormat("\"c9\": {0},", c9);
+
             sb.AppendFormat("\"costE65\": {0},", costE65);
+            sb.AppendFormat("\"costE42\": {0},", costE42);
+            sb.AppendFormat("\"costE27\": {0},", costE27);
+            sb.AppendFormat("\"costE18\": {0},", costE18);
             sb.AppendFormat("\"costE50\": {0},", costE50);
             sb.AppendFormat("\"costE9\": {0},", costE9);
             sb.AppendFormat("\"costE4\": {0},", costE4);
+            sb.AppendFormat("\"costE1\": {0},", costE1);
             sb.AppendFormat("\"costE1\": {0},", costE1);
 
             sb.AppendFormat("\"bt3D\": \"{0}\",", bt3D);
@@ -615,6 +652,9 @@ namespace TidsTheory
                 var marginal1D = Program.Compute1DMarginals(past);
                 var deEnergies = Program.ComputeUnifiedPotentials2D(past, marginal1D);
                 var e65 = Program.SelectFactorNeutralDeSet(deEnergies, 65);
+                var e42 = Program.SelectFactorNeutralDeSet(deEnergies, 42);
+                var e27 = Program.SelectFactorNeutralDeSet(deEnergies, 27);
+                var e18 = Program.SelectFactorNeutralDeSet(deEnergies, 18);
                 var e50 = Program.SelectFactorNeutralDeSet(deEnergies, 50);
                 var e25 = Program.SelectFactorNeutralDeSet(deEnergies, 25);
                 var e9 = Program.SelectFactorNeutralDeSet(deEnergies, 9);
@@ -640,6 +680,9 @@ namespace TidsTheory
 
                 // Đề
                 bool hitE65 = e65.Contains(actual.De);
+                bool hitE42 = e42.Contains(actual.De);
+                bool hitE27 = e27.Contains(actual.De);
+                bool hitE18 = e18.Contains(actual.De);
                 bool hitE50 = e50.Contains(actual.De);
                 bool hitE25 = e25.Contains(actual.De);
                 bool hitE9 = e9.Contains(actual.De);
@@ -740,6 +783,9 @@ namespace TidsTheory
                 sbRow.AppendFormat("\"tuThuHits\": {0},", tuThuHits);
                 sbRow.AppendFormat("\"hitXien2\": {0},", hitXien2.ToString().ToLower());
                 sbRow.AppendFormat("\"hitE65\": {0},", hitE65.ToString().ToLower());
+                sbRow.AppendFormat("\"hitE42\": {0},", hitE42.ToString().ToLower());
+                sbRow.AppendFormat("\"hitE27\": {0},", hitE27.ToString().ToLower());
+                sbRow.AppendFormat("\"hitE18\": {0},", hitE18.ToString().ToLower());
                 sbRow.AppendFormat("\"hitE50\": {0},", hitE50.ToString().ToLower());
                 sbRow.AppendFormat("\"hitE25\": {0},", hitE25.ToString().ToLower());
                 sbRow.AppendFormat("\"hitE9\": {0},", hitE9.ToString().ToLower());
@@ -799,8 +845,9 @@ namespace TidsTheory
                 return "{\"valid\": false, \"error\": \"Văn bản trống\"}";
             }
 
-            // Tìm ngày nếu có
+            // Tìm ngày nếu có và loại bỏ ngày ra khỏi văn bản để không bị nhận nhầm số
             string dateStr = DateTime.Now.ToString("yyyy-MM-dd");
+            string textWithoutDate = rawText;
             var dateMatch = Regex.Match(rawText, @"(\d{1,2})[\/\-\.](\d{1,2})[\/\-\.](\d{4})");
             if (dateMatch.Success)
             {
@@ -808,6 +855,7 @@ namespace TidsTheory
                 int month = int.Parse(dateMatch.Groups[2].Value);
                 int year = int.Parse(dateMatch.Groups[3].Value);
                 dateStr = string.Format("{0:D4}-{1:D2}-{2:D2}", year, month, day);
+                textWithoutDate = rawText.Remove(dateMatch.Index, dateMatch.Length);
             }
             else
             {
@@ -818,6 +866,7 @@ namespace TidsTheory
                     int month = int.Parse(isoMatch.Groups[2].Value);
                     int day = int.Parse(isoMatch.Groups[3].Value);
                     dateStr = string.Format("{0:D4}-{1:D2}-{2:D2}", year, month, day);
+                    textWithoutDate = rawText.Remove(isoMatch.Index, isoMatch.Length);
                 }
                 else
                 {
@@ -851,8 +900,8 @@ namespace TidsTheory
             var g6 = new List<string>();
             var g7 = new List<string>();
 
-            // Trích xuất tất cả các số nguyên trong văn bản
-            var matches = Regex.Matches(rawText, @"\b\d{2,5}\b");
+            // Trích xuất tất cả các số nguyên trong văn bản (đã loại bỏ chuỗi ngày tháng)
+            var matches = Regex.Matches(textWithoutDate, @"\b\d{2,5}\b");
             var cleanNumbers = new List<string>();
             foreach (Match m in matches)
             {
