@@ -278,6 +278,13 @@ namespace TidsTheory
                 if (args.Length > 1 && int.TryParse(args[1], out p)) testDays = p;
                 RunQciAudit(records, testDays);
             }
+            else if (command == "qcide" || command == "qci-de" || command == "test-qcide" || command == "deqci" || command == "de100")
+            {
+                int testDays = 100;
+                int p;
+                if (args.Length > 1 && int.TryParse(args[1], out p)) testDays = p;
+                RunQciDeLadderAudit(records, testDays);
+            }
             else if (command == "d50test" || command == "test-d50" || command == "de50" || command == "d50")
             {
                 int testDays = 100;
@@ -291,6 +298,13 @@ namespace TidsTheory
                 int p;
                 if (args.Length > 1 && int.TryParse(args[1], out p)) testDays = p;
                 RunDeSetAudit(records, testDays, 65);
+            }
+            else if (command == "ratio" || command == "decimation" || command == "test-ratio")
+            {
+                int testDays = 300;
+                int p;
+                if (args.Length > 1 && int.TryParse(args[1], out p)) testDays = p;
+                RunDecimationRatioComparison(records, testDays);
             }
             else if (command == "regime" || command == "regimetest" || command == "test-regime")
             {
@@ -988,6 +1002,46 @@ namespace TidsTheory
                 if (slice.Any())
                     Console.WriteLine("     [Nhóm " + (row + 1) + "]: " + string.Join(", ", slice));
             }
+
+            // =========================================================================
+            // CẤU HÌNH KIM TỰ THÁP RÚT GỌN 65% (TIDS 65% DECIMATION PYRAMID)
+            // =========================================================================
+            var sub42 = bsmBasketEnergies.Where(e => dan65.Contains(e.State)).ToList();
+            var dan42 = SelectFactorNeutralDeSet(sub42, 42).OrderBy(x => x).ToList();
+
+            var sub27 = bsmBasketEnergies.Where(e => dan42.Contains(e.State)).ToList();
+            var dan27 = SelectFactorNeutralDeSet(sub27, 27).OrderBy(x => x).ToList();
+
+            var sub18 = bsmBasketEnergies.Where(e => dan27.Contains(e.State)).ToList();
+            var dan18 = SelectFactorNeutralDeSet(sub18, 18).OrderBy(x => x).ToList();
+
+            var sub12 = bsmBasketEnergies.Where(e => dan18.Contains(e.State)).ToList();
+            var dan12 = SelectFactorNeutralDeSet(sub12, 12).OrderBy(x => x).ToList();
+
+            var sub8 = bsmBasketEnergies.Where(e => dan12.Contains(e.State)).ToList();
+            var dan8 = SelectFactorNeutralDeSet(sub8, 8).OrderBy(x => x).ToList();
+
+            var sub5 = bsmBasketEnergies.Where(e => dan8.Contains(e.State)).ToList();
+            var dan5 = SelectFactorNeutralDeSet(sub5, 5).OrderBy(x => x).ToList();
+
+            var sub3 = bsmBasketEnergies.Where(e => dan5.Contains(e.State)).ToList();
+            var dan3 = SelectFactorNeutralDeSet(sub3, 3).OrderBy(x => x).ToList();
+
+            var sub2 = bsmBasketEnergies.Where(e => dan3.Contains(e.State)).ToList();
+            var dan2 = SelectFactorNeutralDeSet(sub2, 2).OrderBy(x => x).ToList();
+
+            Console.WriteLine();
+            Console.WriteLine(">> KIM TỰ THÁP RÚT GỌN 65% (TIDS 65% DECIMATION PYRAMID LADDER):");
+            Console.WriteLine("   [Tầng 1 - 65s (Bảo hiểm Giáp)]: " + string.Join(", ", dan65.Select(x => x.ToString("D2"))));
+            Console.WriteLine("   [Tầng 2 - 42s (Giảm tải Cấp 2)]: " + string.Join(", ", dan42.Select(x => x.ToString("D2"))));
+            Console.WriteLine("   [Tầng 3 - 27s (Dàn Hà Đồ 27s)]: " + string.Join(", ", dan27.Select(x => x.ToString("D2"))));
+            Console.WriteLine("   [Tầng 4 - 18s (XUNG KÍCH ROI MAX)]: " + string.Join(", ", dan18.Select(x => x.ToString("D2"))));
+            Console.WriteLine("   [Tầng 5 - 12s (Dàn Cốt Lõi 12s)]: " + string.Join(", ", dan12.Select(x => x.ToString("D2"))));
+            Console.WriteLine("   [Tầng 6 -  8s (Bát Quái Trận)]: " + string.Join(", ", dan8.Select(x => x.ToString("D2"))));
+            Console.WriteLine("   [Tầng 7 -  5s (Ngũ Hành Hội Tụ)]: " + string.Join(", ", dan5.Select(x => x.ToString("D2"))));
+            Console.WriteLine("   [Tầng 8 -  3s (Tam Tài Đồng Quy)]: " + string.Join(", ", dan3.Select(x => x.ToString("D2"))));
+            Console.WriteLine("   [Tầng 9 -  2s (Song Thủ Tinh Tuyển)]: " + string.Join(", ", dan2.Select(x => x.ToString("D2"))));
+            Console.WriteLine("   [Tầng 10 - 1s (Bạch Thủ Nhất Điểm)]: " + dan2[0].ToString("D2"));
 
             if (regime.Regime == MarketRegimeType.Coiling)
             {
@@ -1717,8 +1771,10 @@ namespace TidsTheory
 
                 var prevMarginal = Compute1DMarginals(prevRecords);
                 var prevBsm = ComputeBsmBasketPotentials2D(prevRecords, prevMarginal);
-                var prevDan50 = SelectFactorNeutralDeSet(prevBsm, 50);
-                bool prevDeHit = prevDan50.Contains(records[n - 1].De);
+                var prevDan65 = SelectFactorNeutralDeSet(prevBsm, 65);
+                var prevSub42 = prevBsm.Where(e => prevDan65.Contains(e.State)).ToList();
+                var prevDan42 = SelectFactorNeutralDeSet(prevSub42, 42);
+                bool prevDeHit = prevDan42.Contains(records[n - 1].De);
 
                 if (!prevLoHit && !prevDeHit) isDrawdownYesterday = true;
             }
@@ -1768,7 +1824,17 @@ namespace TidsTheory
 
             long remainForDeAnd3D = budget - costLotto - costXien;
 
-            // PHÂN BỔ ĐỀ DỰA TRÊN REGIME ĐỘNG
+            // CẤU HÌNH KIM TỰ THÁP RÚT GỌN 65% (TIDS 65% DECIMATION PYRAMID)
+            var bsmBasketEnergies = ComputeBsmBasketPotentials2D(records, marginal1D);
+            var dan65 = SelectFactorNeutralDeSet(bsmBasketEnergies, 65).OrderBy(x => x).ToList();
+            var sub42 = bsmBasketEnergies.Where(e => dan65.Contains(e.State)).ToList();
+            var dan42 = SelectFactorNeutralDeSet(sub42, 42).OrderBy(x => x).ToList();
+            var sub27 = bsmBasketEnergies.Where(e => dan42.Contains(e.State)).ToList();
+            var dan27 = SelectFactorNeutralDeSet(sub27, 27).OrderBy(x => x).ToList();
+            var sub18 = bsmBasketEnergies.Where(e => dan27.Contains(e.State)).ToList();
+            var dan18 = SelectFactorNeutralDeSet(sub18, 18).OrderBy(x => x).ToList();
+
+            // PHÂN BỔ ĐỀ DỰA TRÊN REGIME ĐỘNG THEO THANG RÚT GỌN 65%
             long c65 = 0;
             long costE65 = 0;
             if (regime.Regime == MarketRegimeType.Coiling || isDrawdownYesterday)
@@ -1778,43 +1844,43 @@ namespace TidsTheory
             }
 
             long remainDeBudget = Math.Max(0, remainForDeAnd3D - costE65);
-            long c50 = (long)Math.Max(1000, Math.Floor((remainDeBudget * 0.45) / (50 * 1000)) * 1000);
-            long costE50 = 50 * c50;
+            long c42 = (long)Math.Max(1000, Math.Floor((remainDeBudget * 0.45) / (42 * 1000)) * 1000);
+            long costE42 = 42 * c42;
 
-            long c25 = 0;
+            long c27 = 0;
             if (regime.Regime == MarketRegimeType.Peak)
             {
-                c25 = (long)Math.Max(1000, Math.Floor((remainDeBudget * 0.25) / (25 * 1000)) * 1000);
+                c27 = (long)Math.Max(1000, Math.Floor((remainDeBudget * 0.25) / (27 * 1000)) * 1000);
             }
             else if (regime.Regime == MarketRegimeType.Convergent)
             {
-                c25 = (long)Math.Max(0, Math.Floor((c50 * 0.6) / 1000) * 1000);
+                c27 = (long)Math.Max(0, Math.Floor((c42 * 0.6) / 1000) * 1000);
             }
             else
             {
-                c25 = 0; // Coiling/Chaos: E25 hiệu suất thấp (16-21%), c25 = 0 để dồn vốn bảo hiểm cho E65
+                c27 = 0; // Coiling/Chaos: E27 hiệu suất thấp, c27 = 0 để dồn vốn bảo hiểm cho E65
             }
-            long costE25 = 25 * c25;
+            long costE27 = 27 * c27;
 
-            long c9 = (long)Math.Max(1000, Math.Floor(c50 / 1000.0) * 1000);
-            long costE9 = 9 * c9;
+            long c18 = (long)Math.Max(1000, Math.Floor(c42 / 1000.0) * 1000);
+            long costE18 = 18 * c18;
 
-            long c4 = (long)Math.Max(1000, Math.Floor(c50 / 1000.0) * 1000);
+            long c4 = (long)Math.Max(1000, Math.Floor(c42 / 1000.0) * 1000);
             long costE4 = 4 * c4;
 
-            long c1 = (long)Math.Max(2000, Math.Floor((c50 * 2) / 1000.0) * 1000);
+            long c1 = (long)Math.Max(2000, Math.Floor((c42 * 2) / 1000.0) * 1000);
             long costE1 = c1;
 
-            long costDe = costE65 + costE50 + costE25 + costE9 + costE4 + costE1;
+            long costDe = costE65 + costE42 + costE27 + costE18 + costE4 + costE1;
 
             long remain3D = remainForDeAnd3D - costDe;
-            while (remain3D < 12000 && (c25 > 0 || c1 > 1000 || c4 > 1000 || c50 > 1000))
+            while (remain3D < 12000 && (c27 > 0 || c1 > 1000 || c4 > 1000 || c42 > 1000))
             {
-                if (c25 > 0) { c25 = 0; costE25 = 0; }
+                if (c27 > 0) { c27 = 0; costE27 = 0; }
                 else if (c1 > 1000) { c1 -= 1000; costE1 -= 1000; }
                 else if (c4 > 1000) { c4 -= 1000; costE4 -= 4000; }
-                else if (c50 > 1000) { c50 -= 1000; costE50 -= 50000; }
-                costDe = costE65 + costE50 + costE25 + costE9 + costE4 + costE1;
+                else if (c42 > 1000) { c42 -= 1000; costE42 -= 42000; }
+                costDe = costE65 + costE42 + costE27 + costE18 + costE4 + costE1;
                 remain3D = remainForDeAnd3D - costDe;
             }
 
@@ -1835,7 +1901,7 @@ namespace TidsTheory
             else if (regime.Regime == MarketRegimeType.Peak)
             {
                 Console.WriteLine(">> [TRẠNG THÁI DANH MỤC: 🟢 THÁI HÒA (PEAK) - ĐẠI THỪA XUẤT TRẬN TẤN CÔNG ĐỀ]");
-                Console.WriteLine("   ! Khẩu quyết Đạo Dịch: Khí thông mượt mà, dồn đòn bẩy cho Đề (Hà Đồ Dàn 25, Đại Diễn 50, Cửu Cung 9).");
+                Console.WriteLine("   ! Khẩu quyết Đạo Dịch: Khí thông mượt mà, dồn đòn bẩy cho Đề (Hà Đồ Dàn 27, Đại Diễn 42, Cửu Cung 18).");
             }
             else if (isDrawdownYesterday)
             {
@@ -1852,19 +1918,19 @@ namespace TidsTheory
             Console.WriteLine(string.Format("   * Song Thủ Lô ({0} - {1}): Cược {2} điểm/con x 2 con = {3:N0} VNĐ (27k/điểm)", btLo.ToString("D2"), stLo.ToString("D2"), stPts, costStLo));
             Console.WriteLine(string.Format("   * Cặp Xiên 2 Song Thủ ({0} - {1}): Cược {2:N0} VNĐ (Tỷ lệ nổ OOS: 7.00%, Z = +1.17)", btLo.ToString("D2"), stLo.ToString("D2"), costXien));
             Console.WriteLine();
-            Console.WriteLine("2. TRỤC 2: NHÂN HÒA (PHÒNG THỦ & HỘ THÂN) - TỨ THỦ LÔ & CỬU CUNG ĐỀ DÀN:");
+            Console.WriteLine("2. TRỤC 2: NHÂN HÒA (PHÒNG THỦ & HỘ THÂN) - TỨ THỦ LÔ & THANG RÚT GỌN 65%:");
             Console.WriteLine(string.Format("   * Lô Lót Tứ Thủ ({0} - {1}): Cược {2} điểm/con x 2 con = {3:N0} VNĐ (27k/điểm)", tuThu3.ToString("D2"), tuThu4.ToString("D2"), lotPts, costLotLo));
             Console.WriteLine(string.Format("     [Hệ 4 số Tứ thủ {0}-{1}-{2}-{3} đạt tỷ lệ nổ >=1 con là 73.33%, Max Streak 16 kỳ]", btLo.ToString("D2"), stLo.ToString("D2"), tuThu3.ToString("D2"), tuThu4.ToString("D2")));
             if (c65 > 0)
-                Console.WriteLine(string.Format("   * Huyền Thiên Giáp (E65):    Đánh {0:N0} đ/số x 65 số = {1:N0} VNĐ (Kích hoạt bảo hiểm nén Coiling)", c65, costE65));
+                Console.WriteLine(string.Format("   * Huyền Thiên Giáp (E65 - Tầng 1): Đánh {0:N0} đ/số x 65 số = {1:N0} VNĐ (Kích hoạt bảo hiểm nén Coiling/Trượt kép)", c65, costE65));
             else
-                Console.WriteLine("     [Huyền Thiên Giáp (E65): Dự phòng kích hoạt khi có trượt kép (Vốn = 0 đ)]");
-            Console.WriteLine(string.Format("   * Đại Diễn Thần Trận (E50):  Đánh thêm {0:N0} đ/số x 50 số = {1:N0} VNĐ (Tổng: {2:N0} đ/số)", c50, costE50, c65 + c50));
-            if (c25 > 0)
-                Console.WriteLine(string.Format("   * Hà Đồ Tự Nhiên (E25):      Cộng thêm {0:N0} đ/số x 25 số = {1:N0} VNĐ (Tổng: {2:N0} đ/số)", c25, costE25, c65 + c50 + c25));
-            Console.WriteLine(string.Format("   * Cửu Cung Lạc Thư (E9):     Cộng thêm {0:N0} đ/số x 9 số = {1:N0} VNĐ (Tổng: {2:N0} đ/số)", c9, costE9, c65 + c50 + c25 + c9));
-            Console.WriteLine(string.Format("   * Tứ Tượng Hội Tụ (E4):      Cộng thêm {0:N0} đ/số x 4 số = {1:N0} VNĐ (Tổng: {2:N0} đ/số)", c4, costE4, c65 + c50 + c25 + c9 + c4));
-            Console.WriteLine(string.Format("   * Thái Cực Nhất Điểm ({0}):   Cộng thêm {1:N0} đ (Tổng đánh: {2:N0} VNĐ)", btDe.ToString("D2"), c1, c65 + c50 + c25 + c9 + c4 + c1));
+                Console.WriteLine("     [Huyền Thiên Giáp (E65 - Tầng 1): Dự phòng kích hoạt khi có trượt kép (Vốn = 0 đ)]");
+            Console.WriteLine(string.Format("   * Đại Diễn Thần Trận (E42 - Tầng 2): Đánh thêm {0:N0} đ/số x 42 số = {1:N0} VNĐ (Tổng: {2:N0} đ/số)", c42, costE42, c65 + c42));
+            if (c27 > 0)
+                Console.WriteLine(string.Format("   * Hà Đồ Tự Nhiên (E27 - Tầng 3):   Cộng thêm {0:N0} đ/số x 27 số = {1:N0} VNĐ (Tổng: {2:N0} đ/số)", c27, costE27, c65 + c42 + c27));
+            Console.WriteLine(string.Format("   * Cửu Cung Thần Trận (E18 - Tầng 4, ROI Cực Đại): Cộng thêm {0:N0} đ/số x 18 số = {1:N0} VNĐ (Tổng: {2:N0} đ/số)", c18, costE18, c65 + c42 + c27 + c18));
+            Console.WriteLine(string.Format("   * Tứ Tượng Hội Tụ (E4):           Cộng thêm {0:N0} đ/số x 4 số = {1:N0} VNĐ (Tổng: {2:N0} đ/số)", c4, costE4, c65 + c42 + c27 + c18 + c4));
+            Console.WriteLine(string.Format("   * Thái Cực Nhất Điểm ({0}):        Cộng thêm {1:N0} đ (Tổng đánh: {2:N0} VNĐ)", btDe.ToString("D2"), c1, c65 + c42 + c27 + c18 + c4 + c1));
             if (regime.Regime == MarketRegimeType.Coiling)
             {
                 var coilingCluster = ExtractBsmCoilingCluster(unifiedEnergies, regime, 10);
@@ -1879,17 +1945,17 @@ namespace TidsTheory
 
             long payout1Lo = stPts * 99000;
             long payout1Lo_80 = stPts * 80000;
-            long payoutDe50 = c50 * 99;
-            long payoutDe9 = (c50 + c25 + c9) * 99;
+            long payoutDe42 = (c65 + c42) * 99;
+            long payoutDe18 = (c65 + c42 + c27 + c18) * 99;
             long payoutBothLo = 2 * stPts * 99000 + (long)(costXien * 16.5);
             long payout3D = costBt3D * 960;
 
-            Console.WriteLine(">> MA TRẬN KỊCH BẢN THU HOÀN VỐN & SINH LỜI DỰ KIẾN:");
+            Console.WriteLine(">> MA TRẬN KỊCH BẢN THU HOÀN VỐN & SINH LỜI DỰ KIẾN (THANG RÚT GỌN 65%):");
             Console.WriteLine(string.Format(" * Kịch bản 1: Nổ 1 con Lô chính ({0} hoặc {1}): Thu {2:N0} VNĐ (tỷ lệ 1:99) [{3:N0} đ tỷ lệ 80k] => Thu hồi {4:F1}% vốn", 
                 btLo.ToString("D2"), stLo.ToString("D2"), payout1Lo, payout1Lo_80, (double)payout1Lo * 100.0 / totalAllocated));
-            Console.WriteLine(string.Format(" * Kịch bản 2: Nổ 1 Lô chính + Ăn Đề Dàn 50:           Thu {0:N0} VNĐ => LÃI THUẦN {1:+0;-0;0} VNĐ", payout1Lo + payoutDe50, (payout1Lo + payoutDe50) - totalAllocated));
+            Console.WriteLine(string.Format(" * Kịch bản 2: Nổ 1 Lô chính + Ăn Đề Dàn 42:           Thu {0:N0} VNĐ => LÃI THUẦN {1:+0;-0;0} VNĐ", payout1Lo + payoutDe42, (payout1Lo + payoutDe42) - totalAllocated));
             Console.WriteLine(string.Format(" * Kịch bản 3: Song Thủ nổ cả cặp + Nổ Xiên 2:         Thu {0:N0} VNĐ => LÃI RÒNG {1:+0;-0;0} VNĐ (ROI +{2:F1}%)", payoutBothLo, payoutBothLo - totalAllocated, (double)(payoutBothLo - totalAllocated) * 100.0 / totalAllocated));
-            Console.WriteLine(string.Format(" * Kịch bản 4: Nổ Đề Dàn Hạt Nhân 9 số:                Thu {0:N0} VNĐ (Thu hồi/Bảo hiểm tiền đề)", payoutDe9));
+            Console.WriteLine(string.Format(" * Kịch bản 4: Nổ Đề Dàn Xung Kích 18 số (ROI Max):     Thu {0:N0} VNĐ (Thu hồi/Bảo hiểm & Lãi lớn)", payoutDe18));
             Console.WriteLine(string.Format(" * Kịch bản 5: Nổ Bạch Thủ 3 Càng ({0}):               Thu {1:N0} VNĐ => ĐỘT BIẾN LỢI NHUẬN", bt3D, payout3D));
             Console.WriteLine("=========================================================================================");
         }
@@ -1952,14 +2018,22 @@ namespace TidsTheory
             // 1 Bộ Xiên 4
             string xien4 = string.Format("{0}-{1}-{2}-{3}", btLo.ToString("D2"), stLo.ToString("D2"), tuThu3.ToString("D2"), tuThu4.ToString("D2"));
 
-            // Đề
+            // Đề - Thang rút gọn 65% (TIDS 65% Decimation Pyramid)
             int btDe = unifiedEnergies[0].State;
             var dan2 = unifiedEnergies.Take(2).Select(x => x.State.ToString("D2")).ToList();
             var dan4 = unifiedEnergies.Take(4).Select(x => x.State.ToString("D2")).ToList();
-            var dan9 = unifiedEnergies.Take(9).Select(x => x.State.ToString("D2")).ToList();
-            var dan25 = SelectFactorNeutralDeSet(bsmBasketEnergies, 25).OrderBy(x => x).Select(x => x.ToString("D2")).ToList();
-            var dan50 = SelectFactorNeutralDeSet(bsmBasketEnergies, 50).OrderBy(x => x).Select(x => x.ToString("D2")).ToList();
-            var dan65 = SelectFactorNeutralDeSet(bsmBasketEnergies, 65).OrderBy(x => x).Select(x => x.ToString("D2")).ToList();
+            var dan65Raw = SelectFactorNeutralDeSet(bsmBasketEnergies, 65).OrderBy(x => x).ToList();
+            var sub42 = bsmBasketEnergies.Where(e => dan65Raw.Contains(e.State)).ToList();
+            var dan42Raw = SelectFactorNeutralDeSet(sub42, 42).OrderBy(x => x).ToList();
+            var sub27 = bsmBasketEnergies.Where(e => dan42Raw.Contains(e.State)).ToList();
+            var dan27Raw = SelectFactorNeutralDeSet(sub27, 27).OrderBy(x => x).ToList();
+            var sub18 = bsmBasketEnergies.Where(e => dan27Raw.Contains(e.State)).ToList();
+            var dan18Raw = SelectFactorNeutralDeSet(sub18, 18).OrderBy(x => x).ToList();
+
+            var dan65 = dan65Raw.Select(x => x.ToString("D2")).ToList();
+            var dan42 = dan42Raw.Select(x => x.ToString("D2")).ToList();
+            var dan27 = dan27Raw.Select(x => x.ToString("D2")).ToList();
+            var dan18 = dan18Raw.Select(x => x.ToString("D2")).ToList();
 
             // 3D
             int[] ganD3 = new int[10];
@@ -2053,7 +2127,7 @@ namespace TidsTheory
 
             long remainForDeAnd3D = budget - costLotto - costXien;
 
-            // PHÂN BỔ ĐỀ DỰA TRÊN REGIME ĐỘNG
+            // PHÂN BỔ ĐỀ DỰA TRÊN REGIME ĐỘNG THEO THANG RÚT GỌN 65%
             long c65 = 0;
             long costE65 = 0;
             if (regime.Regime == MarketRegimeType.Coiling)
@@ -2063,43 +2137,43 @@ namespace TidsTheory
             }
 
             long remainDeBudget = Math.Max(0, remainForDeAnd3D - costE65);
-            long c50 = (long)Math.Max(1000, Math.Floor((remainDeBudget * 0.45) / (50 * 1000)) * 1000);
-            long costE50 = 50 * c50;
+            long c42 = (long)Math.Max(1000, Math.Floor((remainDeBudget * 0.45) / (42 * 1000)) * 1000);
+            long costE42 = 42 * c42;
 
-            long c25 = 0;
+            long c27 = 0;
             if (regime.Regime == MarketRegimeType.Peak)
             {
-                c25 = (long)Math.Max(1000, Math.Floor((remainDeBudget * 0.25) / (25 * 1000)) * 1000);
+                c27 = (long)Math.Max(1000, Math.Floor((remainDeBudget * 0.25) / (27 * 1000)) * 1000);
             }
             else if (regime.Regime == MarketRegimeType.Convergent)
             {
-                c25 = (long)Math.Max(0, Math.Floor((c50 * 0.6) / 1000) * 1000);
+                c27 = (long)Math.Max(0, Math.Floor((c42 * 0.6) / 1000) * 1000);
             }
             else
             {
-                c25 = 0; // Coiling/Chaos: E25 hiệu suất thấp (16-21%), c25 = 0 để dồn vốn bảo hiểm cho E65
+                c27 = 0; // Coiling/Chaos: E27 hiệu suất thấp, c27 = 0 để dồn vốn bảo hiểm cho E65
             }
-            long costE25 = 25 * c25;
+            long costE27 = 27 * c27;
 
-            long c9 = (long)Math.Max(1000, Math.Floor(c50 / 1000.0) * 1000);
-            long costE9 = 9 * c9;
+            long c18 = (long)Math.Max(1000, Math.Floor(c42 / 1000.0) * 1000);
+            long costE18 = 18 * c18;
 
-            long c4 = (long)Math.Max(1000, Math.Floor(c50 / 1000.0) * 1000);
+            long c4 = (long)Math.Max(1000, Math.Floor(c42 / 1000.0) * 1000);
             long costE4 = 4 * c4;
 
-            long c1 = (long)Math.Max(2000, Math.Floor((c50 * 2) / 1000.0) * 1000);
+            long c1 = (long)Math.Max(2000, Math.Floor((c42 * 2) / 1000.0) * 1000);
             long costE1 = c1;
 
-            long costDe = costE65 + costE50 + costE25 + costE9 + costE4 + costE1;
+            long costDe = costE65 + costE42 + costE27 + costE18 + costE4 + costE1;
 
             long remain3D = remainForDeAnd3D - costDe;
-            while (remain3D < 12000 && (c25 > 0 || c1 > 1000 || c4 > 1000 || c50 > 1000))
+            while (remain3D < 12000 && (c27 > 0 || c1 > 1000 || c4 > 1000 || c42 > 1000))
             {
-                if (c25 > 0) { c25 = 0; costE25 = 0; }
+                if (c27 > 0) { c27 = 0; costE27 = 0; }
                 else if (c1 > 1000) { c1 -= 1000; costE1 -= 1000; }
                 else if (c4 > 1000) { c4 -= 1000; costE4 -= 4000; }
-                else if (c50 > 1000) { c50 -= 1000; costE50 -= 50000; }
-                costDe = costE65 + costE50 + costE25 + costE9 + costE4 + costE1;
+                else if (c42 > 1000) { c42 -= 1000; costE42 -= 42000; }
+                costDe = costE65 + costE42 + costE27 + costE18 + costE4 + costE1;
                 remain3D = remainForDeAnd3D - costDe;
             }
 
@@ -2138,10 +2212,10 @@ namespace TidsTheory
             // 8. Bộ 1 Xiên 4 Tứ Thủ
             rows.Add(new SheetRow { Stt = idx++, Axis = "Trục 3: Thiên Thời (Đột biến)", Category = "Bộ 1 Xiên 4 Tứ Thủ", Quantity = 1, NumberList = "(" + xien4 + ")", Unit = "VNĐ/vé", BetPerUnit = 0, TotalBet = 0, Note = "Xiên 4 dự phòng (Vốn = 0)" });
 
-            // 9. Đại Diễn Thần Trận (E50)
-            rows.Add(new SheetRow { Stt = idx++, Axis = "Trục 2: Nhân Hòa (Hộ thân)", Category = "Đại Diễn Thần Trận (E50)", Quantity = 50, NumberList = string.Join(", ", dan50), Unit = "VNĐ/số", BetPerUnit = c50, TotalBet = costE50, Note = string.Format("Lớp vỏ 50 số (Tổng cược: {0:N0} đ/số)", c65 + c50) });
+            // 9. Đại Diễn Thần Trận (E42 - Thang 65% Cấp 2)
+            rows.Add(new SheetRow { Stt = idx++, Axis = "Trục 2: Nhân Hòa (Hộ thân)", Category = "Đại Diễn Thần Trận (E42)", Quantity = 42, NumberList = string.Join(", ", dan42), Unit = "VNĐ/số", BetPerUnit = c42, TotalBet = costE42, Note = string.Format("Lớp vỏ 42 số - Thang 65% (Tổng cược: {0:N0} đ/số)", c65 + c42) });
 
-            // 10. Huyền Thiên Giáp (E65)
+            // 10. Huyền Thiên Giáp (E65 - Thang 65% Cấp 1)
             rows.Add(new SheetRow { Stt = idx++, Axis = "Trục 2: Nhân Hòa (Hộ thân)", Category = "Huyền Thiên Giáp (E65)", Quantity = 65, NumberList = string.Join(", ", dan65), Unit = "VNĐ/số", BetPerUnit = c65, TotalBet = costE65, Note = (c65 > 0) ? string.Format("Kích hoạt bảo hiểm nén thế năng PHỤC KHÍ ({0:N0} đ/số)", c65) : "Dự phòng kích hoạt khi có trượt kép (Vốn = 0)" });
 
             // 11. Quy Nguyên Trận (10 số nén vĩ mô)
@@ -2158,17 +2232,17 @@ namespace TidsTheory
                 Note = (regime.Regime == MarketRegimeType.Coiling) ? string.Format("10 số đáy thế năng cụm nén {0} (Vốn = 0 đ - Tùy chọn lót)", regime.CompressedFactor) : "Dự phòng săn điểm nổ vĩ mô (Vốn = 0)" 
             });
 
-            // 12. Hà Đồ Tự Nhiên (E25)
-            rows.Add(new SheetRow { Stt = idx++, Axis = "Trục 2: Nhân Hòa (Hộ thân)", Category = "Hà Đồ Tự Nhiên (E25)", Quantity = 25, NumberList = string.Join(", ", dan25), Unit = "VNĐ/số", BetPerUnit = c25, TotalBet = costE25, Note = string.Format("Cược thêm cho 25 số lõi (Tổng cược: {0:N0} đ/số)", c65 + c50 + c25) });
+            // 12. Hà Đồ Tự Nhiên (E27 - Thang 65% Cấp 3)
+            rows.Add(new SheetRow { Stt = idx++, Axis = "Trục 2: Nhân Hòa (Hộ thân)", Category = "Hà Đồ Tự Nhiên (E27)", Quantity = 27, NumberList = string.Join(", ", dan27), Unit = "VNĐ/số", BetPerUnit = c27, TotalBet = costE27, Note = string.Format("Cược thêm cho 27 số lõi (Tổng cược: {0:N0} đ/số)", c65 + c42 + c27) });
 
-            // 13. Cửu Cung Lạc Thư (E9)
-            rows.Add(new SheetRow { Stt = idx++, Axis = "Trục 2: Nhân Hòa (Hộ thân)", Category = "Cửu Cung Lạc Thư (E9)", Quantity = 9, NumberList = string.Join(", ", dan9), Unit = "VNĐ/số", BetPerUnit = c9, TotalBet = costE9, Note = string.Format("Cược thêm cho 9 số hạt nhân (Tổng cược: {0:N0} đ/số)", c65 + c50 + c25 + c9) });
+            // 13. Cửu Cung Thần Trận (E18 - Thang 65% Cấp 4, ROI Cực Đại +22.8%)
+            rows.Add(new SheetRow { Stt = idx++, Axis = "Trục 2: Nhân Hòa (Hộ thân)", Category = "Cửu Cung Thần Trận (E18)", Quantity = 18, NumberList = string.Join(", ", dan18), Unit = "VNĐ/số", BetPerUnit = c18, TotalBet = costE18, Note = string.Format("Cược thêm cho 18 số xung kích ROI Max (Tổng cược: {0:N0} đ/số)", c65 + c42 + c27 + c18) });
 
             // 14. Tứ Tượng Hội Tụ (E4)
-            rows.Add(new SheetRow { Stt = idx++, Axis = "Trục 2: Nhân Hòa (Hộ thân)", Category = "Tứ Tượng Hội Tụ (E4)", Quantity = 4, NumberList = string.Join(", ", dan4), Unit = "VNĐ/số", BetPerUnit = c4, TotalBet = costE4, Note = string.Format("Cược thêm cho 4 số tứ thủ (Tổng cược: {0:N0} đ/số)", c65 + c50 + c25 + c9 + c4) });
+            rows.Add(new SheetRow { Stt = idx++, Axis = "Trục 2: Nhân Hòa (Hộ thân)", Category = "Tứ Tượng Hội Tụ (E4)", Quantity = 4, NumberList = string.Join(", ", dan4), Unit = "VNĐ/số", BetPerUnit = c4, TotalBet = costE4, Note = string.Format("Cược thêm cho 4 số tứ thủ (Tổng cược: {0:N0} đ/số)", c65 + c42 + c27 + c18 + c4) });
 
             // 15. Thái Cực Nhất Điểm (E1)
-            rows.Add(new SheetRow { Stt = idx++, Axis = "Trục 2: Nhân Hòa (Hộ thân)", Category = "Thái Cực Nhất Điểm (E1)", Quantity = 1, NumberList = btDe.ToString("D2"), Unit = "VNĐ/số", BetPerUnit = c1, TotalBet = costE1, Note = string.Format("Cược thêm cho Bạch thủ đề (Tổng cược: {0:N0} đ)", c65 + c50 + c25 + c9 + c4 + c1) });
+            rows.Add(new SheetRow { Stt = idx++, Axis = "Trục 2: Nhân Hòa (Hộ thân)", Category = "Thái Cực Nhất Điểm (E1)", Quantity = 1, NumberList = btDe.ToString("D2"), Unit = "VNĐ/số", BetPerUnit = c1, TotalBet = costE1, Note = string.Format("Cược thêm cho Bạch thủ đề (Tổng cược: {0:N0} đ)", c65 + c42 + c27 + c18 + c4 + c1) });
 
             // 16. Lưỡng Nghi Đồng Quy (E2)
             rows.Add(new SheetRow { Stt = idx++, Axis = "Trục 2: Nhân Hòa (Hộ thân)", Category = "Lưỡng Nghi Đồng Quy (E2)", Quantity = 2, NumberList = string.Join(", ", dan2), Unit = "VNĐ/số", BetPerUnit = 0, TotalBet = 0, Note = "Đã nằm trong Tứ thủ E4 (Vốn = 0)" });
@@ -3048,6 +3122,156 @@ namespace TidsTheory
             catch { }
         }
 
+        public class DecimationConfig
+        {
+            public string Name;
+            public double Ratio;
+            public int[] Sizes;
+            public int[] Hits;
+            public int[] RetainedHits;
+        }
+
+        public static void RunDecimationRatioComparison(List<LotteryRecord> records, int testDays = 300)
+        {
+            int n = records.Count;
+            if (testDays <= 0 || testDays > 3000) testDays = 300;
+            int startIdx = n - testDays;
+
+            Console.WriteLine("=========================================================================================");
+            Console.WriteLine("    KIỂM THỬ ĐẦY ĐỦ TÍNH NĂNG TIDS ENGINE: SO SÁNH CÁC TỶ LỆ RÚT GỌN ĐỆ QUY");
+            Console.WriteLine("    Khoảng thời gian OOS: từ {0} đến {1} ({2} kỳ mở thưởng)", records[startIdx].Date, records[n - 1].Date, testDays);
+            Console.WriteLine("=========================================================================================\n");
+
+            var configs = new List<DecimationConfig>
+            {
+                new DecimationConfig { Name = "Tỷ lệ 70% (Giảm 30%)", Ratio = 0.70, Sizes = new int[] { 70, 49, 34, 24, 17, 12, 8, 6, 4, 3, 2, 1 } },
+                new DecimationConfig { Name = "Tỷ lệ 65% (Giảm 35%)", Ratio = 0.65, Sizes = new int[] { 65, 42, 27, 18, 12, 8, 5, 3, 2, 1 } },
+                new DecimationConfig { Name = "Tỷ lệ Vàng 61.8% (Fibonacci)", Ratio = 0.618, Sizes = new int[] { 62, 38, 24, 15, 9, 6, 4, 2, 1 } },
+                new DecimationConfig { Name = "Tỷ lệ 60% (Giảm 40%)", Ratio = 0.60, Sizes = new int[] { 60, 36, 22, 13, 8, 5, 3, 2, 1 } },
+                new DecimationConfig { Name = "Tỷ lệ 50% (Phân đôi Bisection)", Ratio = 0.50, Sizes = new int[] { 50, 25, 12, 6, 3, 1 } }
+            };
+
+            foreach (var cfg in configs)
+            {
+                cfg.Hits = new int[cfg.Sizes.Length];
+                cfg.RetainedHits = new int[cfg.Sizes.Length];
+            }
+
+            long reward2D = 99000;
+
+            for (int t = startIdx; t < n; t++)
+            {
+                var subList = records.Take(t).ToList();
+                var actual = records[t];
+                int actualDe = actual.De;
+
+                // 100% Full Engine: Compute 1D Marginals + Full BSM Basket Energies
+                var marginal1D = Compute1DMarginals(subList);
+                var bsmBasket = ComputeBsmBasketPotentials2D(subList, marginal1D);
+
+                foreach (var cfg in configs)
+                {
+                    var currentPool = new List<StateEnergy>(bsmBasket);
+                    bool lastLevelHit = false;
+
+                    for (int lvl = 0; lvl < cfg.Sizes.Length; lvl++)
+                    {
+                        int targetSize = cfg.Sizes[lvl];
+
+                        // Tái cân bằng Factor-Neutral trên tập con hiện hành
+                        var nextDan = SelectFactorNeutralDeSet(currentPool, targetSize);
+                        bool isHit = nextDan.Contains(actualDe);
+
+                        if (isHit)
+                        {
+                            cfg.Hits[lvl]++;
+                            if (lvl == 0 || lastLevelHit) cfg.RetainedHits[lvl]++;
+                        }
+
+                        lastLevelHit = isHit;
+                        // Co cụm currentPool lại chỉ còn các số thuộc nextDan
+                        currentPool = currentPool.Where(e => nextDan.Contains(e.State)).ToList();
+                    }
+                }
+            }
+
+            // BÁO CÁO KẾT QUẢ CHO TỪNG TỶ LỆ
+            foreach (var cfg in configs)
+            {
+                Console.WriteLine("-----------------------------------------------------------------------------------------");
+                Console.WriteLine(">> MÔ HÌNH: {0} (Quy mô: {1})", cfg.Name.ToUpper(), string.Join(" -> ", cfg.Sizes.Select(s => s + "s")));
+                Console.WriteLine("-----------------------------------------------------------------------------------------");
+                Console.WriteLine("Tầng | Quy mô | Số kỳ trúng | Tỷ lệ trúng | Ngẫu nhiên | Lợi thế (+EV) | ROI %     | Giữ chân tầng trước");
+                Console.WriteLine("-----------------------------------------------------------------------------------------");
+
+                for (int lvl = 0; lvl < cfg.Sizes.Length; lvl++)
+                {
+                    int sz = cfg.Sizes[lvl];
+                    int hits = cfg.Hits[lvl];
+                    double actualRate = (double)hits / testDays * 100.0;
+                    double randRate = (double)sz;
+                    double ev = actualRate - randRate;
+
+                    long cost = (long)sz * 1000 * testDays;
+                    long win = (long)hits * reward2D;
+                    double roi = ((double)(win - cost) / cost) * 100.0;
+                    string roiStr = roi >= 0 ? string.Format("+{0:F1}%", roi) : string.Format("{0:F1}%", roi);
+
+                    string retainStr = "-";
+                    if (lvl > 0)
+                    {
+                        int prevHits = cfg.Hits[lvl - 1];
+                        double retainRate = prevHits > 0 ? (double)cfg.RetainedHits[lvl] / prevHits * 100.0 : 0.0;
+                        double expectedRetain = (double)sz / cfg.Sizes[lvl - 1] * 100.0;
+                        retainStr = string.Format("{0:F1}% (Lý thuyết {1:F1}%)", retainRate, expectedRetain);
+                    }
+
+                    string evStr = ev >= 0 ? string.Format("+{0:F2}%", ev) : string.Format("{0:F2}%", ev);
+                    Console.WriteLine("Lvl {0,2} | {1,2} số  | {2,4} / {3,-3} | {4,6:F2}%   | {5,5:F2}%    | {6,8}      | {7,7}   | {8}",
+                        lvl + 1, sz, hits, testDays, actualRate, randRate, evStr, roiStr, retainStr);
+                }
+                Console.WriteLine();
+            }
+
+            // BẢNG SO SÁNH TỔNG KẾT TOÀN DIỆN
+            Console.WriteLine("=========================================================================================================================");
+            Console.WriteLine("   BẢNG ĐỐI SOÁT TỔNG HỢP: TỶ LỆ NÀO TỐI ƯU NHẤT CHO CHIẾN LƯỢC RÚT GỌN ĐA TẦNG?");
+            Console.WriteLine("=========================================================================================================================");
+            Console.WriteLine("Mô hình rút gọn               | Tầng 1 (Gốc) | Dàn 25-27s  | Dàn 15-18s  | Dàn 8-9s    | Tứ thủ (4s) | Bạch thủ (1s)");
+            Console.WriteLine("-------------------------------------------------------------------------------------------------------------------------");
+            foreach (var cfg in configs)
+            {
+                string l1 = string.Format("{0:F1}%", (double)cfg.Hits[0] / testDays * 100.0);
+                
+                // Tìm dàn xấp xỉ 25-27s
+                int idx27 = -1;
+                for (int i = 0; i < cfg.Sizes.Length; i++) if (cfg.Sizes[i] >= 22 && cfg.Sizes[i] <= 27) { idx27 = i; break; }
+                string l27 = idx27 >= 0 ? string.Format("{0}s: {1:F1}%", cfg.Sizes[idx27], (double)cfg.Hits[idx27] / testDays * 100.0) : "N/A";
+
+                // Tìm dàn xấp xỉ 15-18s
+                int idx18 = -1;
+                for (int i = 0; i < cfg.Sizes.Length; i++) if (cfg.Sizes[i] >= 15 && cfg.Sizes[i] <= 18) { idx18 = i; break; }
+                string l18 = idx18 >= 0 ? string.Format("{0}s: {1:F1}%", cfg.Sizes[idx18], (double)cfg.Hits[idx18] / testDays * 100.0) : "N/A";
+
+                // Tìm dàn xấp xỉ 8-9s
+                int idx8 = -1;
+                for (int i = 0; i < cfg.Sizes.Length; i++) if (cfg.Sizes[i] >= 8 && cfg.Sizes[i] <= 9) { idx8 = i; break; }
+                string l8 = idx8 >= 0 ? string.Format("{0}s: {1:F1}%", cfg.Sizes[idx8], (double)cfg.Hits[idx8] / testDays * 100.0) : "N/A";
+
+                // Tứ thủ (4s)
+                int idx4 = Array.IndexOf(cfg.Sizes, 4);
+                string l4 = idx4 >= 0 ? string.Format("{0:F1}%", (double)cfg.Hits[idx4] / testDays * 100.0) : "N/A";
+
+                // Bạch thủ (1s)
+                int idx1 = Array.IndexOf(cfg.Sizes, 1);
+                string l1s = idx1 >= 0 ? string.Format("{0} kỳ ({1:F1}%)", cfg.Hits[idx1], (double)cfg.Hits[idx1] / testDays * 100.0) : "N/A";
+
+                Console.WriteLine("{0,-29} | {1,-12} | {2,-11} | {3,-11} | {4,-11} | {5,-11} | {6}",
+                    cfg.Name, l1, l27, l18, l8, l4, l1s);
+            }
+            Console.WriteLine("=========================================================================================================================");
+        }
+
         public static void RunQciAudit(List<LotteryRecord> records, int testDays = 100)
         {
             int n = records.Count;
@@ -3173,6 +3397,209 @@ namespace TidsTheory
             Console.WriteLine(string.Format("🔴 VÙNG ĐỎ (<60%)   | {0,2} ngày | {1,5:F1}% ({2,2}/{3,2} kỳ) | {4,5:F1}% ({5,2}/{6,2} kỳ) | {7,5:F1}% ({8,2}/{9,2} kỳ)   | {10,5:F1}% ({11,2}/{12,2} kỳ)   | {13,5:F1}% ({14,2}/{15,2} kỳ)",
                 redCount, rPctE50, redWinE50, redCount, rPctBt, redWinBtLo, redCount, rPctSt, redWinStLo, redCount, rPctBoth, redWinBothSt, redCount, rPctTt, redWinTtLo, redCount));
             Console.WriteLine("-------------------------------------------------------------------------------------------------------------------------");
+        }
+
+        public static void RunQciDeLadderAudit(List<LotteryRecord> records, int testDays = 100)
+        {
+            int n = records.Count;
+            if (testDays <= 0 || testDays > 3000) testDays = 100;
+            int startIdx = n - testDays;
+
+            Console.WriteLine("=========================================================================================================================");
+            Console.WriteLine(string.Format("   BẢNG KIỂM THỬ ĐỐI SOÁT CHIẾN LƯỢC QCI ADAPTIVE & KIM TỰ THÁP DÀN ĐỀ 65% ({0} KỲ GẦN NHẤT)", testDays));
+            Console.WriteLine(string.Format("   Khoảng thời gian: từ kỳ #{0} ({1}, {2}) đến kỳ #{3} ({4}, {5})",
+                records[startIdx].Id, records[startIdx].Date, records[startIdx].DayOfWeek, records[n - 1].Id, records[n - 1].Date, records[n - 1].DayOfWeek));
+            Console.WriteLine("=========================================================================================================================");
+            Console.WriteLine(string.Format(" {0,-3} | {1,-5} | {2,-10} | {3,-8} | {4,-6} | {5,-7} | {6,-5} | {7,-5} | {8,-5} | {9,-5} | {10,-5} | {11,-4} | {12,-4} | {13}",
+                "STT", "Kỳ", "Ngày", "Thứ", "QCI", "Vùng", "Đề 2D", "E65", "E42", "E27", "E18", "E4", "E1", "Tầng Trúng Sâu Nhất"));
+            Console.WriteLine("-------------------------------------------------------------------------------------------------------------------------");
+
+            int win65 = 0, win42 = 0, win27 = 0, win18 = 0, win4 = 0, win1 = 0;
+            int curStreak65 = 0, maxStreak65 = 0, curLoss65 = 0, maxLoss65 = 0;
+            int curStreak42 = 0, maxStreak42 = 0, curLoss42 = 0, maxLoss42 = 0;
+            int curStreak27 = 0, maxStreak27 = 0, curLoss27 = 0, maxLoss27 = 0;
+            int curStreak18 = 0, maxStreak18 = 0, curLoss18 = 0, maxLoss18 = 0;
+
+            int greenCount = 0, yellowCount = 0, redCount = 0;
+            int gWin65 = 0, gWin42 = 0, gWin27 = 0, gWin18 = 0, gWin4 = 0, gWin1 = 0;
+            int yWin65 = 0, yWin42 = 0, yWin27 = 0, yWin18 = 0, yWin4 = 0, yWin1 = 0;
+            int rWin65 = 0, rWin42 = 0, rWin27 = 0, rWin18 = 0, rWin4 = 0, rWin1 = 0;
+
+            for (int t = startIdx; t < n; t++)
+            {
+                int stt = t - startIdx + 1;
+                var subList = records.Take(t).ToList();
+                var actual = records[t];
+                int actualDe = actual.De;
+
+                var marginal1D = Compute1DMarginals(subList);
+                var lotto1D = Compute1DLottoMarginals(subList);
+                double[,] W;
+                var lottoEnergies = ComputeUnifiedLottoPotentials(subList, lotto1D, out W);
+                var unifiedEnergies = ComputeUnifiedPotentials2D(subList, marginal1D);
+                var bsmBasket = ComputeBsmBasketPotentials2D(subList, marginal1D);
+
+                var qci = ComputeQCI(subList, lottoEnergies, unifiedEnergies, lotto1D, marginal1D);
+
+                var dan65 = SelectFactorNeutralDeSet(bsmBasket, 65);
+                var sub42 = bsmBasket.Where(e => dan65.Contains(e.State)).ToList();
+                var dan42 = SelectFactorNeutralDeSet(sub42, 42);
+                var sub27 = bsmBasket.Where(e => dan42.Contains(e.State)).ToList();
+                var dan27 = SelectFactorNeutralDeSet(sub27, 27);
+                var sub18 = bsmBasket.Where(e => dan27.Contains(e.State)).ToList();
+                var dan18 = SelectFactorNeutralDeSet(sub18, 18);
+                var dan4 = unifiedEnergies.Take(4).Select(x => x.State).ToList();
+                int btDe = unifiedEnergies[0].State;
+
+                bool hit65 = dan65.Contains(actualDe);
+                bool hit42 = dan42.Contains(actualDe);
+                bool hit27 = dan27.Contains(actualDe);
+                bool hit18 = dan18.Contains(actualDe);
+                bool hit4 = dan4.Contains(actualDe);
+                bool hit1 = (actualDe == btDe);
+
+                if (hit65) { win65++; curStreak65++; curLoss65 = 0; if (curStreak65 > maxStreak65) maxStreak65 = curStreak65; }
+                else { curLoss65++; curStreak65 = 0; if (curLoss65 > maxLoss65) maxLoss65 = curLoss65; }
+
+                if (hit42) { win42++; curStreak42++; curLoss42 = 0; if (curStreak42 > maxStreak42) maxStreak42 = curStreak42; }
+                else { curLoss42++; curStreak42 = 0; if (curLoss42 > maxLoss42) maxLoss42 = curLoss42; }
+
+                if (hit27) { win27++; curStreak27++; curLoss27 = 0; if (curStreak27 > maxStreak27) maxStreak27 = curStreak27; }
+                else { curLoss27++; curStreak27 = 0; if (curLoss27 > maxLoss27) maxLoss27 = curLoss27; }
+
+                if (hit18) { win18++; curStreak18++; curLoss18 = 0; if (curStreak18 > maxStreak18) maxStreak18 = curStreak18; }
+                else { curLoss18++; curStreak18 = 0; if (curLoss18 > maxLoss18) maxLoss18 = curLoss18; }
+
+                if (hit4) win4++;
+                if (hit1) win1++;
+
+                string deepestHit = "GÃY (Ngoài 65s)";
+                if (hit1) deepestHit = "🎯 ĂN BẠCH THỦ (E1)";
+                else if (hit4) deepestHit = "⭐ ĂN TỨ THỦ (E4)";
+                else if (hit18) deepestHit = "⚡ ĂN CỬU CUNG 18s (ROI MAX)";
+                else if (hit27) deepestHit = "✨ ĂN HÀ ĐỒ 27s";
+                else if (hit42) deepestHit = "✔ Ăn Dàn Vỏ 42s";
+                else if (hit65) deepestHit = "🛡 Ăn Giáp E65 (Bảo hiểm)";
+
+                string zoneSymbol = (qci.Zone == "XANH") ? "🟢 XANH" : ((qci.Zone == "VÀNG") ? "🟡 VÀNG" : "🔴 ĐỎ ");
+
+                if (qci.Zone == "XANH")
+                {
+                    greenCount++;
+                    if (hit65) gWin65++;
+                    if (hit42) gWin42++;
+                    if (hit27) gWin27++;
+                    if (hit18) gWin18++;
+                    if (hit4) gWin4++;
+                    if (hit1) gWin1++;
+                }
+                else if (qci.Zone == "VÀNG")
+                {
+                    yellowCount++;
+                    if (hit65) yWin65++;
+                    if (hit42) yWin42++;
+                    if (hit27) yWin27++;
+                    if (hit18) yWin18++;
+                    if (hit4) yWin4++;
+                    if (hit1) yWin1++;
+                }
+                else
+                {
+                    redCount++;
+                    if (hit65) rWin65++;
+                    if (hit42) rWin42++;
+                    if (hit27) rWin27++;
+                    if (hit18) rWin18++;
+                    if (hit4) rWin4++;
+                    if (hit1) rWin1++;
+                }
+
+                Console.WriteLine(string.Format(" {0,3} | #{1,-4} | {2,-10} | {3,-8} | {4,5:F1}% | {5,-7} | {6,-5} | {7,-5} | {8,-5} | {9,-5} | {10,-5} | {11,-4} | {12,-4} | {13}",
+                    stt, actual.Id, actual.Date, actual.DayOfWeek, qci.Score, zoneSymbol, actualDe.ToString("D2"),
+                    hit65 ? " ĂN " : " -  ",
+                    hit42 ? " ĂN " : " -  ",
+                    hit27 ? " ĂN " : " -  ",
+                    hit18 ? " ĂN " : " -  ",
+                    hit4 ? " ĂN" : " - ",
+                    hit1 ? " ĂN" : " - ",
+                    deepestHit));
+            }
+
+            Console.WriteLine("-------------------------------------------------------------------------------------------------------------------------");
+            Console.WriteLine("1. BẢNG TỔNG HỢP HIỆU NĂNG CÁC DÀN ĐỀ THEO THANG RÚT GỌN 65% (100 KỲ GẦN NHẤT):");
+            Console.WriteLine("-------------------------------------------------------------------------------------------------------------------------");
+            Console.WriteLine(string.Format(" {0,-26} | {1,-10} | {2,-11} | {3,-12} | {4,-12} | {5,-12} | {6}",
+                "Dàn Đề Thang 65%", "Quy Mô", "Số Kỳ Trúng", "Tỷ Lệ Trúng", "Max Win (Ăn)", "Max Drawdown", "ROI (Tỷ lệ 1:99)"));
+            Console.WriteLine("-------------------------------------------------------------------------------------------------------------------------");
+
+            double p65 = win65 * 100.0 / testDays;
+            double p42 = win42 * 100.0 / testDays;
+            double p27 = win27 * 100.0 / testDays;
+            double p18 = win18 * 100.0 / testDays;
+            double p4 = win4 * 100.0 / testDays;
+            double p1 = win1 * 100.0 / testDays;
+
+            double roi65 = (win65 * 99.0 - testDays * 65.0) / (testDays * 65.0) * 100.0;
+            double roi42 = (win42 * 99.0 - testDays * 42.0) / (testDays * 42.0) * 100.0;
+            double roi27 = (win27 * 99.0 - testDays * 27.0) / (testDays * 27.0) * 100.0;
+            double roi18 = (win18 * 99.0 - testDays * 18.0) / (testDays * 18.0) * 100.0;
+            double roi4 = (win4 * 99.0 - testDays * 4.0) / (testDays * 4.0) * 100.0;
+            double roi1 = (win1 * 99.0 - testDays * 1.0) / (testDays * 1.0) * 100.0;
+
+            string sRoi65 = (roi65 >= 0 ? "+" : "") + roi65.ToString("F1") + "%";
+            string sRoi42 = (roi42 >= 0 ? "+" : "") + roi42.ToString("F1") + "%";
+            string sRoi27 = (roi27 >= 0 ? "+" : "") + roi27.ToString("F1") + "%";
+            string sRoi18 = (roi18 >= 0 ? "+" : "") + roi18.ToString("F1") + "%";
+            string sRoi4 = (roi4 >= 0 ? "+" : "") + roi4.ToString("F1") + "%";
+            string sRoi1 = (roi1 >= 0 ? "+" : "") + roi1.ToString("F1") + "%";
+
+            Console.WriteLine(string.Format(" {0,-26} | {1,-10} | {2,4}/{3,-4} kỳ | {4,9:F1}% | {5,2} kỳ liên tiếp | {6,2} kỳ trượt | {7,7} (Lá chắn bảo hiểm)",
+                "Tầng 1: Huyền Thiên Giáp (E65)", "65 số", win65, testDays, p65, maxStreak65, maxLoss65, sRoi65));
+            Console.WriteLine(string.Format(" {0,-26} | {1,-10} | {2,4}/{3,-4} kỳ | {4,9:F1}% | {5,2} kỳ liên tiếp | {6,2} kỳ trượt | {7,7} (Tiết kiệm 8 số)",
+                "Tầng 2: Đại Diễn Thần Trận (E42)", "42 số", win42, testDays, p42, maxStreak42, maxLoss42, sRoi42));
+            Console.WriteLine(string.Format(" {0,-26} | {1,-10} | {2,4}/{3,-4} kỳ | {4,9:F1}% | {5,2} kỳ liên tiếp | {6,2} kỳ trượt | {7,7}",
+                "Tầng 3: Hà Đồ Tự Nhiên (E27)", "27 số", win27, testDays, p27, maxStreak27, maxLoss27, sRoi27));
+            Console.WriteLine(string.Format(" {0,-26} | {1,-10} | {2,4}/{3,-4} kỳ | {4,9:F1}% | {5,2} kỳ liên tiếp | {6,2} kỳ trượt | {7,7} ★ ROI ĐỈNH CAO",
+                "Tầng 4: Cửu Cung Thần Trận (E18)", "18 số", win18, testDays, p18, maxStreak18, maxLoss18, sRoi18));
+            Console.WriteLine(string.Format(" {0,-26} | {1,-10} | {2,4}/{3,-4} kỳ | {4,9:F1}% | {5,2} kỳ liên tiếp | {6,2} kỳ trượt | {7,7}",
+                "Tầng 5: Tứ Tượng Hội Tụ (E4)", "4 số", win4, testDays, p4, "-", "-", sRoi4));
+            Console.WriteLine(string.Format(" {0,-26} | {1,-10} | {2,4}/{3,-4} kỳ | {4,9:F1}% | {5,2} kỳ liên tiếp | {6,2} kỳ trượt | {7,7} (Bạch thủ đáy V_eff)",
+                "Tầng 6: Thái Cực Nhất Điểm (E1)", "1 số", win1, testDays, p1, "-", "-", sRoi1));
+
+            Console.WriteLine("-------------------------------------------------------------------------------------------------------------------------");
+            Console.WriteLine("2. MA TRẬN TỶ LỆ TRÚNG THEO 3 VÙNG THỜI KHÍ QCI (QUANTUM COHERENCE INDEX):");
+            Console.WriteLine("-------------------------------------------------------------------------------------------------------------------------");
+            Console.WriteLine("Phân Loại Vùng QCI | Số Ngày  | Dàn E65 (65s)   | Dàn E42 (42s)   | Dàn E27 (27s)   | Dàn E18 (18s)   | Tứ Thủ (4s) | Bạch Thủ");
+            Console.WriteLine("-------------------------------------------------------------------------------------------------------------------------");
+
+            double gp65 = greenCount > 0 ? gWin65 * 100.0 / greenCount : 0;
+            double gp42 = greenCount > 0 ? gWin42 * 100.0 / greenCount : 0;
+            double gp27 = greenCount > 0 ? gWin27 * 100.0 / greenCount : 0;
+            double gp18 = greenCount > 0 ? gWin18 * 100.0 / greenCount : 0;
+            double gp4 = greenCount > 0 ? gWin4 * 100.0 / greenCount : 0;
+            double gp1 = greenCount > 0 ? gWin1 * 100.0 / greenCount : 0;
+
+            double yp65 = yellowCount > 0 ? yWin65 * 100.0 / yellowCount : 0;
+            double yp42 = yellowCount > 0 ? yWin42 * 100.0 / yellowCount : 0;
+            double yp27 = yellowCount > 0 ? yWin27 * 100.0 / yellowCount : 0;
+            double yp18 = yellowCount > 0 ? yWin18 * 100.0 / yellowCount : 0;
+            double yp4 = yellowCount > 0 ? yWin4 * 100.0 / yellowCount : 0;
+            double yp1 = yellowCount > 0 ? yWin1 * 100.0 / yellowCount : 0;
+
+            double rp65 = redCount > 0 ? rWin65 * 100.0 / redCount : 0;
+            double rp42 = redCount > 0 ? rWin42 * 100.0 / redCount : 0;
+            double rp27 = redCount > 0 ? rWin27 * 100.0 / redCount : 0;
+            double rp18 = redCount > 0 ? rWin18 * 100.0 / redCount : 0;
+            double rp4 = redCount > 0 ? rWin4 * 100.0 / redCount : 0;
+            double rp1 = redCount > 0 ? rWin1 * 100.0 / redCount : 0;
+
+            Console.WriteLine(string.Format("🟢 VÙNG XANH (>=75%)| {0,2} ngày  | {1,5:F1}% ({2,2}/{3,2}) | {4,5:F1}% ({5,2}/{6,2}) | {7,5:F1}% ({8,2}/{9,2}) | {10,5:F1}% ({11,2}/{12,2}) | {13,4:F1}% ({14}) | {15,4:F1}% ({16})",
+                greenCount, gp65, gWin65, greenCount, gp42, gWin42, greenCount, gp27, gWin27, greenCount, gp18, gWin18, greenCount, gp4, gWin4, gp1, gWin1));
+            Console.WriteLine(string.Format("🟡 VÙNG VÀNG (60-74%)| {0,2} ngày  | {1,5:F1}% ({2,2}/{3,2}) | {4,5:F1}% ({5,2}/{6,2}) | {7,5:F1}% ({8,2}/{9,2}) | {10,5:F1}% ({11,2}/{12,2}) | {13,4:F1}% ({14}) | {15,4:F1}% ({16})",
+                yellowCount, yp65, yWin65, yellowCount, yp42, yWin42, yellowCount, yp27, yWin27, yellowCount, yp18, yWin18, yellowCount, yp4, yWin4, yp1, yWin1));
+            Console.WriteLine(string.Format("🔴 VÙNG ĐỎ (<60%)   | {0,2} ngày  | {1,5:F1}% ({2,2}/{3,2}) | {4,5:F1}% ({5,2}/{6,2}) | {7,5:F1}% ({8,2}/{9,2}) | {10,5:F1}% ({11,2}/{12,2}) | {13,4:F1}% ({14}) | {15,4:F1}% ({16})",
+                redCount, rp65, rWin65, redCount, rp42, rWin42, redCount, rp27, rWin27, redCount, rp18, rWin18, redCount, rp4, rWin4, rp1, rWin1));
+            Console.WriteLine("=========================================================================================================================");
         }
 
         private static int GetBestSpectralLoQuiet(List<LotteryRecord> records)

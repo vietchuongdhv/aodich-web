@@ -36,6 +36,10 @@ namespace TidsTheory
             {
                 records = Program.LoadData(csvFilePath);
             }
+
+            // Tự động kiểm tra và cập nhật CSDL mới nhất từ GitHub khi khởi động (chống mất dữ liệu khi Render ngủ đông)
+            TrySyncFromGitHubOnStartup();
+
             Console.WriteLine(string.Format(">> Đã nạp thành công {0} bản ghi lịch sử (2002 -> nay).", records.Count));
 
             string envPort = Environment.GetEnvironmentVariable("PORT");
@@ -1105,9 +1109,126 @@ namespace TidsTheory
 
                 // Tải lại toàn bộ dữ liệu vào bộ nhớ
                 records = Program.LoadData(csvFilePath);
+
+                // Tự động đồng bộ lên GitHub (nếu có cấu hình GITHUB_TOKEN & GITHUB_REPO)
+                PushToGitHubAsync();
             }
 
             return string.Format("{{\"success\": true, \"message\": \"Đã nạp thành công kết quả ngày {0}! Tổng số kỳ lịch sử hiện tại: {1} kỳ.\", \"totalRecords\": {1}}}", dateStr, records.Count);
+        }
+
+        private static void TrySyncFromGitHubOnStartup()
+        {
+            try
+            {
+                string ghRepo = Environment.GetEnvironmentVariable("GITHUB_REPO");
+                string ghToken = Environment.GetEnvironmentVariable("GITHUB_TOKEN");
+                string ghBranch = Environment.GetEnvironmentVariable("GITHUB_BRANCH");
+                if (string.IsNullOrEmpty(ghBranch)) ghBranch = "main";
+
+                if (string.IsNullOrEmpty(ghRepo)) return;
+
+                ServicePointManager.SecurityProtocol = (SecurityProtocolType)3072; // Tls12
+                Console.WriteLine(">> [GITHUB SYNC] Đang kiểm tra CSDL mới nhất từ GitHub: " + ghRepo);
+
+                string url = string.Format("https://raw.githubusercontent.com/{0}/{1}/data/lottery_master.csv", ghRepo, ghBranch);
+                using (var wc = new WebClient())
+                {
+                    wc.Encoding = Encoding.UTF8;
+                    wc.Headers.Add("User-Agent", "TidsEngine-Web");
+                    if (!string.IsNullOrEmpty(ghToken))
+                    {
+                        wc.Headers.Add("Authorization", "token " + ghToken);
+                    }
+                    string remoteCsv = wc.DownloadString(url);
+                    if (!string.IsNullOrEmpty(remoteCsv))
+                    {
+                        var remoteLines = remoteCsv.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+                        var localLines = File.Exists(csvFilePath) ? File.ReadAllLines(csvFilePath) : new string[0];
+                        if (remoteLines.Length > localLines.Length)
+                        {
+                            File.WriteAllText(csvFilePath, remoteCsv, Encoding.UTF8);
+                            lock (dataLock)
+                            {
+                                records = Program.LoadData(csvFilePath);
+                            }
+                            Console.WriteLine(string.Format(">> [GITHUB SYNC] Tải thành công CSDL mới từ GitHub ({0} bản ghi).", records.Count));
+                        }
+                        else
+                        {
+                            Console.WriteLine(">> [GITHUB SYNC] CSDL cục bộ đã đồng nhất với GitHub.");
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("[GITHUB SYNC CẢNH BÁO] Không thể nạp dữ liệu từ GitHub: " + ex.Message);
+            }
+        }
+
+        public static void PushToGitHubAsync()
+        {
+            ThreadPool.QueueUserWorkItem(state =>
+            {
+                try
+                {
+                    string ghRepo = Environment.GetEnvironmentVariable("GITHUB_REPO");
+                    string ghToken = Environment.GetEnvironmentVariable("GITHUB_TOKEN");
+                    string ghBranch = Environment.GetEnvironmentVariable("GITHUB_BRANCH");
+                    if (string.IsNullOrEmpty(ghBranch)) ghBranch = "main";
+
+                    if (string.IsNullOrEmpty(ghRepo) || string.IsNullOrEmpty(ghToken)) return;
+
+                    ServicePointManager.SecurityProtocol = (SecurityProtocolType)3072; // Tls12
+                    Console.WriteLine(">> [GITHUB SYNC] Đang tự động lưu CSDL lên GitHub: " + ghRepo);
+
+                    // 1. Lấy SHA của file hiện tại trên GitHub
+                    string apiUrl = string.Format("https://api.github.com/repos/{0}/contents/data/lottery_master.csv?ref={1}", ghRepo, ghBranch);
+                    string sha = "";
+                    try
+                    {
+                        using (var wc = new WebClient())
+                        {
+                            wc.Encoding = Encoding.UTF8;
+                            wc.Headers.Add("User-Agent", "TidsEngine-Web");
+                            wc.Headers.Add("Authorization", "Bearer " + ghToken);
+                            wc.Headers.Add("Accept", "application/vnd.github.v3+json");
+                            string json = wc.DownloadString(apiUrl);
+                            sha = ExtractJsonString(json, "sha");
+                        }
+                    }
+                    catch { }
+
+                    // 2. Đọc file local và Base64
+                    byte[] fileBytes;
+                    lock (dataLock)
+                    {
+                        fileBytes = File.ReadAllBytes(csvFilePath);
+                    }
+                    string base64Content = Convert.ToBase64String(fileBytes);
+
+                    // 3. Gửi PUT commit lên GitHub API
+                    using (var wc = new WebClient())
+                    {
+                        wc.Encoding = Encoding.UTF8;
+                        wc.Headers.Add("User-Agent", "TidsEngine-Web");
+                        wc.Headers.Add("Authorization", "Bearer " + ghToken);
+                        wc.Headers.Add("Accept", "application/vnd.github.v3+json");
+                        wc.Headers.Add("Content-Type", "application/json");
+
+                        string payload = string.Format("{{\"message\": \"Auto update lottery result {0}\", \"content\": \"{1}\", \"sha\": \"{2}\", \"branch\": \"{3}\"}}",
+                            DateTime.Now.ToString("yyyy-MM-dd HH:mm"), base64Content, sha, ghBranch);
+
+                        wc.UploadString(string.Format("https://api.github.com/repos/{0}/contents/data/lottery_master.csv", ghRepo), "PUT", payload);
+                        Console.WriteLine(">> [GITHUB SYNC] ĐÃ ĐỒNG BỘ THÀNH CÔNG LÊN GITHUB REPO VĨNH VIỄN!");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("[GITHUB SYNC LỖI ĐẨY DỮ LIỆU]: " + ex.Message);
+                }
+            });
         }
 
         private static string GetVietnameseDayOfWeek(DateTime dt)

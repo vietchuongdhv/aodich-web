@@ -458,6 +458,17 @@
         <button onclick="saveResultToDatabase()" id="btnSaveResult" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-extrabold text-xs shadow-lg active:scale-95 transition-transform flex items-center justify-center gap-1.5">
           <span>💾 LƯU VÀO CSDL & TÁI HIỆU CHỈNH HỆ THỐNG</span>
         </button>
+
+        <!-- BẢO HIỂM LƯU TRỮ CHỐNG NGỦ ĐÔNG RENDER -->
+        <div class="p-2.5 rounded-xl border border-gray-800 bg-daoDark-900/90 text-[10px] space-y-1">
+          <div class="flex items-center justify-between text-gray-300 font-bold">
+            <span class="flex items-center gap-1">🛡️ Bảo Hiểm Lưu Trữ Đa Tầng</span>
+            <span class="text-emerald-400 font-bold">Tự Động Bù Đắp</span>
+          </div>
+          <p class="text-gray-400 leading-relaxed">
+            Kết quả được lưu kép vào máy chủ và bộ nhớ trình duyệt thiết bị. Nếu máy chủ Render ngủ đông và bị khởi động lại, thiết bị sẽ tự động khôi phục dữ liệu lên lại máy chủ ngay khi bạn mở app!
+          </p>
+        </div>
       </section>
     </div>
 
@@ -743,6 +754,9 @@
           rBadge.className = 'text-[11px] px-2.5 py-1 rounded-full font-medium bg-daoDark-800 text-gray-300 border border-gray-700 whitespace-nowrap';
           document.getElementById('coilingAlert').classList.add('hidden');
         }
+
+        // Tự động kiểm tra và bù đắp dữ liệu nếu máy chủ Render vừa tỉnh giấc ngủ đông
+        checkAndAutoRestoreServer(data.latestDate);
       } catch (e) {
         console.error(e);
       }
@@ -1129,6 +1143,7 @@
         });
         const result = await res.json();
         if (result.success) {
+          saveRecordToLocalStorage(parsedData);
           showToast('Đã lưu kết quả & tái hiệu chỉnh hệ thống!');
           alert(result.message);
           clearRawText();
@@ -1143,6 +1158,52 @@
         }
       } catch (e) {
         alert('Lỗi khi lưu kết quả: ' + e.message);
+      }
+    }
+
+    function saveRecordToLocalStorage(rec) {
+      try {
+        let history = JSON.parse(localStorage.getItem('tids_local_lottery_records') || '[]');
+        history = history.filter(item => item.date !== rec.date);
+        history.push(rec);
+        if (history.length > 30) history = history.slice(history.length - 30);
+        localStorage.setItem('tids_local_lottery_records', JSON.stringify(history));
+      } catch (e) {
+        console.error('Không thể lưu localStorage:', e);
+      }
+    }
+
+    let isRestoring = false;
+    async function checkAndAutoRestoreServer(serverLatestDate) {
+      if (isRestoring || !serverLatestDate) return;
+      try {
+        const history = JSON.parse(localStorage.getItem('tids_local_lottery_records') || '[]');
+        if (!history || history.length === 0) return;
+
+        // Lọc các bản ghi mới hơn máy chủ hiện tại (do Render vừa ngủ dậy và bị reset container)
+        const missingRecords = history.filter(item => item.date > serverLatestDate).sort((a,b) => a.date.localeCompare(b.date));
+        if (missingRecords.length > 0) {
+          isRestoring = true;
+          console.warn('[Auto-Restore] Phát hiện máy chủ Render bị reset sau khi ngủ đông. Đang tự động khôi phục:', missingRecords.length, 'kỳ');
+          showToast(`⚡ Đang tự động bù đắp kỳ mới lên Render...`);
+          for (const rec of missingRecords) {
+            await fetch('/api/save-result', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json; charset=utf-8' },
+              body: JSON.stringify(rec)
+            });
+          }
+          isRestoring = false;
+          // Tải lại status và predict sau khi khôi phục
+          const refreshed = await (await fetch('/api/status?_t=' + Date.now(), { cache: 'no-store' })).json();
+          statusData = refreshed;
+          await fetchPredict(currentBudget);
+          if (currentHistoryDays) await fetchHistory(currentHistoryDays);
+          showToast(`✅ Đã tự động khôi phục kỳ (${missingRecords[missingRecords.length - 1].date}) lên Render!`);
+        }
+      } catch (e) {
+        isRestoring = false;
+        console.error('Lỗi tự động khôi phục:', e);
       }
     }
 
