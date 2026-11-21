@@ -334,10 +334,11 @@
       <!-- KỊCH BẢN THU HỒI VỐN -->
       <section class="bg-daoDark-850 rounded-xl p-3 border border-gray-800 text-[11px] text-gray-400 space-y-1">
         <div class="font-bold text-gray-200 mb-0.5 text-xs">🎯 Kịch Bản Thu Hoàn Vốn Dự Kiến:</div>
-        <div class="flex justify-between"><span>• Nổ 1 con Lô STL (25 hoặc 65):</span> <strong class="text-emerald-400" id="scen1Text">Thu 396.000 đ (Thu 79.2% vốn)</strong></div>
-        <div class="flex justify-between"><span>• Nổ 1 Lô STL + Ăn Đề 50:</span> <strong class="text-emerald-400" id="scen2Text">Thu 495.000 đ (HÒA VỐN)</strong></div>
-        <div class="flex justify-between"><span>• STL nổ cả cặp + Nổ Xiên 2:</span> <strong class="text-daoGold-400" id="scen3Text">Thu 1.204.500 đ (ROI +140.9%)</strong></div>
-        <div class="flex justify-between"><span>• Nổ Bạch Thủ 3 Càng (071):</span> <strong class="text-purple-400" id="scen4Text">Thu 8.640.000 đ (ĐỘT BIẾN)</strong></div>
+        <div class="flex justify-between"><span id="scen1Label">• Nổ 1 con Lô STL:</span> <strong class="text-emerald-400" id="scen1Text">--</strong></div>
+        <div class="flex justify-between"><span id="scen2Label">• Nổ 1 Lô STL + Ăn Đề Kiềng 42:</span> <strong class="text-emerald-400" id="scen2Text">--</strong></div>
+        <div class="flex justify-between"><span id="scen3Label">• STL nổ cả cặp + Nổ Xiên 2:</span> <strong class="text-daoGold-400" id="scen3Text">--</strong></div>
+        <div class="flex justify-between"><span id="scen4Label">• Nổ Bạch Thủ 3 Càng:</span> <strong class="text-purple-400" id="scen4Text">--</strong></div>
+        <div class="flex justify-between"><span id="scen5Label">• Nổ Đề Dàn Gối Đầu 18s (ROI Max):</span> <strong class="text-amber-400" id="scen5Text">--</strong></div>
       </section>
 
       <!-- BẢNG TỔNG HỢP TOÀN BỘ 22 HẠNG MỤC DỰ BÁO (CHUẨN LỆNH SHEET) -->
@@ -824,19 +825,38 @@
         document.getElementById('cost3DPerTicket').innerText = `${data.c3D_base.toLocaleString('vi-VN')} đ/vé (Ăn 1:960)`;
         document.getElementById('costBt3DDisplay').innerText = `Cược ${data.c3D_bt.toLocaleString('vi-VN')} đ`;
 
-        // Kịch bản thu hồi vốn động
+        // Kịch bản thu hồi vốn động (Thang 65% Realtime)
         const win1Lo = Math.floor(data.stPts * 99000);
-        const win1Lo80k = Math.floor(data.stPts * 80000);
+        
+        const elScen1Label = document.getElementById('scen1Label');
+        if (elScen1Label) elScen1Label.innerText = `• Nổ 1 con Lô STL (${pad2(data.btLo)} hoặc ${pad2(data.stLo)}):`;
         document.getElementById('scen1Text').innerText = `Thu ${win1Lo.toLocaleString('vi-VN')} đ (${((win1Lo/budget)*100).toFixed(1)}% vốn)`;
         
-        const winLoDe = win1Lo + Math.floor(((data.costE50/50) + (data.costE65/65)) * 99);
+        const rateDe42 = (data.c42 || (data.costE42 ? data.costE42 / 42 : (data.costE50 / 50)) || 0);
+        const rateDe65 = (data.c65 || (data.costE65 ? data.costE65 / 65 : 0) || 0);
+        const winDe42Total = Math.floor((rateDe42 + rateDe65) * 99);
+        const winLoDe = win1Lo + winDe42Total;
+        const elScen2Label = document.getElementById('scen2Label');
+        if (elScen2Label) elScen2Label.innerText = `• Nổ 1 Lô STL + Ăn Đề Kiềng 42:`;
         document.getElementById('scen2Text').innerText = `Thu ${winLoDe.toLocaleString('vi-VN')} đ (${winLoDe >= budget ? 'CÓ LÃI' : 'HÒA VỐN'})`;
 
         const win2LoXien = (win1Lo * 2) + Math.floor(data.costXien * 16.5);
-        document.getElementById('scen3Text').innerText = `Thu ${win2LoXien.toLocaleString('vi-VN')} đ (Lãi +${(win2LoXien - budget).toLocaleString('vi-VN')} đ)`;
+        const elScen3Label = document.getElementById('scen3Label');
+        if (elScen3Label) elScen3Label.innerText = `• STL nổ cả cặp (${pad2(data.btLo)}-${pad2(data.stLo)}) + Xiên 2:`;
+        const diff3 = win2LoXien - budget;
+        document.getElementById('scen3Text').innerText = `Thu ${win2LoXien.toLocaleString('vi-VN')} đ (Lãi +${diff3.toLocaleString('vi-VN')} đ)`;
 
         const winBt3D = Math.floor(data.c3D_bt * 960);
+        const elScen4Label = document.getElementById('scen4Label');
+        if (elScen4Label) elScen4Label.innerText = `• Nổ Bạch Thủ 3 Càng (${data.bt3D}):`;
         document.getElementById('scen4Text').innerText = `Thu ${winBt3D.toLocaleString('vi-VN')} đ (ĐỘT BIẾN)`;
+
+        const elScen5 = document.getElementById('scen5Text');
+        if (elScen5) {
+          const rate18 = ((data.c18 || (data.costE18 ? data.costE18 / 18 : 0)) + rateDe42 + rateDe65);
+          const win18 = Math.floor(rate18 * 99);
+          elScen5.innerText = `Thu ${win18.toLocaleString('vi-VN')} đ (${win18 >= budget ? 'CÓ LÃI' : 'BẢO HIỂM'})`;
+        }
 
         // Render Bảng Toàn Bộ 22 Hạng Mục Dự Báo (Chuẩn lệnh Sheet)
         const sheetBody = document.getElementById('sheetTableBody');
