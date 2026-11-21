@@ -64,10 +64,13 @@
           </p>
         </div>
       </div>
-      <div>
-        <span id="regimeBadge" class="text-[11px] px-2.5 py-1 rounded-full font-bold bg-amber-950/90 text-amber-300 border border-amber-600/50 whitespace-nowrap">
+      <div class="flex items-center gap-1.5">
+        <span id="regimeBadge" class="text-[11px] px-2 py-0.5 rounded-full font-bold bg-amber-950/90 text-amber-300 border border-amber-600/50 whitespace-nowrap">
           🟠 PHỤC KHÍ
         </span>
+        <button onclick="forceRefreshAll(true)" title="Đồng bộ & Tải lại dữ liệu mới nhất (Xóa sạch Cache di động)" class="p-1 rounded-lg bg-daoGold-600/20 text-daoGold-400 hover:bg-daoGold-600/40 border border-daoGold-500/40 text-xs flex items-center justify-center active:scale-95 transition-transform" id="btnForceRefresh">
+          <span id="refreshIcon" class="inline-block">🔄</span>
+        </button>
       </div>
     </div>
   </header>
@@ -239,39 +242,50 @@
           <!-- E1 & E4 -->
           <div class="grid grid-cols-2 gap-2">
             <div class="bg-daoDark-850 p-2.5 rounded-xl border border-gray-800">
-              <span class="text-[9px] text-daoGold-400 font-bold uppercase block">Thái Cực Nhất Điểm (E1)</span>
-              <div class="text-lg font-black text-daoGold-300 my-0.5" id="e1Display">71</div>
-              <div class="text-[9px] text-gray-400" id="e1CostDisplay">Cược thêm: 2.000 đ</div>
+              <span class="text-[9px] text-daoGold-400 font-bold uppercase block">Thái Cực (E1)</span>
+              <div class="text-lg font-black text-daoGold-300 my-0.5" id="e1Display">--</div>
+              <div class="text-[9px] text-gray-400" id="e1CostDisplay">Cược thêm: 0 đ</div>
             </div>
             <div class="bg-daoDark-850 p-2.5 rounded-xl border border-gray-800">
-              <span class="text-[9px] text-daoGold-400 font-bold uppercase block">Tứ Tượng Hội Tụ (E4)</span>
-              <div class="text-xs font-bold text-gray-200 my-1 tracking-wide" id="e4Display">71, 00, 68, 45</div>
-              <div class="text-[9px] text-gray-400" id="e4CostDisplay">Cược thêm: 4.000 đ</div>
+              <span class="text-[9px] text-daoGold-400 font-bold uppercase block">Tứ Tượng (E4)</span>
+              <div class="text-xs font-bold text-gray-200 my-1 tracking-wide" id="e4Display">--</div>
+              <div class="text-[9px] text-gray-400" id="e4CostDisplay">Cược thêm: 0 đ</div>
             </div>
           </div>
 
-          <!-- E9 -->
-          <div class="bg-daoDark-850 p-2.5 rounded-xl border border-gray-800">
-            <div class="flex items-center justify-between mb-0.5">
-              <span class="text-[9px] text-daoGold-400 font-bold uppercase">Cửu Cung Lạc Thư (E9 - Hạt Nhân)</span>
-              <span class="text-[9px] text-gray-400" id="e9CostDisplay">Cược thêm: 9.000 đ</span>
+          <!-- E18 & E27 -->
+          <div class="grid grid-cols-2 gap-2">
+            <div class="bg-daoDark-850 p-2.5 rounded-xl border border-gray-800">
+              <div class="flex items-center justify-between mb-0.5">
+                <span class="text-[9px] text-daoGold-400 font-bold uppercase">Gối Đầu (E18)</span>
+                <span class="text-[9px] text-gray-400" id="e18CostDisplay">+0 đ</span>
+              </div>
+              <div class="text-[10px] font-bold text-gray-200 tracking-wide line-clamp-1" id="e18Display">
+                --
+              </div>
             </div>
-            <div class="text-[11px] font-bold text-gray-200 tracking-wide" id="e9Display">
-              71, 00, 68, 45, 12, 99, 50, 36, 81
+            <div class="bg-daoDark-850 p-2.5 rounded-xl border border-gray-800">
+              <div class="flex items-center justify-between mb-0.5">
+                <span class="text-[9px] text-amber-400 font-bold uppercase">Tấn Công (E27)</span>
+                <span class="text-[9px] text-gray-400" id="e27CostDisplay">+0 đ</span>
+              </div>
+              <div class="text-[10px] font-bold text-gray-200 tracking-wide line-clamp-1" id="e27Display">
+                --
+              </div>
             </div>
           </div>
 
-          <!-- E50 & E65 -->
+          <!-- E42 & E65 -->
           <div class="bg-daoDark-850 p-2.5 rounded-xl border border-gray-800">
             <div class="flex items-center justify-between mb-0.5">
-              <span class="text-[9px] text-cyan-400 font-bold uppercase">Đại Diễn (E50) & Giáp (E65)</span>
-              <span class="text-[9px] text-gray-400" id="e50CostDisplay">E50: 50k | E65: 65k</span>
+              <span class="text-[9px] text-cyan-400 font-bold uppercase">Chân Kiềng (E42) & Giáp (E65)</span>
+              <span class="text-[9px] text-gray-400" id="e42CostDisplay">E42: 0k | E65: 0k</span>
             </div>
-            <div class="text-[10px] text-gray-300 leading-snug line-clamp-2" id="e50Display">
-              71, 00, 68, 45, 12, 06, 99, 60, 14, 17, 01, 94, 50, 97, 43, 55, 47, 36, 52, 78, 10, 32, 02...
+            <div class="text-[10px] text-gray-300 leading-snug line-clamp-2" id="e42Display">
+              --
             </div>
             <div class="mt-1 text-[9px] text-amber-300/90 flex items-center justify-between pt-0.5 border-t border-gray-800/60">
-              <span>Huyền Thiên Giáp: 65 số (bảo hiểm nén)</span>
+              <span>Thang 65%: Bảo hiểm nén thế năng</span>
               <button onclick="toggleExpandDe()" class="underline text-daoGold-400 font-bold">Xem tất cả</button>
             </div>
           </div>
@@ -508,7 +522,7 @@
               <strong id="statE65" class="text-cyan-400">--%</strong>
             </div>
             <div class="bg-daoDark-900/90 py-1 px-1 rounded border border-gray-800">
-              <span class="text-gray-400 block text-[9px]">Dàn E50:</span>
+              <span class="text-gray-400 block text-[9px]">Kiềng E42:</span>
               <strong id="statE50" class="text-daoGold-400">--%</strong>
             </div>
           </div>
@@ -524,11 +538,11 @@
                 <th class="py-2 px-1.5 whitespace-nowrap text-center">Tứ Thủ</th>
                 <th class="py-2 px-1.5 whitespace-nowrap text-center">Xiên 2</th>
                 <th class="py-2 px-1.5 whitespace-nowrap text-center">Giáp 65</th>
-                <th class="py-2 px-1.5 whitespace-nowrap text-center">Dàn 50</th>
-                <th class="py-2 px-1.5 whitespace-nowrap text-center">Hà Đồ 25</th>
-                <th class="py-2 px-1.5 whitespace-nowrap text-center">Cửu Cung 9</th>
+                <th class="py-2 px-1.5 whitespace-nowrap text-center">Kiềng 42</th>
+                <th class="py-2 px-1.5 whitespace-nowrap text-center">T.Công 27</th>
+                <th class="py-2 px-1.5 whitespace-nowrap text-center">Gối 18</th>
                 <th class="py-2 px-1.5 whitespace-nowrap text-center">Tứ Tượng 4</th>
-                <th class="py-2 px-1.5 whitespace-nowrap text-center">Bạch Thủ E1</th>
+                <th class="py-2 px-1.5 whitespace-nowrap text-center">Bạch Thủ 1</th>
                 <th class="py-2 px-1.5 whitespace-nowrap text-center">3D (12s)</th>
                 <th class="py-2 px-1.5 whitespace-nowrap text-center">3D (27s)</th>
                 <th class="py-2 px-1.5 whitespace-nowrap text-center">4D Tinh Chọn (16s)</th>
@@ -673,9 +687,32 @@
       fetchPredict(currentBudget);
     }
 
+    async function forceRefreshAll(showToastAlert = true) {
+      const icon = document.getElementById('refreshIcon');
+      if (icon) icon.classList.add('animate-spin');
+
+      try {
+        if ('caches' in window) {
+          const keys = await caches.keys();
+          await Promise.all(keys.map(k => caches.delete(k)));
+        }
+
+        await fetchStatus();
+        await fetchPredict(currentBudget);
+        if (currentHistoryDays) await fetchHistory(currentHistoryDays);
+
+        if (showToastAlert) showToast('Đã làm mới & đồng bộ dữ liệu mới nhất!');
+      } catch (err) {
+        console.error('Lỗi làm mới:', err);
+        if (showToastAlert) showToast('Lỗi khi kết nối máy chủ!');
+      } finally {
+        if (icon) icon.classList.remove('animate-spin');
+      }
+    }
+
     async function fetchStatus() {
       try {
-        const res = await fetch('/api/status');
+        const res = await fetch('/api/status?_t=' + Date.now(), { cache: 'no-store' });
         const data = await res.json();
         statusData = data;
 
@@ -713,7 +750,7 @@
 
     async function fetchPredict(budget) {
       try {
-        const res = await fetch('/api/predict?budget=' + budget);
+        const res = await fetch('/api/predict?budget=' + budget + '&_t=' + Date.now(), { cache: 'no-store' });
         const data = await res.json();
         predictData = data;
 
@@ -728,7 +765,14 @@
         document.getElementById('btlDisplay').innerText = pad2(data.btLo);
 
         // Trục 2: Nhân Hòa
-        const costDeOnly = data.costE65 + data.costE50 + data.costE9 + data.costE4 + data.costE1;
+        const e42 = data.e42 || data.e50;
+        const e27 = data.e27 || data.e25;
+        const e18 = data.e18 || data.e9;
+        const costE42 = data.costE42 !== undefined ? data.costE42 : data.costE50;
+        const costE27 = data.costE27 !== undefined ? data.costE27 : (data.costE25 || 0);
+        const costE18 = data.costE18 !== undefined ? data.costE18 : data.costE9;
+
+        const costDeOnly = data.costE65 + costE42 + costE27 + costE18 + data.costE4 + data.costE1;
         const costTruc2 = data.costLotLo + costDeOnly;
         document.getElementById('costTruc2TotalText').innerText = costTruc2.toLocaleString('vi-VN') + ' đ';
         document.getElementById('costDeTotalText').innerText = `Tổng Đề: ${costDeOnly.toLocaleString('vi-VN')} đ`;
@@ -742,11 +786,20 @@
         document.getElementById('e4Display').innerText = data.e4.map(pad2).join(', ');
         document.getElementById('e4CostDisplay').innerText = `Cược thêm: ${data.costE4.toLocaleString('vi-VN')} đ`;
 
-        document.getElementById('e9Display').innerText = data.e9.map(pad2).join(', ');
-        document.getElementById('e9CostDisplay').innerText = `Cược thêm: ${data.costE9.toLocaleString('vi-VN')} đ`;
+        const elE18 = document.getElementById('e18Display');
+        if (elE18) elE18.innerText = e18.map(pad2).join(', ');
+        const elE18Cost = document.getElementById('e18CostDisplay');
+        if (elE18Cost) elE18Cost.innerText = `+${costE18.toLocaleString('vi-VN')} đ`;
 
-        document.getElementById('e50Display').innerText = data.e50.map(pad2).join(', ');
-        document.getElementById('e50CostDisplay').innerText = `E50: ${(data.costE50/1000)}k | E65: ${(data.costE65/1000)}k`;
+        const elE27 = document.getElementById('e27Display');
+        if (elE27) elE27.innerText = e27.map(pad2).join(', ');
+        const elE27Cost = document.getElementById('e27CostDisplay');
+        if (elE27Cost) elE27Cost.innerText = `+${costE27.toLocaleString('vi-VN')} đ`;
+
+        const elE42 = document.getElementById('e42Display');
+        if (elE42) elE42.innerText = e42.map(pad2).join(', ');
+        const elE42Cost = document.getElementById('e42CostDisplay');
+        if (elE42Cost) elE42Cost.innerText = `E42: ${(costE42/1000)}k | E65: ${(data.costE65/1000)}k`;
 
         document.getElementById('bsmCoilingDisplay').innerText = data.bsmCoiling.map(pad2).join(', ');
 
@@ -862,7 +915,7 @@
         const rangeText = document.getElementById('historyRangeText');
         if (rangeText) rangeText.innerText = `${days} ngày gần nhất`;
 
-        const res = await fetch('/api/history?days=' + days);
+        const res = await fetch('/api/history?days=' + days + '&_t=' + Date.now(), { cache: 'no-store' });
         const data = await res.json();
         const tbody = document.getElementById('historyTableBody');
         tbody.innerHTML = '';
@@ -874,13 +927,13 @@
         let hitStlCount = 0;
         let hitTuThuCount = 0;
         let hitE65Count = 0;
-        let hitE50Count = 0;
+        let hitE42Count = 0;
 
         data.forEach(row => {
           if (row.hitStl) hitStlCount++;
           if (row.hitTuThu) hitTuThuCount++;
           if (row.hitE65) hitE65Count++;
-          if (row.hitE50) hitE50Count++;
+          if (row.hitE42 !== undefined ? row.hitE42 : row.hitE50) hitE42Count++;
         });
 
         const n = data.length;
@@ -892,7 +945,7 @@
           if (elStl) elStl.innerText = `${((hitStlCount/n)*100).toFixed(1)}% (${hitStlCount}/${n})`;
           if (elTuThu) elTuThu.innerText = `${((hitTuThuCount/n)*100).toFixed(1)}% (${hitTuThuCount}/${n})`;
           if (elE65) elE65.innerText = `${((hitE65Count/n)*100).toFixed(1)}% (${hitE65Count}/${n})`;
-          if (elE50) elE50.innerText = `${((hitE50Count/n)*100).toFixed(1)}% (${hitE50Count}/${n})`;
+          if (elE50) elE50.innerText = `${((hitE42Count/n)*100).toFixed(1)}% (${hitE42Count}/${n})`;
         }
 
         data.reverse().forEach(row => {
@@ -915,15 +968,19 @@
             ? `<span class="text-cyan-400 font-bold">✔</span>` 
             : `<span class="text-gray-500">-</span>`;
 
-          const e50Badge = row.hitE50 
+          const hit42 = row.hitE42 !== undefined ? row.hitE42 : row.hitE50;
+          const hit27 = row.hitE27 !== undefined ? row.hitE27 : row.hitE25;
+          const hit18 = row.hitE18 !== undefined ? row.hitE18 : row.hitE9;
+
+          const e42Badge = hit42 
             ? `<span class="text-emerald-400 font-bold">✔</span>` 
             : `<span class="text-gray-500">-</span>`;
 
-          const e25Badge = row.hitE25 
+          const e27Badge = hit27 
             ? `<span class="text-daoGold-400 font-bold">✔</span>` 
             : `<span class="text-gray-500">-</span>`;
 
-          const e9Badge = row.hitE9 
+          const e18Badge = hit18 
             ? `<span class="text-amber-400 font-bold">✔</span>` 
             : `<span class="text-gray-500">-</span>`;
 
@@ -965,9 +1022,9 @@
             <td class="py-2 px-1.5 text-center">${tuThuBadge}</td>
             <td class="py-2 px-1.5 text-center">${xien2Badge}</td>
             <td class="py-2 px-1.5 text-center">${e65Badge}</td>
-            <td class="py-2 px-1.5 text-center">${e50Badge}</td>
-            <td class="py-2 px-1.5 text-center">${e25Badge}</td>
-            <td class="py-2 px-1.5 text-center">${e9Badge}</td>
+            <td class="py-2 px-1.5 text-center">${e42Badge}</td>
+            <td class="py-2 px-1.5 text-center">${e27Badge}</td>
+            <td class="py-2 px-1.5 text-center">${e18Badge}</td>
             <td class="py-2 px-1.5 text-center">${e4Badge}</td>
             <td class="py-2 px-1.5 text-center">${e1Badge}</td>
             <td class="py-2 px-1.5 text-center">${d3Badge}</td>
@@ -1115,8 +1172,8 @@
     }
 
     function toggleExpandDe() {
-      const el = document.getElementById('e50Display');
-      el.classList.toggle('line-clamp-2');
+      const el = document.getElementById('e42Display') || document.getElementById('e50Display');
+      if (el) el.classList.toggle('line-clamp-2');
     }
 
     function pad2(num) {
