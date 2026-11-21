@@ -276,17 +276,17 @@ namespace TidsTheory
             sb.AppendFormat("\"latestDayOfWeek\": \"{0}\",", EscapeJson(last.DayOfWeek));
             sb.AppendFormat("\"latestGdb\": \"{0}\",", last.Gdb);
             sb.AppendFormat("\"latestDe\": {0},", last.De);
-            sb.AppendFormat("\"qciScore\": {0:F1},", qci.Score);
+            sb.AppendFormat(System.Globalization.CultureInfo.InvariantCulture, "\"qciScore\": {0:F1},", qci.Score);
             sb.AppendFormat("\"qciZone\": \"{0}\",", EscapeJson(qci.Zone));
             sb.AppendFormat("\"actionRecommendation\": \"{0}\",", EscapeJson(qci.ActionRecommendation));
             sb.AppendFormat("\"regimeName\": \"{0}\",", EscapeJson(regime.RegimeName));
             sb.AppendFormat("\"regimeSymbol\": \"{0}\",", EscapeJson(regime.RegimeSymbol));
-            sb.AppendFormat("\"regimeEntropy\": {0:F3},", regime.EntropyH);
-            sb.AppendFormat("\"regimeGamma\": {0:F3},", regime.SpectralGapGamma);
-            sb.AppendFormat("\"regimeZ\": {0:F2},", regime.ZMacro);
+            sb.AppendFormat(System.Globalization.CultureInfo.InvariantCulture, "\"regimeEntropy\": {0:F3},", regime.EntropyH);
+            sb.AppendFormat(System.Globalization.CultureInfo.InvariantCulture, "\"regimeGamma\": {0:F3},", regime.SpectralGapGamma);
+            sb.AppendFormat(System.Globalization.CultureInfo.InvariantCulture, "\"regimeZ\": {0:F2},", regime.ZMacro);
             sb.AppendFormat("\"regimeCompressedFactor\": \"{0}\",", EscapeJson(regime.CompressedFactor));
-            sb.AppendFormat("\"regimeMomentum\": {0:F1},", regime.MomentumMRoll * 100);
-            sb.AppendFormat("\"kellyMultiplier\": {0:F2}", regime.KellyMultiplier);
+            sb.AppendFormat(System.Globalization.CultureInfo.InvariantCulture, "\"regimeMomentum\": {0:F1},", regime.MomentumMRoll * 100);
+            sb.AppendFormat(System.Globalization.CultureInfo.InvariantCulture, "\"kellyMultiplier\": {0:F2}", regime.KellyMultiplier);
             sb.Append("}");
 
             byte[] buf = Encoding.UTF8.GetBytes(sb.ToString());
@@ -613,7 +613,10 @@ namespace TidsTheory
             sb.AppendFormat("\"costE9\": {0},", costE9);
             sb.AppendFormat("\"costE4\": {0},", costE4);
             sb.AppendFormat("\"costE1\": {0},", costE1);
-            sb.AppendFormat("\"costE1\": {0},", costE1);
+
+            sb.AppendFormat("\"regimeCompressedFactor\": \"{0}\",", EscapeJson(regime.CompressedFactor));
+            sb.AppendFormat(System.Globalization.CultureInfo.InvariantCulture, "\"regimeZ\": {0:F2},", regime.ZMacro);
+            sb.AppendFormat("\"regimeName\": \"{0}\",", EscapeJson(regime.RegimeName));
 
             sb.AppendFormat("\"bt3D\": \"{0}\",", bt3D);
             sb.AppendFormat("\"dan3D_12\": [{0}],", string.Join(",", dan3D_12.Select(x => "\"" + x + "\"")));
