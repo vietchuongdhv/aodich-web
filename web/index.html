@@ -329,6 +329,20 @@
             <span class="text-purple-300 font-bold" id="costBt3DDisplay">Cược 9.000 đ</span>
           </div>
         </div>
+
+        <div class="bg-daoDark-850 p-2.5 rounded-xl border border-gray-800 mb-2">
+          <div class="flex items-center justify-between mb-1">
+            <span class="text-[10px] font-bold text-gray-300 uppercase">Dàn 4 Càng Trọng Tâm 16 Số</span>
+            <span class="text-[9px] text-cyan-300 font-semibold">Tích Tensor 1D (Ăn 1:8880)</span>
+          </div>
+          <div class="text-[11px] font-bold text-cyan-200 leading-relaxed tracking-wide" id="dan4DDisplay">
+            3089, 3094, 3044, 3068, 3389, 3394, 3344, 3368, 4089, 4094, 4044, 4068, 4389, 4394, 4344, 4368
+          </div>
+          <div class="mt-2 text-[10px] text-gray-400 pt-1.5 border-t border-gray-800 flex items-center justify-between">
+            <span>★ Bạch thủ 4 Càng: <strong class="text-daoGold-400 text-xs" id="bt4DDisplay">3089</strong></span>
+            <span class="text-gray-400 text-[10px]">Dàn 81s: Đồng bộ Google Sheet</span>
+          </div>
+        </div>
       </section>
 
       <!-- MA TRẬN KỊCH BẢN THU HOÀN VỐN & SINH LỜI (KELLY DYNAMIC SCENARIOS - PHƯƠNG ÁN 2: CHIẾN THUẬT ĐẠO DỊCH) -->
@@ -914,6 +928,13 @@
         document.getElementById('bt3DDisplay').innerText = data.bt3D;
         document.getElementById('cost3DPerTicket').innerText = `${data.c3D_base.toLocaleString('vi-VN')} đ/vé (Ăn 1:960)`;
         document.getElementById('costBt3DDisplay').innerText = `Cược ${data.c3D_bt.toLocaleString('vi-VN')} đ`;
+
+        if (data.dan4D_16 && data.dan4D_16.length > 0) {
+          const el4D = document.getElementById('dan4DDisplay');
+          if (el4D) el4D.innerText = data.dan4D_16.join(', ');
+          const elBt4D = document.getElementById('bt4DDisplay');
+          if (elBt4D) elBt4D.innerText = data.bt4D || '';
+        }
 
         // MA TRẬN KỊCH BẢN THU HOÀN VỐN & SINH LỜI (PHƯƠNG ÁN 2: CHIẾN THUẬT ĐẠO DỊCH)
         const win1Lo = Math.floor(data.stPts * 99000);
