@@ -533,10 +533,17 @@ namespace TidsTheory
             sb.AppendFormat("\"tamThuLo\": [{0}, {1}, {2}],", tamThuLoList[0], tamThuLoList[1], tamThuLoList[2]);
             sb.AppendFormat("\"tuThuLo\": [{0}, {1}, {2}, {3}],", tuThuLoList[0], tuThuLoList[1], tuThuLoList[2], tuThuLoList[3]);
             sb.AppendFormat("\"stPts\": {0},", stPts);
+            sb.AppendFormat("\"stPts1\": {0},", stPts1);
+            sb.AppendFormat("\"stPts2\": {0},", stPts2);
             sb.AppendFormat("\"lotPts\": {0},", lotPts);
             sb.AppendFormat("\"costStLo\": {0},", costStLo);
             sb.AppendFormat("\"costLotLo\": {0},", costLotLo);
             sb.AppendFormat("\"costXien\": {0},", costXien);
+            sb.AppendFormat("\"cost27_3D\": {0},", cost27_3D);
+            sb.AppendFormat("\"cost81_4D\": {0},", cost81_4D);
+            sb.AppendFormat("\"cost3D_12\": {0},", cost3D_12);
+            sb.AppendFormat("\"cost4D_small\": {0},", cost4D_small);
+            sb.AppendFormat("\"dan3D_27\": [{0}],", string.Join(",", dan3D_27.Select(x => "\"" + x + "\"")));
 
             sb.AppendFormat("\"e1\": {0},", e1);
             sb.AppendFormat("\"e2\": [{0}],", string.Join(",", e2));
