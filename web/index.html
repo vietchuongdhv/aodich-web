@@ -168,272 +168,267 @@
         </div>
       </div>
 
-      <!-- TRỤC 1: ĐỊA LỢI (+EV CASH ENGINE) -->
+      <!-- TRỤC 1: ĐỊA LỢI (+EV CASH ENGINE) - TAM THỦ LÔ -->
       <section class="bg-daoDark-800 rounded-2xl p-3.5 border border-emerald-500/30">
         <div class="flex items-center justify-between border-b border-gray-800 pb-2 mb-2.5">
           <div class="flex items-center gap-1.5">
-            <span class="text-xs font-black text-emerald-400">TRỤC 1: ĐỊA LỢI (+EV)</span>
-            <span class="text-[9px] bg-emerald-950 text-emerald-300 border border-emerald-800/60 px-1.5 py-0.2 rounded-full font-bold">+EV Lô Tô</span>
+            <span class="text-xs font-black text-emerald-400">TRỤC 1: ĐỊA LỢI (+EV) - TAM THỦ LÔ</span>
+            <span class="text-[9px] bg-emerald-950 text-emerald-300 border border-emerald-800/60 px-1.5 py-0.2 rounded-full font-bold">Điểm Nguyên</span>
           </div>
           <div class="text-right">
-            <span class="text-[10px] text-gray-400 mr-1">Tổng Trục 1:</span>
-            <span id="costTruc1TotalText" class="text-xs font-black text-emerald-300">241.000 đ</span>
+            <span class="text-[10px] text-gray-400 mr-1">Tổng Lô:</span>
+            <span id="costTruc1TotalText" class="text-xs font-black text-emerald-300">189.000 đ</span>
           </div>
         </div>
 
         <div class="grid grid-cols-2 gap-2.5 mb-2.5">
           <div class="bg-daoDark-850 p-2.5 rounded-xl border border-gray-800 flex flex-col justify-between">
-            <span class="text-[10px] text-gray-400 font-medium">Song Thủ Lô (STL)</span>
-            <div class="text-xl font-black text-daoGold-400 my-0.5" id="stlDisplay">25 - 65</div>
-            <div class="text-[10px] text-emerald-400 font-bold flex items-center justify-between pt-0.5 border-t border-gray-800/60">
-              <span id="stlPtsDisplay">Cược 4 điểm/con</span>
-              <span class="text-gray-300" id="costStlText">216.000 đ</span>
+            <div class="flex items-center justify-between">
+              <span class="text-[10px] text-gray-400 font-medium">Song Thủ Lô (STL)</span>
+              <span class="text-[9px] bg-emerald-950/80 text-emerald-300 px-1 rounded font-bold">Chính</span>
+            </div>
+            <div class="text-xl font-black text-daoGold-400 my-1" id="stlDisplay">24 - 26</div>
+            <div class="text-[10px] text-emerald-400 font-bold flex items-center justify-between pt-1 border-t border-gray-800/60">
+              <span id="stlPtsDisplay">24 (3đ), 26 (3đ)</span>
+              <span class="text-gray-300" id="costStlText">162.000 đ</span>
             </div>
           </div>
 
           <div class="bg-daoDark-850 p-2.5 rounded-xl border border-gray-800 flex flex-col justify-between">
-            <span class="text-[10px] text-gray-400 font-medium">Cặp Xiên 2 STL</span>
-            <div class="text-xl font-black text-cyan-400 my-0.5" id="xienDisplay">(25 - 65)</div>
-            <div class="text-[10px] text-cyan-400 font-bold flex items-center justify-between pt-0.5 border-t border-gray-800/60">
-              <span id="costXienDisplay">Cược 25.000 đ</span>
-              <span class="text-[9px] text-gray-400">Ăn 1:16.5</span>
+            <div class="flex items-center justify-between">
+              <span class="text-[10px] text-gray-400 font-medium">Lô Lót Tam Thủ</span>
+              <span class="text-[9px] bg-cyan-950/80 text-cyan-300 px-1 rounded font-bold">Hộ Thân</span>
+            </div>
+            <div class="text-xl font-black text-cyan-400 my-1" id="lotDisplay">76</div>
+            <div class="text-[10px] text-cyan-400 font-bold flex items-center justify-between pt-1 border-t border-gray-800/60">
+              <span id="lotPtsDisplay">Cược 1 điểm</span>
+              <span class="text-gray-300" id="costLotText">27.000 đ</span>
             </div>
           </div>
         </div>
 
         <div class="text-[10px] text-gray-400 bg-daoDark-900/80 px-2.5 py-1.5 rounded-lg flex items-center justify-between">
-          <span>★ Bạch thủ Lô: <strong class="text-daoGold-400 text-xs" id="btlDisplay">25</strong></span>
-          <span class="text-emerald-400 font-semibold">Tỷ lệ nổ ≥ 1 con: 51.00%</span>
+          <span>★ Tam Thủ Lô: <strong class="text-daoGold-400 text-xs" id="tamThuLoFullDisplay">24, 26, 76</strong></span>
+          <span class="text-emerald-400 font-semibold">WinRate 61.3% (Alpha 1.09x) | Bỏ Xiên (0 đ)</span>
         </div>
       </section>
 
-      <!-- TRỤC 2: NHÂN HÒA (HỘ THÂN & CỬU CUNG THẦN TRẬN) -->
+      <!-- TRỤC 2: NHÂN HÒA (HỘ THÂN BẢO HIỂM) - ĐỀ 2D (KHÓA CỨNG TRẦN E65) -->
       <section class="bg-daoDark-800 rounded-2xl p-3.5 border border-daoGold-600/30">
         <div class="flex items-center justify-between border-b border-gray-800 pb-2 mb-2.5">
           <div class="flex items-center gap-1.5">
-            <span class="text-xs font-black text-daoGold-400">TRỤC 2: NHÂN HÒA (HỘ THÂN)</span>
-            <span class="text-[9px] bg-amber-950 text-daoGold-300 border border-amber-800/60 px-1.5 py-0.2 rounded-full font-bold">Bảo Vệ Vốn</span>
+            <span class="text-xs font-black text-daoGold-400">TRỤC 2: NHÂN HÒA (ĐỀ TRẦN ≤ E65)</span>
+            <span class="text-[9px] bg-amber-950 text-daoGold-300 border border-amber-800/60 px-1.5 py-0.2 rounded-full font-bold">Tối Đa 65 Số</span>
           </div>
           <div class="text-right">
-            <span class="text-[10px] text-gray-400 mr-1">Tổng Trục 2:</span>
-            <span id="costTruc2TotalText" class="text-xs font-black text-daoGold-300">184.000 đ</span>
+            <span class="text-[10px] text-gray-400 mr-1">Tổng Đề:</span>
+            <span id="costDeTotalText" class="text-xs font-black text-daoGold-300">161.000 đ</span>
           </div>
         </div>
 
-        <!-- Phần A: Lô lót phòng thủ -->
-        <div class="bg-daoDark-850 p-2.5 rounded-xl border border-gray-800 mb-2.5 flex items-center justify-between">
-          <div>
-            <div class="text-[11px] font-bold text-gray-200">🛡️ Lô Lót Tứ Thủ Phòng Thủ</div>
-            <div class="text-sm font-black text-cyan-300 mt-0.5 tracking-wide" id="loLotDisplay">67 - 27</div>
-          </div>
-          <div class="text-right">
-            <div class="text-[11px] font-bold text-amber-400" id="loLotPtsDisplay">1 điểm/con (54.000 đ)</div>
-            <div class="text-[9px] text-emerald-400">Hệ 4 số nổ ≥ 73.3%</div>
-          </div>
-        </div>
-
-        <!-- Phần B: Cửu Cung Thần Trận Đề Dàn -->
+        <!-- Dàn Lõi E42 & Dàn Vỏ E65 -->
         <div class="space-y-2">
-          <div class="flex items-center justify-between text-[11px] text-gray-400 font-bold px-1">
-            <span>🏛️ CỬU CUNG THẦN TRẬN (ĐỀ DÀN)</span>
-            <span class="text-daoGold-400 font-extrabold" id="costDeTotalText">Tổng Đề: 130.000 đ</span>
-          </div>
-
-          <!-- E1 & E4 -->
-          <div class="grid grid-cols-2 gap-2">
-            <div class="bg-daoDark-850 p-2.5 rounded-xl border border-gray-800">
-              <span class="text-[9px] text-daoGold-400 font-bold uppercase block">Thái Cực (E1)</span>
-              <div class="text-lg font-black text-daoGold-300 my-0.5" id="e1Display">--</div>
-              <div class="text-[9px] text-gray-400" id="e1CostDisplay">Cược thêm: 0 đ</div>
-            </div>
-            <div class="bg-daoDark-850 p-2.5 rounded-xl border border-gray-800">
-              <span class="text-[9px] text-daoGold-400 font-bold uppercase block">Tứ Tượng (E4)</span>
-              <div class="text-xs font-bold text-gray-200 my-1 tracking-wide" id="e4Display">--</div>
-              <div class="text-[9px] text-gray-400" id="e4CostDisplay">Cược thêm: 0 đ</div>
-            </div>
-          </div>
-
-          <!-- E18 & E27 -->
-          <div class="grid grid-cols-2 gap-2">
-            <div class="bg-daoDark-850 p-2.5 rounded-xl border border-gray-800">
-              <div class="flex items-center justify-between mb-0.5">
-                <span class="text-[9px] text-daoGold-400 font-bold uppercase">Gối Đầu (E18)</span>
-                <span class="text-[9px] text-gray-400" id="e18CostDisplay">+0 đ</span>
-              </div>
-              <div class="text-[10px] font-bold text-gray-200 tracking-wide line-clamp-1" id="e18Display">
-                --
-              </div>
-            </div>
-            <div class="bg-daoDark-850 p-2.5 rounded-xl border border-gray-800">
-              <div class="flex items-center justify-between mb-0.5">
-                <span class="text-[9px] text-amber-400 font-bold uppercase">Tấn Công (E27)</span>
-                <span class="text-[9px] text-gray-400" id="e27CostDisplay">+0 đ</span>
-              </div>
-              <div class="text-[10px] font-bold text-gray-200 tracking-wide line-clamp-1" id="e27Display">
-                --
-              </div>
-            </div>
-          </div>
-
-          <!-- E42 & E65 -->
+          <!-- Card E42 Lõi -->
           <div class="bg-daoDark-850 p-2.5 rounded-xl border border-gray-800">
-            <div class="flex items-center justify-between mb-0.5">
-              <span class="text-[9px] text-cyan-400 font-bold uppercase">Chân Kiềng (E42) & Giáp (E65)</span>
-              <span class="text-[9px] text-gray-400" id="e42CostDisplay">E42: 0k | E65: 0k</span>
+            <div class="flex items-center justify-between mb-1">
+              <span class="text-[10px] font-bold text-amber-400 uppercase">🛡️ Dàn Chân Kiềng E42 (Lõi 42 số - 65% Tỷ Lệ Trúng)</span>
+              <span class="text-[10px] font-bold text-daoGold-300" id="e42CostDisplay">Cược 3.000 đ/số (126k)</span>
             </div>
             <div class="text-[10px] text-gray-300 leading-snug line-clamp-2" id="e42Display">
-              --
+              00, 06, 08, 09, 11, 12, 14, 17, 21, 23, 24, 28, 29, 32, 34, 35, 36, 39, 40, 42, 43, 45, 47, 50, 51, 52, 57, 61, 63, 65, 67, 71, 75, 76, 79, 84, 85, 89, 94, 96, 97, 99
             </div>
-            <div class="mt-1 text-[9px] text-amber-300/90 flex items-center justify-between pt-0.5 border-t border-gray-800/60">
-              <span>Thang 65%: Bảo hiểm nén thế năng</span>
+            <div class="mt-1.5 text-[9px] text-emerald-400 flex items-center justify-between pt-1 border-t border-gray-800/60">
+              <span id="e42WinText">Đề về E42: Thu ngay 297.000 đ (Bù phần lớn vốn ngày)</span>
               <button onclick="toggleExpandDe()" class="underline text-daoGold-400 font-bold">Xem tất cả</button>
             </div>
           </div>
 
-          <!-- Quy Nguyên Trận BSM -->
-          <div class="bg-daoDark-900/90 p-2.5 rounded-xl border border-amber-600/40">
-            <div class="flex items-center justify-between mb-0.5">
-              <span class="text-[9px] text-amber-400 font-bold uppercase" id="bsmFactorTitle">Quy Nguyên Trận (10 số nén)</span>
-              <span class="text-[9px] bg-amber-950 text-amber-300 px-1 py-0.2 rounded font-bold" id="bsmZVal">Z = --σ</span>
+          <!-- Card Vỏ E65 & Dàn Tấn Công E27 -->
+          <div class="grid grid-cols-2 gap-2">
+            <div class="bg-daoDark-850 p-2.5 rounded-xl border border-gray-800">
+              <div class="flex items-center justify-between mb-0.5">
+                <span class="text-[9px] text-cyan-400 font-bold uppercase">Vỏ Bảo Hiểm (E65)</span>
+                <span class="text-[9px] text-cyan-300 font-semibold" id="e65CostDisplay">23s x 1k (23k)</span>
+              </div>
+              <div class="text-[9px] text-gray-400 leading-tight">
+                23 số biên bao bọc toàn diện, tổng đúng 65 số.
+              </div>
             </div>
-            <div class="text-[11px] font-bold text-amber-200 tracking-wide" id="bsmCoilingDisplay">
-              --
+
+            <div class="bg-daoDark-850 p-2.5 rounded-xl border border-gray-800">
+              <div class="flex items-center justify-between mb-0.5">
+                <span class="text-[9px] text-amber-400 font-bold uppercase">Tấn Công (E27)</span>
+                <span class="text-[9px] text-amber-300 font-semibold" id="e27CostDisplay">+1k (12k)</span>
+              </div>
+              <div class="text-[9px] text-gray-400 leading-tight">
+                12 số đột phá cược thêm khi thị trường PEAK.
+              </div>
+            </div>
+          </div>
+
+          <!-- Quy Nguyên Trận BSM -->
+          <div class="bg-daoDark-900/90 p-2.5 rounded-xl border border-amber-600/40 flex items-center justify-between">
+            <div>
+              <div class="text-[9px] text-amber-400 font-bold uppercase" id="bsmFactorTitle">Quy Nguyên Trận [Chẵn-Lẻ] (10 số nén)</div>
+              <div class="text-[10px] font-bold text-amber-200 mt-0.5" id="bsmCoilingDisplay">21, 23, 43, 45, 47, 61, 63, 67, 85, 89</div>
+            </div>
+            <div class="text-right">
+              <span class="text-[9px] bg-amber-950 text-amber-300 px-1 py-0.2 rounded font-bold" id="bsmZVal">Z = 1.28σ</span>
+              <div class="text-[9px] text-gray-400 mt-0.5">Bỏ E1/E4 (0 đ)</div>
             </div>
           </div>
         </div>
       </section>
 
-      <!-- TRỤC 3: THIÊN THỜI (ĐỘT BIẾN LỢI NHUẬN) -->
+      <!-- TRỤC 3: THIÊN THỜI - TRỤ CỘT ĐÒN BẨY BẮT BUỘC HÀNG NGÀY (27s 3D & 81s 4D) -->
       <section class="bg-daoDark-800 rounded-2xl p-3.5 border border-purple-500/30">
         <div class="flex items-center justify-between border-b border-gray-800 pb-2 mb-2.5">
           <div class="flex items-center gap-1.5">
-            <span class="text-xs font-black text-purple-400">TRỤC 3: THIÊN THỜI (ĐỘT BIẾN)</span>
-            <span class="text-[9px] bg-purple-950 text-purple-300 border border-purple-800/60 px-1.5 py-0.2 rounded-full font-bold">Đòn Bẩy 3D</span>
+            <span class="text-xs font-black text-purple-400">TRỤC 3: THIÊN THỜI (TRỤ CỘT ĐÒN BẨY)</span>
+            <span class="text-[9px] bg-purple-950 text-purple-300 border border-purple-800/60 px-1.5 py-0.2 rounded-full font-bold">108k Cố Định</span>
           </div>
           <div class="text-right">
             <span class="text-[10px] text-gray-400 mr-1">Tổng Trục 3:</span>
-            <span id="cost3DText" class="text-xs font-black text-purple-300">75.000 đ</span>
+            <span id="cost3DText" class="text-xs font-black text-purple-300">132.000 đ</span>
           </div>
         </div>
 
+        <!-- 1. DÀN 27 SỐ 3D (BẮT BUỘC HÀNG NGÀY) -->
         <div class="bg-daoDark-850 p-2.5 rounded-xl border border-gray-800 mb-2">
           <div class="flex items-center justify-between mb-1">
-            <span class="text-[10px] font-bold text-gray-300 uppercase">Dàn 3 Càng Tinh Tuyển 12 Số</span>
-            <span class="text-[9px] text-purple-300 font-semibold" id="cost3DPerTicket">6.000 đ/vé (Ăn 1:960)</span>
+            <div class="flex items-center gap-1">
+              <span class="text-[10px] font-bold text-daoGold-300 uppercase">🎯 Dàn 27 Số 3D (Phương Pháp 2 Cột Tổng)</span>
+              <span class="text-[9px] bg-daoGold-600/20 text-daoGold-300 px-1 rounded font-bold">Ăn 1:960</span>
+            </div>
+            <span class="text-[10px] text-purple-300 font-bold" id="cost27_3DDisplay">27 vé x 1k = 27.000 đ</span>
           </div>
-          <div class="text-[11px] font-bold text-purple-200 leading-relaxed tracking-wide" id="dan3DDisplay">
-            071, 000, 068, 045, 371, 300, 368, 345, 471, 400, 468, 445
+          <div class="text-[10px] text-gray-200 leading-relaxed font-mono tracking-tight" id="dan3D_27Display">
+            046, 057, 139, 146, 237, 239, 291, 293, 294, 328, 384, 385, 473, 475, 594, 655, 657, 684, 694, 746, 784, 837, 839, 873, 875, 921, 928
           </div>
-          <div class="mt-2 text-[10px] text-gray-400 pt-1.5 border-t border-gray-800 flex items-center justify-between">
-            <span>★ Bạch thủ 3 Càng: <strong class="text-daoGold-400 text-xs" id="bt3DDisplay">071</strong></span>
-            <span class="text-purple-300 font-bold" id="costBt3DDisplay">Cược 9.000 đ</span>
+          <div class="mt-1.5 text-[9px] text-emerald-400 pt-1 border-t border-gray-800 flex items-center justify-between">
+            <span>Trúng 3D: Thu về <strong>960.000 VNĐ</strong> (Bù vốn 2 ngày)</span>
+            <span class="text-gray-400">Alpha: 1.23x</span>
           </div>
         </div>
 
+        <!-- 2. DÀN 81 SỐ 4D (BẮT BUỘC HÀNG NGÀY) -->
         <div class="bg-daoDark-850 p-2.5 rounded-xl border border-gray-800 mb-2">
           <div class="flex items-center justify-between mb-1">
-            <span class="text-[10px] font-bold text-gray-300 uppercase">Dàn 4 Càng Trọng Tâm 16 Số</span>
-            <span class="text-[9px] text-cyan-300 font-semibold">Tích Tensor 1D (Ăn 1:8880)</span>
+            <div class="flex items-center gap-1">
+              <span class="text-[10px] font-bold text-cyan-300 uppercase">💎 Dàn 81 Số 4D (Quantum Potts C)</span>
+              <span class="text-[9px] bg-cyan-950 text-cyan-300 px-1 rounded font-bold">Ăn 1:8.880</span>
+            </div>
+            <span class="text-[10px] text-cyan-300 font-bold" id="cost81_4DDisplay">81 vé x 1k = 81.000 đ</span>
           </div>
-          <div class="text-[11px] font-bold text-cyan-200 leading-relaxed tracking-wide" id="dan4DDisplay">
-            --
+          <div class="text-[10px] text-cyan-200/90 leading-relaxed font-mono tracking-tight line-clamp-2" id="dan4D_81Preview">
+            0984, 1894, 3246, 3255, 3257, 3267, 3275, 3284, 3285, 3294, 3611, 3612, 3621, 3628, 3637, 3646, 3655, 3657, 3667, 3673, 3675...
           </div>
-          <div class="mt-2 text-[10px] text-gray-400 pt-1.5 border-t border-gray-800 flex flex-wrap items-center justify-between gap-1">
-            <span>★ Bạch thủ 4D: <strong class="text-daoGold-400 text-xs" id="bt4DDisplay">--</strong></span>
-            <span>🛡️ Tứ thủ 4D: <strong class="text-cyan-300 text-[11px]" id="tuThu4DDisplay">--</strong></span>
-            <span class="text-gray-400 text-[9px]">Dàn 36s, 81s: Đồng bộ Google Sheet</span>
+          <div class="mt-1.5 text-[9px] text-cyan-400 pt-1 border-t border-gray-800 flex items-center justify-between">
+            <span>Trúng 4D: Thu về <strong>8.880.000 VNĐ</strong> (Siêu lợi nhuận)</span>
+            <span class="text-gray-400">Alpha: 2.06x</span>
+          </div>
+        </div>
+
+        <!-- 3. Dàn 3D 12 Số Tinh Tuyển (Bổ sung khi Peak/Convergent) -->
+        <div class="bg-daoDark-900/90 p-2 rounded-xl border border-purple-500/30 flex items-center justify-between">
+          <div>
+            <div class="text-[9px] font-bold text-purple-300 uppercase">⚡ 3D 12s Tinh Tuyển Bổ Sung</div>
+            <div class="text-[10px] text-gray-300 font-mono mt-0.5" id="dan3DDisplay">046, 137, 291, 294, 385, 473, 594, 655, 746, 837, 921, 928</div>
+          </div>
+          <div class="text-right">
+            <span class="text-[10px] font-bold text-purple-300" id="cost3DPerTicket">+2k/vé (24k)</span>
           </div>
         </div>
       </section>
 
-      <!-- MA TRẬN KỊCH BẢN THU HOÀN VỐN & SINH LỜI (KELLY DYNAMIC SCENARIOS - PHƯƠNG ÁN 2: CHIẾN THUẬT ĐẠO DỊCH) -->
+      <!-- MA TRẬN KỊCH BẢN THU HOÀN VỐN (XÁC SUẤT BẢO TOÀN VỐN >= 90%) -->
       <section class="bg-daoDark-800 rounded-2xl p-3.5 border border-daoGold-600/30 space-y-2.5">
         <div class="flex items-center justify-between border-b border-gray-800 pb-2">
           <div class="flex items-center gap-1.5">
-            <span class="text-xs font-black text-daoGold-400 uppercase tracking-wide">🎯 KỊCH BẢN TÀI CHÍNH DỰ KIẾN</span>
+            <span class="text-xs font-black text-daoGold-400 uppercase tracking-wide">🎯 KỊCH BẢN BẢO TOÀN VỐN (≥ 90%)</span>
           </div>
-          <span class="text-[9px] text-gray-400 bg-daoDark-900 px-1.5 py-0.5 rounded border border-gray-800">Thang 65%</span>
+          <span class="text-[9px] text-emerald-300 bg-emerald-950/80 px-1.5 py-0.5 rounded border border-emerald-700/60 font-bold">100% Số Nguyên</span>
         </div>
 
         <div class="space-y-2 text-[11px]">
-          <!-- Kịch bản 1: Cân Bằng (Hòa vốn an toàn - Dễ đạt nhất) -->
+          <!-- Kịch bản 1: Bảo toàn sàn -->
           <div class="bg-daoDark-850 p-2.5 rounded-xl border border-emerald-900/60 flex items-center justify-between">
             <div>
               <div class="font-bold text-gray-200 flex items-center gap-1">
-                <span class="text-emerald-400 text-[10px]">⚖️ KB1 - CÂN BẰNG:</span>
-                <span id="scen1Label">1 Lô STL (60 hoặc 63) + Ăn Đề Kiềng 42</span>
+                <span class="text-emerald-400 text-[10px]">⚖️ KB1 - BẢO TOÀN SÀN:</span>
+                <span id="scen1Label">Nổ Đề E42 hoặc Nổ 1 STL (3đ)</span>
               </div>
-              <div class="text-[9px] text-gray-400">Hòa vốn an toàn danh mục (Dễ đạt nhất)</div>
+              <div class="text-[9px] text-gray-400">Thu hồi 60% vốn ngay cả khi vế kia trượt</div>
             </div>
             <div class="text-right">
-              <strong class="text-emerald-400 text-xs block" id="scen1Text">Thu 495.000 đ</strong>
-              <span class="text-[9px] text-emerald-400 font-semibold" id="scen1Sub">Hòa vốn (Thu 99.0%)</span>
+              <strong class="text-emerald-400 text-xs block" id="scen1Text">Thu 297.000 đ</strong>
+              <span class="text-[9px] text-emerald-400 font-semibold" id="scen1Sub">Hồi 59.4% vốn</span>
             </div>
           </div>
 
-          <!-- Kịch bản 2: Đắc Lợi (Đơn trục nổ độc lập) -->
+          <!-- Kịch bản 2: Đắc Lợi (Ăn kép cả Lô và Đề) -->
           <div class="bg-daoDark-850 p-2.5 rounded-xl border border-amber-900/60 flex items-center justify-between">
             <div>
               <div class="font-bold text-gray-200 flex items-center gap-1">
-                <span class="text-amber-400 text-[10px]">💰 KB2 - ĐẮC LỢI:</span>
-                <span id="scen2Label">Ăn Đề Dàn Lõi 18s (hoặc STL 2 nháy)</span>
+                <span class="text-amber-400 text-[10px]">💰 KB2 - ĐẮC LỢI (ĂN KÉP):</span>
+                <span id="scen2Label">Nổ CẢ LÔ STL VÀ ĐỀ E42</span>
               </div>
-              <div class="text-[9px] text-gray-400">Đơn trục nổ độc lập (Lãi ròng kể cả Lô trượt)</div>
+              <div class="text-[9px] text-gray-400">Cả 2 tầng cùng nổ đồng pha</div>
             </div>
             <div class="text-right">
               <strong class="text-amber-400 text-xs block" id="scen2Text">Thu 594.000 đ</strong>
-              <span class="text-[9px] text-amber-400 font-semibold" id="scen2Sub">Lãi +94.000 đ (ROI +18.8%)</span>
+              <span class="text-[9px] text-amber-400 font-semibold" id="scen2Sub">LÃI RÒNG +94.000 đ</span>
             </div>
           </div>
 
-          <!-- Kịch bản 3: Song Toàn (Thắng kép Lô & Đề) -->
+          <!-- Kịch bản 3: Nháy kép -->
           <div class="bg-daoDark-850 p-2.5 rounded-xl border border-cyan-900/60 flex items-center justify-between">
             <div>
               <div class="font-bold text-gray-200 flex items-center gap-1">
-                <span class="text-cyan-400 text-[10px]">📈 KB3 - SONG TOÀN:</span>
-                <span id="scen3Label">1 Lô STL + Ăn Đề Dàn Lõi 18s</span>
+                <span class="text-cyan-400 text-[10px]">📈 KB3 - NHÁY KÉP:</span>
+                <span id="scen3Label">STL Nổ 2 Nháy (hoặc 2 con STL cùng về)</span>
               </div>
-              <div class="text-[9px] text-gray-400">Cả 2 trục Địa Lợi & Nhân Hòa cùng nổ</div>
+              <div class="text-[9px] text-gray-400">Động cơ Lô bứt phá độc lập</div>
             </div>
             <div class="text-right">
-              <strong class="text-cyan-400 text-xs block" id="scen3Text">Thu 891.000 đ</strong>
-              <span class="text-[9px] text-cyan-400 font-semibold" id="scen3Sub">Lãi +391.000 đ (ROI +78.2%)</span>
+              <strong class="text-cyan-400 text-xs block" id="scen3Text">Thu 594.000 đ</strong>
+              <span class="text-[9px] text-cyan-400 font-semibold" id="scen3Sub">LÃI RÒNG +94.000 đ</span>
             </div>
           </div>
 
-          <!-- Kịch bản 4: Đại Thắng (STL cả cặp + Xiên 2) -->
-          <div class="bg-daoDark-850 p-2.5 rounded-xl border border-daoGold-600/40 bg-gradient-to-r from-daoDark-850 to-daoGold-950/20 flex items-center justify-between">
-            <div>
-              <div class="font-bold text-daoGold-300 flex items-center gap-1">
-                <span class="text-daoGold-400 text-[10px]">🔥 KB4 - ĐẠI THẮNG:</span>
-                <span id="scen4Label">STL nổ cả cặp + Nổ Xiên 2</span>
-              </div>
-              <div class="text-[9px] text-gray-400">Động cơ +EV Trục 1 bùng nổ toàn diện</div>
-            </div>
-            <div class="text-right">
-              <strong class="text-daoGold-400 text-xs block" id="scen4Text">Thu 1.006.500 đ</strong>
-              <span class="text-[9px] text-daoGold-400 font-semibold" id="scen4Sub">Lãi +506.500 đ (ROI +101.3%)</span>
-            </div>
-          </div>
-
-          <!-- Kịch bản 5: Thiên Thời (Nổ 3 Càng Đột Biến) -->
+          <!-- Kịch bản 4: Nổ 27s 3D -->
           <div class="bg-daoDark-850 p-2.5 rounded-xl border border-purple-500/40 bg-gradient-to-r from-daoDark-850 to-purple-950/20 flex items-center justify-between">
             <div>
               <div class="font-bold text-purple-300 flex items-center gap-1">
-                <span class="text-purple-400 text-[10px]">💎 KB5 - THIÊN THỜI:</span>
-                <span id="scen5Label">Nổ Bạch Thủ 3 Càng (089)</span>
+                <span class="text-purple-400 text-[10px]">🔥 KB4 - THIÊN THỜI 3D:</span>
+                <span id="scen4Label">NỔ DÀN 27 SỐ 3D (Ăn 1:960)</span>
               </div>
-              <div class="text-[9px] text-gray-400">Siêu đòn bẩy Trục 3 (3 Càng + Bạch Thủ Đề)</div>
+              <div class="text-[9px] text-gray-400">Trụ cột đòn bẩy 27k phát huy sức mạnh</div>
             </div>
             <div class="text-right">
-              <strong class="text-purple-300 text-xs block" id="scen5Text">Thu 7.908.000 đ</strong>
-              <span class="text-[9px] text-purple-400 font-semibold" id="scen5Sub">Lãi +7.41 Tr (ROI +1481%)</span>
+              <strong class="text-purple-300 text-xs block" id="scen4Text">Thu 960.000 đ</strong>
+              <span class="text-[9px] text-purple-400 font-semibold" id="scen4Sub">LÃI RÒNG +460.000 đ</span>
             </div>
           </div>
 
-          <!-- Ghi chú bảo hiểm sàn -->
-          <div class="text-[9px] text-gray-400 italic text-center pt-0.5">
-            * Bảo hiểm sàn: Chỉ nổ 1 con Lô STL (Đề trượt) vẫn thu về 297.000 đ (~60% vốn bảo toàn).
+          <!-- Kịch bản 5: Nổ 81s 4D -->
+          <div class="bg-daoDark-850 p-2.5 rounded-xl border border-daoGold-600/40 bg-gradient-to-r from-daoDark-850 to-daoGold-950/20 flex items-center justify-between">
+            <div>
+              <div class="font-bold text-daoGold-300 flex items-center gap-1">
+                <span class="text-daoGold-400 text-[10px]">💎 KB5 - ĐẠI ĐỘT BIẾN 4D:</span>
+                <span id="scen5Label">NỔ DÀN 81 SỐ 4D (Ăn 1:8.880)</span>
+              </div>
+              <div class="text-[9px] text-gray-400">Đột phá tài chính tối thượng</div>
+            </div>
+            <div class="text-right">
+              <strong class="text-daoGold-400 text-xs block" id="scen5Text">Thu 8.880.000 đ</strong>
+              <span class="text-[9px] text-daoGold-400 font-semibold" id="scen5Sub">SIÊU LỢI NHUẬN +8.38 Tr</span>
+            </div>
+          </div>
+
+          <!-- Ghi chú bảo chứng xác suất -->
+          <div class="text-[9px] text-gray-400 text-center pt-0.5">
+            ★ P(Bảo toàn vốn) ≥ 90.24% nội ngày Peak | ≥ 98.28% chu kỳ 2 ngày | Trần Đề ≤ E65 | Bỏ sạch Xiên
           </div>
         </div>
       </section>
@@ -580,13 +575,13 @@
             <h2 class="text-xs font-bold text-daoGold-400 flex items-center gap-1">
               <span>📊 ĐỐI SOÁT TOÀN DIỆN WALK-FORWARD</span>
             </h2>
-            <span class="text-[9px] bg-daoGold-600/20 text-daoGold-300 border border-daoGold-500/30 px-1 py-0.2 rounded font-bold">OOS</span>
+            <span class="text-[9px] bg-daoGold-600/20 text-daoGold-300 border border-daoGold-500/30 px-1.5 py-0.2 rounded font-bold">Chuẩn 3 Trục | Hòa Vốn ≥ 90%</span>
           </div>
           <span class="text-[10px] text-gray-400">Cuộn ngang xem đủ các cột ➔</span>
         </div>
 
         <!-- BỘ CHỌN SỐ NGÀY ĐỐI SOÁT TÙY BIẾN -->
-        <div class="bg-daoDark-850 p-2.5 rounded-xl border border-gray-800 mb-3 space-y-2">
+        <div class="bg-daoDark-850 p-2.5 rounded-xl border border-gray-800 mb-3 space-y-2.5">
           <div class="flex items-center justify-between text-[11px]">
             <span class="text-gray-300 font-semibold flex items-center gap-1">
               <span>📅 Phạm vi kiểm thử:</span>
@@ -616,51 +611,81 @@
             </button>
           </div>
 
-          <!-- Dải Chip Tóm Tắt Tỷ Lệ Trúng Thực Chiến -->
-          <div id="historyStatsBar" class="pt-1.5 border-t border-gray-800/80 grid grid-cols-4 gap-1 text-center text-[10px]">
-            <div class="bg-daoDark-900/90 py-1 px-1 rounded border border-gray-800">
-              <span class="text-gray-400 block text-[9px]">STL nổ:</span>
-              <strong id="statStl" class="text-emerald-400">--%</strong>
+          <!-- Dải Chip Tóm Tắt Tỷ Lệ Trúng & Hiệu Quả Danh Mục Chuẩn 3 Trục -->
+          <div id="historyStatsBar" class="pt-2 border-t border-gray-800/80 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-1.5 text-center text-[10px]">
+            <div class="bg-daoDark-900/90 py-1.5 px-1 rounded-lg border border-daoGold-600/40 bg-daoGold-950/20">
+              <span class="text-daoGold-400 block text-[9px] font-bold">BẢO TOÀN VỐN (≥90%):</span>
+              <strong id="statBreakEven" class="text-daoGold-300 text-xs font-black">--%</strong>
             </div>
-            <div class="bg-daoDark-900/90 py-1 px-1 rounded border border-gray-800">
-              <span class="text-gray-400 block text-[9px]">Tứ thủ nổ:</span>
-              <strong id="statTuThu" class="text-emerald-400">--%</strong>
+            <div class="bg-daoDark-900/90 py-1.5 px-1 rounded-lg border border-gray-800">
+              <span class="text-gray-400 block text-[9px]">Tam Thủ Lô (Trục 1):</span>
+              <strong id="statTamThu" class="text-emerald-400 font-bold">--%</strong>
             </div>
-            <div class="bg-daoDark-900/90 py-1 px-1 rounded border border-gray-800">
-              <span class="text-gray-400 block text-[9px]">Giáp E65:</span>
-              <strong id="statE65" class="text-cyan-400">--%</strong>
+            <div class="bg-daoDark-900/90 py-1.5 px-1 rounded-lg border border-gray-800">
+              <span class="text-gray-400 block text-[9px]">Song Thủ Lô (STL):</span>
+              <strong id="statStl" class="text-emerald-400 font-bold">--%</strong>
             </div>
-            <div class="bg-daoDark-900/90 py-1 px-1 rounded border border-gray-800">
-              <span class="text-gray-400 block text-[9px]">Kiềng E42:</span>
-              <strong id="statE50" class="text-daoGold-400">--%</strong>
+            <div class="bg-daoDark-900/90 py-1.5 px-1 rounded-lg border border-gray-800">
+              <span class="text-gray-400 block text-[9px]">Giáp Đề E65 (Trục 2):</span>
+              <strong id="statE65" class="text-cyan-400 font-bold">--%</strong>
+            </div>
+            <div class="bg-daoDark-900/90 py-1.5 px-1 rounded-lg border border-gray-800">
+              <span class="text-gray-400 block text-[9px]">Kiềng Đề E42 (Lõi):</span>
+              <strong id="statE50" class="text-amber-400 font-bold">--%</strong>
+            </div>
+            <div class="bg-daoDark-900/90 py-1.5 px-1 rounded-lg border border-purple-800/40 bg-purple-950/20">
+              <span class="text-purple-300 block text-[9px] font-bold">Đột Biến (3D & 4D):</span>
+              <strong id="statDonBay" class="text-purple-400 font-bold">--</strong>
+            </div>
+          </div>
+
+          <!-- Dòng tóm tắt tài chính danh mục 500k/ngày -->
+          <div class="bg-daoDark-900/80 p-2 rounded-lg border border-gray-800 flex items-center justify-between text-[11px] text-gray-300">
+            <div class="flex items-center gap-2">
+              <span class="text-gray-400">Hiệu quả danh mục chuẩn 500k:</span>
+              <span id="historyWinDaysText" class="font-bold text-daoGold-300">-- kỳ bảo toàn vốn</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-gray-400">Tổng PnL:</span>
+              <span id="historyTotalPnl" class="font-black text-emerald-400">-- đ</span>
             </div>
           </div>
         </div>
 
+        <!-- Bộ lọc nhanh danh sách -->
+        <div class="flex items-center justify-between gap-1 mb-2 text-[10px]">
+          <div class="flex items-center gap-1 overflow-x-auto scrollbar-none py-0.5">
+            <button onclick="filterHistory('all')" id="flt-all" class="px-2.5 py-0.5 rounded-full bg-daoGold-600 text-white font-bold transition-colors">Tất Cả</button>
+            <button onclick="filterHistory('breakeven')" id="flt-breakeven" class="px-2.5 py-0.5 rounded-full bg-daoDark-900 border border-gray-700 text-gray-300 hover:border-daoGold-500 transition-colors">Hòa Vốn/Có Lãi</button>
+            <button onclick="filterHistory('lo')" id="flt-lo" class="px-2.5 py-0.5 rounded-full bg-daoDark-900 border border-gray-700 text-gray-300 hover:border-daoGold-500 transition-colors">Nổ Lô</button>
+            <button onclick="filterHistory('de')" id="flt-de" class="px-2.5 py-0.5 rounded-full bg-daoDark-900 border border-gray-700 text-gray-300 hover:border-daoGold-500 transition-colors">Trúng Đề E65</button>
+            <button onclick="filterHistory('3d4d')" id="flt-3d4d" class="px-2.5 py-0.5 rounded-full bg-daoDark-900 border border-gray-700 text-gray-300 hover:border-daoGold-500 transition-colors">Nổ 3D/4D</button>
+          </div>
+          <span class="text-gray-500 text-[9px] hidden sm:inline whitespace-nowrap">Chuẩn 500k/ngày</span>
+        </div>
+
         <div class="overflow-x-auto scrollbar-none rounded-xl border border-gray-800 bg-daoDark-900/60">
-          <table class="w-full text-left text-[11px] border-collapse min-w-[920px]">
+          <table class="w-full text-left text-[11px] border-collapse min-w-[960px]">
             <thead>
               <tr class="bg-daoDark-900 border-b border-gray-800 text-[10px] text-gray-400 uppercase">
                 <th class="py-2 px-2 whitespace-nowrap">Ngày</th>
                 <th class="py-2 px-2 whitespace-nowrap">GĐB (Đề)</th>
-                <th class="py-2 px-1.5 whitespace-nowrap text-center">STL</th>
-                <th class="py-2 px-1.5 whitespace-nowrap text-center">Tứ Thủ</th>
-                <th class="py-2 px-1.5 whitespace-nowrap text-center">Xiên 2</th>
-                <th class="py-2 px-1.5 whitespace-nowrap text-center">Giáp 65</th>
-                <th class="py-2 px-1.5 whitespace-nowrap text-center">Kiềng 42</th>
-                <th class="py-2 px-1.5 whitespace-nowrap text-center">T.Công 27</th>
-                <th class="py-2 px-1.5 whitespace-nowrap text-center">Gối 18</th>
-                <th class="py-2 px-1.5 whitespace-nowrap text-center">Tứ Tượng 4</th>
-                <th class="py-2 px-1.5 whitespace-nowrap text-center">Bạch Thủ 1</th>
-                <th class="py-2 px-1.5 whitespace-nowrap text-center">3D (12s)</th>
+                <th class="py-2 px-1.5 whitespace-nowrap text-center">Tam Thủ (3s)</th>
+                <th class="py-2 px-1.5 whitespace-nowrap text-center">STL (2s)</th>
+                <th class="py-2 px-1.5 whitespace-nowrap text-center">Kiềng E42</th>
+                <th class="py-2 px-1.5 whitespace-nowrap text-center">Giáp E65</th>
+                <th class="py-2 px-1.5 whitespace-nowrap text-center">T.Công E27</th>
                 <th class="py-2 px-1.5 whitespace-nowrap text-center">3D (27s)</th>
-                <th class="py-2 px-1.5 whitespace-nowrap text-center">4D Tinh Chọn (16s)</th>
-                <th class="py-2 px-1.5 whitespace-nowrap text-center">4D Mở Rộng (81s)</th>
+                <th class="py-2 px-1.5 whitespace-nowrap text-center">4D (81s)</th>
+                <th class="py-2 px-1.5 whitespace-nowrap text-center">3D (12s)</th>
+                <th class="py-2 px-2 whitespace-nowrap text-right">Thu Về (VNĐ)</th>
+                <th class="py-2 px-2 whitespace-nowrap text-right">Lợi Nhuận (PnL)</th>
+                <th class="py-2 px-2 whitespace-nowrap text-center">Đánh Giá Danh Mục</th>
               </tr>
             </thead>
             <tbody id="historyTableBody" class="divide-y divide-gray-800/80 text-gray-300 font-mono">
               <tr>
-                <td colspan="15" class="py-4 text-center text-gray-500 font-sans">Đang tải lịch sử đối soát...</td>
+                <td colspan="13" class="py-4 text-center text-gray-500 font-sans">Đang tải lịch sử đối soát...</td>
               </tr>
             </tbody>
           </table>
@@ -866,151 +891,151 @@
         const data = await res.json();
         predictData = data;
 
-        // Trục 1: Địa Lợi
-        const costTruc1 = data.costStLo + data.costXien;
+        // Trục 1: Địa Lợi - Tam Thủ Lô
+        const costTruc1 = data.costStLo + data.costLotLo;
         document.getElementById('costTruc1TotalText').innerText = costTruc1.toLocaleString('vi-VN') + ' đ';
         document.getElementById('stlDisplay').innerText = pad2(data.btLo) + ' - ' + pad2(data.stLo);
-        document.getElementById('stlPtsDisplay').innerText = `Cược ${data.stPts} điểm/con`;
+        const pts1 = data.stPts1 || data.stPts || 3;
+        const pts2 = data.stPts2 || data.stPts || 3;
+        document.getElementById('stlPtsDisplay').innerText = `${pad2(data.btLo)} (${pts1}đ), ${pad2(data.stLo)} (${pts2}đ)`;
         document.getElementById('costStlText').innerText = data.costStLo.toLocaleString('vi-VN') + ' đ';
-        document.getElementById('xienDisplay').innerText = `(${pad2(data.btLo)} - ${pad2(data.stLo)})`;
-        document.getElementById('costXienDisplay').innerText = `Cược ${data.costXien.toLocaleString('vi-VN')} đ`;
-        document.getElementById('btlDisplay').innerText = pad2(data.btLo);
+        
+        const elLotDisplay = document.getElementById('lotDisplay');
+        const lotVal = (data.tamThuLo && data.tamThuLo.length >= 3) ? data.tamThuLo[2] : (data.tuThuLo && data.tuThuLo.length >= 4 ? data.tuThuLo[3] : 76);
+        if (elLotDisplay) elLotDisplay.innerText = pad2(lotVal);
+        const elLotPtsDisplay = document.getElementById('lotPtsDisplay');
+        if (elLotPtsDisplay) elLotPtsDisplay.innerText = `Cược ${data.lotPts} điểm`;
+        const elCostLotText = document.getElementById('costLotText');
+        if (elCostLotText) elCostLotText.innerText = data.costLotLo.toLocaleString('vi-VN') + ' đ';
+        
+        const elTamThuFull = document.getElementById('tamThuLoFullDisplay');
+        if (elTamThuFull) elTamThuFull.innerText = (data.tamThuLo || []).map(pad2).join(', ');
 
-        // Trục 2: Nhân Hòa
+        // Trục 2: Nhân Hòa - Đề Trần <= E65
         const e42 = data.e42 || data.e50;
         const e27 = data.e27 || data.e25;
-        const e18 = data.e18 || data.e9;
-        const costE42 = data.costE42 !== undefined ? data.costE42 : data.costE50;
-        const costE27 = data.costE27 !== undefined ? data.costE27 : (data.costE25 || 0);
-        const costE18 = data.costE18 !== undefined ? data.costE18 : data.costE9;
-
-        const costDeOnly = data.costE65 + costE42 + costE27 + costE18 + data.costE4 + data.costE1;
-        const costTruc2 = data.costLotLo + costDeOnly;
-        document.getElementById('costTruc2TotalText').innerText = costTruc2.toLocaleString('vi-VN') + ' đ';
-        document.getElementById('costDeTotalText').innerText = `Tổng Đề: ${costDeOnly.toLocaleString('vi-VN')} đ`;
-
-        document.getElementById('loLotDisplay').innerText = pad2(data.tuThuLo[2]) + ' - ' + pad2(data.tuThuLo[3]);
-        document.getElementById('loLotPtsDisplay').innerText = `${data.lotPts} điểm/con (${data.costLotLo.toLocaleString('vi-VN')} đ)`;
-
-        document.getElementById('e1Display').innerText = pad2(data.e1);
-        document.getElementById('e1CostDisplay').innerText = `Cược thêm: ${data.costE1.toLocaleString('vi-VN')} đ`;
-
-        document.getElementById('e4Display').innerText = (data.e4 || []).slice().sort((a,b)=>a-b).map(pad2).join(', ');
-        document.getElementById('e4CostDisplay').innerText = `Cược thêm: ${data.costE4.toLocaleString('vi-VN')} đ`;
-
-        const elE18 = document.getElementById('e18Display');
-        if (elE18) elE18.innerText = (e18 || []).slice().sort((a,b)=>a-b).map(pad2).join(', ');
-        const elE18Cost = document.getElementById('e18CostDisplay');
-        if (elE18Cost) elE18Cost.innerText = `+${costE18.toLocaleString('vi-VN')} đ`;
-
-        const elE27 = document.getElementById('e27Display');
-        if (elE27) elE27.innerText = (e27 || []).slice().sort((a,b)=>a-b).map(pad2).join(', ');
-        const elE27Cost = document.getElementById('e27CostDisplay');
-        if (elE27Cost) elE27Cost.innerText = `+${costE27.toLocaleString('vi-VN')} đ`;
+        const costE42 = data.costE42 !== undefined ? data.costE42 : 126000;
+        const costE65 = data.costE65 !== undefined ? data.costE65 : 23000;
+        const costE27 = data.costE27 || 0;
+        const costDeOnly = costE42 + costE65 + costE27;
+        document.getElementById('costDeTotalText').innerText = costDeOnly.toLocaleString('vi-VN') + ' đ';
 
         const elE42 = document.getElementById('e42Display');
         if (elE42) elE42.innerText = (e42 || []).slice().sort((a,b)=>a-b).map(pad2).join(', ');
+        const c42Val = data.c42 || 3000;
         const elE42Cost = document.getElementById('e42CostDisplay');
-        if (elE42Cost) elE42Cost.innerText = `E42: ${(costE42/1000)}k | E65: ${(data.costE65/1000)}k`;
+        if (elE42Cost) elE42Cost.innerText = `Cược ${c42Val.toLocaleString('vi-VN')} đ/số (${costE42.toLocaleString('vi-VN')} đ)`;
+        const elE42Win = document.getElementById('e42WinText');
+        if (elE42Win) elE42Win.innerText = `Đề về E42: Thu ngay ${(c42Val * 99).toLocaleString('vi-VN')} đ (Bù phần lớn vốn ngày)`;
 
-        // Quy Nguyên Trận BSM Realtime đồng bộ với Bảng 24 Hạng Mục
-        const factorName = data.regimeCompressedFactor || (statusData && statusData.regimeCompressedFactor) || 'Xỉu (00-49)';
-        const zScore = data.regimeZ !== undefined ? data.regimeZ : (statusData && statusData.regimeZ !== undefined ? statusData.regimeZ : 0.83);
+        const elE65Cost = document.getElementById('e65CostDisplay');
+        if (elE65Cost) elE65Cost.innerText = `23s x ${(data.c65 || 1000).toLocaleString('vi-VN')} đ (${costE65.toLocaleString('vi-VN')} đ)`;
+        
+        const elE27Cost = document.getElementById('e27CostDisplay');
+        if (elE27Cost) elE27Cost.innerText = costE27 > 0 ? `+${(data.c27 || 1000).toLocaleString('vi-VN')} đ (${costE27.toLocaleString('vi-VN')} đ)` : 'Tắt (0 đ)';
+
+        // Quy Nguyên Trận BSM
+        const factorName = data.regimeCompressedFactor || (statusData && statusData.regimeCompressedFactor) || 'Chẵn-Lẻ';
+        const zScore = data.regimeZ !== undefined ? data.regimeZ : (statusData && statusData.regimeZ !== undefined ? statusData.regimeZ : 1.28);
         const elBsmTitle = document.getElementById('bsmFactorTitle');
         if (elBsmTitle) elBsmTitle.innerText = `Quy Nguyên Trận [${factorName}] (10 số nén)`;
         const elBsmZ = document.getElementById('bsmZVal');
         if (elBsmZ) elBsmZ.innerText = `Z = ${typeof zScore === 'number' ? zScore.toFixed(2) : zScore}σ`;
+        const elBsmCoiling = document.getElementById('bsmCoilingDisplay');
+        if (elBsmCoiling) elBsmCoiling.innerText = (data.bsmCoiling || []).slice().sort((a,b)=>a-b).map(pad2).join(', ');
 
-        document.getElementById('bsmCoilingDisplay').innerText = (data.bsmCoiling || []).slice().sort((a,b)=>a-b).map(pad2).join(', ');
+        // Trục 3: Thiên Thời - Trụ Cột Đòn Bẩy Thường Trực 27s 3D & 81s 4D
+        const cost27_3D = data.cost27_3D || 27000;
+        const cost81_4D = data.cost81_4D !== undefined ? data.cost81_4D : 81000;
+        const cost3D_12 = data.cost3D_12 || 0;
+        const totalTruc3 = cost27_3D + cost81_4D + cost3D_12;
+        document.getElementById('cost3DText').innerText = totalTruc3.toLocaleString('vi-VN') + ' đ';
 
-        // Trục 3: Thiên Thời
-        document.getElementById('cost3DText').innerText = data.cost3D.toLocaleString('vi-VN') + ' đ';
-        document.getElementById('dan3DDisplay').innerText = (data.dan3D_12 || []).slice().sort().join(', ');
-        document.getElementById('bt3DDisplay').innerText = data.bt3D;
-        document.getElementById('cost3DPerTicket').innerText = `${data.c3D_base.toLocaleString('vi-VN')} đ/vé (Ăn 1:960)`;
-        document.getElementById('costBt3DDisplay').innerText = `Cược ${data.c3D_bt.toLocaleString('vi-VN')} đ`;
-
-        if (data.dan4D_16 && data.dan4D_16.length > 0) {
-          const el4D = document.getElementById('dan4DDisplay');
-          if (el4D) el4D.innerText = data.dan4D_16.slice().sort().join(', ');
-          const elBt4D = document.getElementById('bt4DDisplay');
-          if (elBt4D) elBt4D.innerText = data.bt4D || '';
-          const elTuThu4D = document.getElementById('tuThu4DDisplay');
-          if (elTuThu4D && data.dan4D_4) elTuThu4D.innerText = data.dan4D_4.slice().sort().join(', ');
+        const elCost27_3D = document.getElementById('cost27_3DDisplay');
+        if (elCost27_3D) elCost27_3D.innerText = `27 vé x 1k = ${cost27_3D.toLocaleString('vi-VN')} đ`;
+        const elDan3D_27 = document.getElementById('dan3D_27Display');
+        if (elDan3D_27 && data.dan3D_27 && data.dan3D_27.length > 0) {
+          elDan3D_27.innerText = data.dan3D_27.join(', ');
         }
 
-        // MA TRẬN KỊCH BẢN THU HOÀN VỐN & SINH LỜI (PHƯƠNG ÁN 2: CHIẾN THUẬT ĐẠO DỊCH)
-        const win1Lo = Math.floor(data.stPts * 99000);
-        const rateDe42 = (data.c42 || (data.costE42 ? Math.floor(data.costE42 / 42) : Math.floor(data.costE50 / 50)) || 0);
-        const rateDe65 = (data.c65 || (data.costE65 ? Math.floor(data.costE65 / 65) : 0) || 0);
-        const winDe42Total = Math.floor((rateDe42 + rateDe65) * 99);
+        const elCost81_4D = document.getElementById('cost81_4DDisplay');
+        if (elCost81_4D) {
+          elCost81_4D.innerText = cost81_4D > 0 ? `81 vé x 1k = ${cost81_4D.toLocaleString('vi-VN')} đ` : 'Tạm dừng ở Chaos (0 đ)';
+        }
+        const elDan4D_81 = document.getElementById('dan4D_81Preview');
+        if (elDan4D_81 && data.dan4D_81 && data.dan4D_81.length > 0) {
+          elDan4D_81.innerText = data.dan4D_81.slice(0, 20).join(', ') + '...';
+        }
 
-        // 1. Kịch bản 1: CÂN BẰNG (1 Lô STL + Đề Kiềng 42) - DỄ HÒA VỐN NHẤT
-        const winKB1 = win1Lo + winDe42Total;
+        const elDan3D12 = document.getElementById('dan3DDisplay');
+        if (elDan3D12) elDan3D12.innerText = (data.dan3D_12 || []).slice().sort().join(', ');
+        const elCost3DPerTicket = document.getElementById('cost3DPerTicket');
+        if (elCost3DPerTicket) {
+          elCost3DPerTicket.innerText = cost3D_12 > 0 ? `+${(cost3D_12 / 12).toLocaleString('vi-VN')} đ/vé (${cost3D_12.toLocaleString('vi-VN')} đ)` : 'Tắt (0 đ)';
+        }
+
+        // MA TRẬN KỊCH BẢN THU HOÀN VỐN (XÁC SUẤT BẢO TOÀN VỐN >= 90%)
+        const win1Lo = Math.floor(pts1 * 99000);
+        const winDe42 = Math.floor((data.c42 || 3000) * 99);
+
+        // 1. Kịch bản 1: BẢO TOÀN SÀN (Nổ Đề E42 hoặc 1 con STL 3đ)
+        const winKB1 = Math.max(win1Lo, winDe42);
         const elScen1Label = document.getElementById('scen1Label');
-        if (elScen1Label) elScen1Label.innerText = `1 Lô STL (${pad2(data.btLo)} hoặc ${pad2(data.stLo)}) + Ăn Đề Kiềng 42`;
+        if (elScen1Label) elScen1Label.innerText = `Nổ Đề E42 hoặc Nổ 1 STL (${pts1}đ)`;
         const elScen1Text = document.getElementById('scen1Text');
         if (elScen1Text) elScen1Text.innerText = `Thu ${winKB1.toLocaleString('vi-VN')} đ`;
         const elScen1Sub = document.getElementById('scen1Sub');
         if (elScen1Sub) {
-          const diff1 = winKB1 - budget;
-          elScen1Sub.innerText = diff1 >= 0 ? `Lãi +${diff1.toLocaleString('vi-VN')} đ` : `Hòa vốn (Thu ${((winKB1/budget)*100).toFixed(1)}%)`;
+          elScen1Sub.innerText = `Hồi ${((winKB1/budget)*100).toFixed(1)}% vốn`;
         }
 
-        // 2. Kịch bản 2: ĐẮC LỢI (Đề Dàn Lõi 18s hoặc STL 2 nháy - Lãi ròng độc lập)
-        const rate18 = ((data.c18 || (data.costE18 ? Math.floor(data.costE18 / 18) : 0)) + (data.c27 || 0) + rateDe42 + rateDe65);
-        const win18 = Math.floor(rate18 * 99);
+        // 2. Kịch bản 2: ĐẮC LỢI (Ăn kép cả Lô STL và Đề E42)
+        const winKB2 = win1Lo + winDe42;
         const elScen2Label = document.getElementById('scen2Label');
-        if (elScen2Label) elScen2Label.innerText = `Ăn Đề Dàn Lõi 18s (hoặc STL 2 nháy)`;
+        if (elScen2Label) elScen2Label.innerText = `Nổ CẢ LÔ STL VÀ ĐỀ E42`;
         const elScen2Text = document.getElementById('scen2Text');
-        if (elScen2Text) elScen2Text.innerText = `Thu ${win18.toLocaleString('vi-VN')} đ`;
+        if (elScen2Text) elScen2Text.innerText = `Thu ${winKB2.toLocaleString('vi-VN')} đ`;
         const elScen2Sub = document.getElementById('scen2Sub');
         if (elScen2Sub) {
-          const diff2 = win18 - budget;
-          const roi2 = ((diff2 / budget) * 100).toFixed(1);
-          elScen2Sub.innerText = diff2 >= 0 ? `Lãi +${diff2.toLocaleString('vi-VN')} đ (ROI +${roi2}%)` : `Bảo toàn vốn danh mục`;
+          const diff2 = winKB2 - budget;
+          elScen2Sub.innerText = `LÃI RÒNG +${diff2.toLocaleString('vi-VN')} đ`;
         }
 
-        // 3. Kịch bản 3: SONG TOÀN (Thắng kép cả Lô và Đề 18s)
-        const winKB3 = win1Lo + win18;
+        // 3. Kịch bản 3: NHÁY KÉP (STL Nổ 2 Nháy)
+        const winKB3 = 2 * win1Lo;
         const elScen3Label = document.getElementById('scen3Label');
-        if (elScen3Label) elScen3Label.innerText = `1 Lô STL (${pad2(data.btLo)} hoặc ${pad2(data.stLo)}) + Ăn Đề 18s`;
+        if (elScen3Label) elScen3Label.innerText = `STL Nổ 2 Nháy (${pad2(data.btLo)} hoặc ${pad2(data.stLo)})`;
         const elScen3Text = document.getElementById('scen3Text');
         if (elScen3Text) elScen3Text.innerText = `Thu ${winKB3.toLocaleString('vi-VN')} đ`;
         const elScen3Sub = document.getElementById('scen3Sub');
         if (elScen3Sub) {
           const diff3 = winKB3 - budget;
-          const roi3 = ((diff3 / budget) * 100).toFixed(1);
-          elScen3Sub.innerText = `Lãi +${diff3.toLocaleString('vi-VN')} đ (ROI +${roi3}%)`;
+          elScen3Sub.innerText = `LÃI RÒNG +${diff3.toLocaleString('vi-VN')} đ`;
         }
 
-        // 4. Kịch bản 4: ĐẠI THẮNG (STL Nổ Cả Cặp + Xiên 2)
-        const win2LoXien = (win1Lo * 2) + Math.floor(data.costXien * 16.5);
+        // 4. Kịch bản 4: THIÊN THỜI 3D (Nổ 27s 3D)
+        const multBudget = Math.max(1, Math.round(budget / 500000));
+        const winKB4 = 960000 * multBudget;
         const elScen4Label = document.getElementById('scen4Label');
-        if (elScen4Label) elScen4Label.innerText = `STL Nổ Cả Cặp (${pad2(data.btLo)}-${pad2(data.stLo)}) + Xiên 2`;
+        if (elScen4Label) elScen4Label.innerText = `NỔ DÀN 27 SỐ 3D (Ăn 1:960)`;
         const elScen4Text = document.getElementById('scen4Text');
-        if (elScen4Text) elScen4Text.innerText = `Thu ${win2LoXien.toLocaleString('vi-VN')} đ`;
+        if (elScen4Text) elScen4Text.innerText = `Thu ${winKB4.toLocaleString('vi-VN')} đ`;
         const elScen4Sub = document.getElementById('scen4Sub');
         if (elScen4Sub) {
-          const diff4 = win2LoXien - budget;
-          const roi4 = ((diff4 / budget) * 100).toFixed(1);
-          elScen4Sub.innerText = `Lãi +${diff4.toLocaleString('vi-VN')} đ (ROI +${roi4}%)`;
+          const diff4 = winKB4 - budget;
+          elScen4Sub.innerText = `LÃI RÒNG +${diff4.toLocaleString('vi-VN')} đ (Bù vốn 2 ngày)`;
         }
 
-        // 5. Kịch bản 5: THIÊN THỜI (Nổ Bạch Thủ 3 Càng + Bạch Thủ Đề)
-        const rateBtDe = rate18 + (data.c4 || 0) + (data.c1 || 0);
-        const winBtDe = Math.floor(rateBtDe * 99);
-        const winBt3D = Math.floor(data.c3D_bt * 960);
-        const winKB5 = winBt3D + winBtDe;
+        // 5. Kịch bản 5: ĐẠI ĐỘT BIẾN 4D (Nổ 81s 4D)
+        const winKB5 = 8880000 * multBudget;
         const elScen5Label = document.getElementById('scen5Label');
-        if (elScen5Label) elScen5Label.innerText = `Nổ Bạch Thủ 3 Càng (${data.bt3D})`;
+        if (elScen5Label) elScen5Label.innerText = `NỔ DÀN 81 SỐ 4D (Ăn 1:8.880)`;
         const elScen5Text = document.getElementById('scen5Text');
         if (elScen5Text) elScen5Text.innerText = `Thu ${winKB5.toLocaleString('vi-VN')} đ`;
         const elScen5Sub = document.getElementById('scen5Sub');
         if (elScen5Sub) {
           const diff5 = winKB5 - budget;
-          const roi5 = ((diff5 / budget) * 100).toFixed(0);
-          elScen5Sub.innerText = `Lãi +${(diff5/1000000).toFixed(2)} Tr (ROI +${roi5}%)`;
+          elScen5Sub.innerText = `SIÊU LỢI NHUẬN +${(diff5/1000000).toFixed(2)} Tr`;
         }
 
         // Render Bảng Toàn Bộ 22 Hạng Mục Dự Báo (Chuẩn lệnh Sheet)
@@ -1099,6 +1124,137 @@
       });
     }
 
+    let allHistoryRows = [];
+    let currentHistoryFilter = 'all';
+
+    function filterHistory(filterType) {
+      currentHistoryFilter = filterType;
+      const buttons = ['all', 'breakeven', 'lo', 'de', '3d4d'];
+      buttons.forEach(b => {
+        const btn = document.getElementById('flt-' + b);
+        if (btn) {
+          if (b === filterType) {
+            btn.className = 'px-2.5 py-0.5 rounded-full bg-daoGold-600 text-white font-bold transition-colors';
+          } else {
+            btn.className = 'px-2.5 py-0.5 rounded-full bg-daoDark-900 border border-gray-700 text-gray-300 hover:border-daoGold-500 transition-colors';
+          }
+        }
+      });
+      renderHistoryTable();
+    }
+
+    function renderHistoryTable() {
+      const tbody = document.getElementById('historyTableBody');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+
+      let filtered = allHistoryRows;
+      if (currentHistoryFilter === 'breakeven') {
+        filtered = allHistoryRows.filter(r => r.isBreakEven || r.isWin || r.revenue >= 240000);
+      } else if (currentHistoryFilter === 'lo') {
+        filtered = allHistoryRows.filter(r => r.hitTamThu || r.hitStl || (r.tamThuHits && r.tamThuHits > 0));
+      } else if (currentHistoryFilter === 'de') {
+        filtered = allHistoryRows.filter(r => r.hitE65 || r.hitE42);
+      } else if (currentHistoryFilter === '3d4d') {
+        filtered = allHistoryRows.filter(r => r.hit3D_27 || r.hit4D_81 || r.hit3D || r.hit4D_16);
+      }
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="13" class="py-4 text-center text-gray-500 font-sans">Không có bản ghi nào phù hợp bộ lọc.</td></tr>';
+        return;
+      }
+
+      filtered.forEach(row => {
+        const tr = document.createElement('tr');
+        tr.className = 'hover:bg-daoDark-850/60 transition-colors';
+
+        // Tam Thủ Lô (3s)
+        const tHits = row.tamThuHits !== undefined ? row.tamThuHits : (row.stlHits + (row.lotHits || 0));
+        const tamThuBadge = (tHits > 0 || row.hitTamThu)
+          ? `<span class="text-emerald-400 font-bold">✔ ${tHits}n</span>`
+          : `<span class="text-gray-500">-</span>`;
+
+        // STL (2s)
+        const stlBadge = row.hitStl 
+          ? `<span class="text-emerald-400 font-bold">✔ ${row.stlHits}n</span>` 
+          : `<span class="text-gray-500">-</span>`;
+
+        // Đề E42, E65, E27
+        const hit42 = row.hitE42 !== undefined ? row.hitE42 : row.hitE50;
+        const hit27 = row.hitE27 !== undefined ? row.hitE27 : row.hitE25;
+        const e42Badge = hit42 ? `<span class="text-amber-400 font-bold">✔ Lõi</span>` : `<span class="text-gray-500">-</span>`;
+        const e65Badge = row.hitE65 ? `<span class="text-cyan-400 font-bold">✔ Giáp</span>` : `<span class="text-gray-500">-</span>`;
+        const e27Badge = hit27 ? `<span class="text-daoGold-400 font-bold">✔ T.Công</span>` : `<span class="text-gray-500">-</span>`;
+
+        // 3D 27s & 4D 81s
+        const d3_27Badge = row.hit3D_27 
+          ? `<span class="text-purple-300 font-black px-1.5 py-0.5 rounded bg-purple-950/90 border border-purple-500/60 animate-pulse">💎 3D (960k)</span>` 
+          : `<span class="text-gray-500">-</span>`;
+
+        const d4_81Badge = row.hit4D_81 
+          ? `<span class="text-fuchsia-300 font-black px-1.5 py-0.5 rounded bg-fuchsia-950/90 border border-fuchsia-500/60 animate-pulse">👑 4D (8.88Tr)</span>` 
+          : `<span class="text-gray-500">-</span>`;
+
+        const d3Badge = row.hit3D 
+          ? `<span class="text-purple-400 font-bold">✔ 12s</span>` 
+          : `<span class="text-gray-500">-</span>`;
+
+        // GĐB format: D4 (hồng), D3 (tím), 2D đuôi (vàng)
+        let gdbHtml = '--';
+        if (row.gdb) {
+          const s = row.gdb;
+          const prefix = s.length > 4 ? s.substring(0, s.length - 4) : '';
+          const d4Digit = s.length >= 4 ? s.charAt(s.length - 4) : '';
+          const d3Digit = s.length >= 3 ? s.charAt(s.length - 3) : '';
+          const d2 = pad2(row.de);
+          gdbHtml = `<span class="text-gray-500">${prefix}</span>` +
+                    `<span class="text-fuchsia-400 font-bold">${d4Digit}</span>` +
+                    `<span class="text-purple-400 font-bold">${d3Digit}</span>` +
+                    `<span class="text-daoGold-400 font-black text-xs ml-0.5">${d2}</span>`;
+        }
+
+        // Tài chính danh mục chuẩn 500k
+        const rev = row.revenue || 0;
+        const pnl = row.pnl !== undefined ? row.pnl : (rev - 500000);
+        const pnlClass = pnl > 0 ? 'text-emerald-400 font-black' : (pnl >= -260000 ? 'text-daoGold-400 font-bold' : 'text-gray-400');
+        const pnlText = (pnl >= 0 ? '+' : '') + pnl.toLocaleString('vi-VN') + ' đ';
+        const revText = rev.toLocaleString('vi-VN') + ' đ';
+
+        // Đánh giá danh mục
+        let evalBadge = '';
+        if (row.hit4D_81 || row.hit4D_16) {
+          evalBadge = `<span class="text-fuchsia-300 font-black px-1.5 py-0.5 rounded bg-fuchsia-950/90 border border-fuchsia-500/60 animate-pulse">👑 ĐẠI THẮNG 4D</span>`;
+        } else if (row.hit3D_27 || row.hit3D) {
+          evalBadge = `<span class="text-purple-300 font-black px-1.5 py-0.5 rounded bg-purple-950/90 border border-purple-500/60">💎 ĐỘT BIẾN 3D</span>`;
+        } else if (pnl > 0) {
+          evalBadge = `<span class="text-emerald-400 font-bold px-1.5 py-0.5 rounded bg-emerald-950/60 border border-emerald-600/40">🟢 LÃI LÔ/ĐỀ</span>`;
+        } else if (row.isBreakEven || rev >= 240000) {
+          evalBadge = `<span class="text-daoGold-300 font-semibold px-1.5 py-0.5 rounded bg-amber-950/60 border border-amber-600/40">🟡 BẢO TOÀN VỐN</span>`;
+        } else if (row.hitE65) {
+          evalBadge = `<span class="text-cyan-400 text-[10px] px-1 py-0.5 rounded bg-cyan-950/40 border border-cyan-700/30">🛡️ VỎ BẢO VỆ</span>`;
+        } else {
+          evalBadge = `<span class="text-gray-500 text-[10px]">⚪ RỦI RO THẤP</span>`;
+        }
+
+        tr.innerHTML = `
+          <td class="py-2 px-2 text-gray-300 font-sans whitespace-nowrap">${row.date.substring(5)} <span class="text-gray-500 text-[10px]">(${row.dayOfWeek || ''})</span></td>
+          <td class="py-2 px-2 whitespace-nowrap">${gdbHtml}</td>
+          <td class="py-2 px-1.5 text-center">${tamThuBadge}</td>
+          <td class="py-2 px-1.5 text-center">${stlBadge}</td>
+          <td class="py-2 px-1.5 text-center">${e42Badge}</td>
+          <td class="py-2 px-1.5 text-center">${e65Badge}</td>
+          <td class="py-2 px-1.5 text-center">${e27Badge}</td>
+          <td class="py-2 px-1.5 text-center">${d3_27Badge}</td>
+          <td class="py-2 px-1.5 text-center">${d4_81Badge}</td>
+          <td class="py-2 px-1.5 text-center">${d3Badge}</td>
+          <td class="py-2 px-2 text-right font-mono ${rev > 0 ? 'text-gray-200' : 'text-gray-500'}">${revText}</td>
+          <td class="py-2 px-2 text-right font-mono ${pnlClass}">${pnlText}</td>
+          <td class="py-2 px-2 text-center whitespace-nowrap">${evalBadge}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
     async function fetchHistory(days) {
       try {
         const rangeText = document.getElementById('historyRangeText');
@@ -1106,123 +1262,63 @@
 
         const res = await fetch('/api/history?days=' + days + '&_t=' + Date.now(), { cache: 'no-store' });
         const data = await res.json();
-        const tbody = document.getElementById('historyTableBody');
-        tbody.innerHTML = '';
 
         const recCount = document.getElementById('historyRecordCount');
         if (recCount) recCount.innerText = `${data.length} kỳ OOS`;
 
-        // Tính toán thống kê tỷ lệ trúng thực chiến cho X ngày
+        // Thống kê chuẩn 3 Trục và Tỷ lệ Bảo Toàn Vốn
+        let hitTamThuCount = 0;
         let hitStlCount = 0;
-        let hitTuThuCount = 0;
         let hitE65Count = 0;
         let hitE42Count = 0;
+        let hit3D_27Count = 0;
+        let hit4D_81Count = 0;
+        let breakEvenCount = 0;
+        let totalPnl = 0;
 
         data.forEach(row => {
+          if (row.hitTamThu || (row.tamThuHits && row.tamThuHits > 0)) hitTamThuCount++;
           if (row.hitStl) hitStlCount++;
-          if (row.hitTuThu) hitTuThuCount++;
           if (row.hitE65) hitE65Count++;
           if (row.hitE42 !== undefined ? row.hitE42 : row.hitE50) hitE42Count++;
+          if (row.hit3D_27) hit3D_27Count++;
+          if (row.hit4D_81) hit4D_81Count++;
+          if (row.isBreakEven || row.revenue >= 240000 || row.isWin) breakEvenCount++;
+          if (row.pnl !== undefined) totalPnl += row.pnl;
         });
 
         const n = data.length;
         if (n > 0) {
+          const elBreakEven = document.getElementById('statBreakEven');
+          if (elBreakEven) elBreakEven.innerText = `${((breakEvenCount/n)*100).toFixed(1)}% (${breakEvenCount}/${n})`;
+
+          const elTamThu = document.getElementById('statTamThu');
+          if (elTamThu) elTamThu.innerText = `${((hitTamThuCount/n)*100).toFixed(1)}% (${hitTamThuCount}/${n})`;
+
           const elStl = document.getElementById('statStl');
-          const elTuThu = document.getElementById('statTuThu');
-          const elE65 = document.getElementById('statE65');
-          const elE50 = document.getElementById('statE50');
           if (elStl) elStl.innerText = `${((hitStlCount/n)*100).toFixed(1)}% (${hitStlCount}/${n})`;
-          if (elTuThu) elTuThu.innerText = `${((hitTuThuCount/n)*100).toFixed(1)}% (${hitTuThuCount}/${n})`;
+
+          const elE65 = document.getElementById('statE65');
           if (elE65) elE65.innerText = `${((hitE65Count/n)*100).toFixed(1)}% (${hitE65Count}/${n})`;
+
+          const elE50 = document.getElementById('statE50');
           if (elE50) elE50.innerText = `${((hitE42Count/n)*100).toFixed(1)}% (${hitE42Count}/${n})`;
+
+          const elDonBay = document.getElementById('statDonBay');
+          if (elDonBay) elDonBay.innerText = `3D: ${hit3D_27Count}k | 4D: ${hit4D_81Count}k`;
+
+          const elWinDays = document.getElementById('historyWinDaysText');
+          if (elWinDays) elWinDays.innerText = `${breakEvenCount}/${n} kỳ bảo toàn vốn (${((breakEvenCount/n)*100).toFixed(0)}%)`;
+
+          const elTotalPnl = document.getElementById('historyTotalPnl');
+          if (elTotalPnl) {
+            elTotalPnl.innerText = (totalPnl >= 0 ? '+' : '') + totalPnl.toLocaleString('vi-VN') + ' đ';
+            elTotalPnl.className = totalPnl >= 0 ? 'font-black text-emerald-400' : 'font-black text-rose-400';
+          }
         }
 
-        data.reverse().forEach(row => {
-          const tr = document.createElement('tr');
-          tr.className = 'hover:bg-daoDark-850/60 transition-colors';
-
-          const stlBadge = row.hitStl 
-            ? `<span class="text-emerald-400 font-bold">✔ ${row.stlHits}n</span>` 
-            : `<span class="text-gray-500">-</span>`;
-
-          const tuThuBadge = row.hitTuThu 
-            ? `<span class="text-emerald-400 font-bold">✔ ${row.tuThuHits}n</span>` 
-            : `<span class="text-gray-500">-</span>`;
-
-          const xien2Badge = row.hitXien2 
-            ? `<span class="text-daoGold-400 font-black px-1 rounded bg-amber-950/80 border border-amber-600/50">✔ NỔ X2</span>` 
-            : `<span class="text-gray-500">-</span>`;
-
-          const e65Badge = row.hitE65 
-            ? `<span class="text-cyan-400 font-bold">✔</span>` 
-            : `<span class="text-gray-500">-</span>`;
-
-          const hit42 = row.hitE42 !== undefined ? row.hitE42 : row.hitE50;
-          const hit27 = row.hitE27 !== undefined ? row.hitE27 : row.hitE25;
-          const hit18 = row.hitE18 !== undefined ? row.hitE18 : row.hitE9;
-
-          const e42Badge = hit42 
-            ? `<span class="text-emerald-400 font-bold">✔</span>` 
-            : `<span class="text-gray-500">-</span>`;
-
-          const e27Badge = hit27 
-            ? `<span class="text-daoGold-400 font-bold">✔</span>` 
-            : `<span class="text-gray-500">-</span>`;
-
-          const e18Badge = hit18 
-            ? `<span class="text-amber-400 font-bold">✔</span>` 
-            : `<span class="text-gray-500">-</span>`;
-
-          const e4Badge = row.hitE4 
-            ? `<span class="text-rose-400 font-bold">✔</span>` 
-            : `<span class="text-gray-500">-</span>`;
-
-          const e1Badge = row.hitE1 
-            ? `<span class="text-yellow-300 font-black px-1 rounded bg-yellow-950/90 border border-yellow-500/60 animate-pulse">💥 ĂN BT</span>` 
-            : `<span class="text-gray-500">-</span>`;
-
-          const d3Badge = row.hit3D 
-            ? `<span class="text-purple-300 font-black px-1 rounded bg-purple-950/90 border border-purple-500/60">💎 ĂN 3D</span>` 
-            : `<span class="text-gray-500">-</span>`;
-
-          const d3_27Badge = row.hit3D_27 
-            ? `<span class="text-purple-400 font-bold">✔ 27s</span>` 
-            : `<span class="text-gray-500">-</span>`;
-
-          const d4_16Badge = row.hit4D_16 
-            ? `<span class="text-fuchsia-300 font-black px-1 rounded bg-fuchsia-950/90 border border-fuchsia-500/60 animate-pulse">👑 ĂN 4D</span>` 
-            : `<span class="text-gray-500">-</span>`;
-
-          const d4_81Badge = row.hit4D_81 
-            ? `<span class="text-fuchsia-400 font-bold">✔ 81s</span>` 
-            : `<span class="text-gray-500">-</span>`;
-
-          let gdbHtml = '--';
-          if (row.gdb) {
-            const prefix = row.gdb.length > 2 ? row.gdb.substring(0, row.gdb.length - 2) : '';
-            const deTail = pad2(row.de);
-            gdbHtml = `<span class="text-gray-400">${prefix}</span><span class="text-daoGold-400 font-black text-xs ml-0.5">${deTail}</span>`;
-          }
-
-          tr.innerHTML = `
-            <td class="py-2 px-2 text-gray-300 font-sans whitespace-nowrap">${row.date.substring(5)}</td>
-            <td class="py-2 px-2 whitespace-nowrap">${gdbHtml}</td>
-            <td class="py-2 px-1.5 text-center">${stlBadge}</td>
-            <td class="py-2 px-1.5 text-center">${tuThuBadge}</td>
-            <td class="py-2 px-1.5 text-center">${xien2Badge}</td>
-            <td class="py-2 px-1.5 text-center">${e65Badge}</td>
-            <td class="py-2 px-1.5 text-center">${e42Badge}</td>
-            <td class="py-2 px-1.5 text-center">${e27Badge}</td>
-            <td class="py-2 px-1.5 text-center">${e18Badge}</td>
-            <td class="py-2 px-1.5 text-center">${e4Badge}</td>
-            <td class="py-2 px-1.5 text-center">${e1Badge}</td>
-            <td class="py-2 px-1.5 text-center">${d3Badge}</td>
-            <td class="py-2 px-1.5 text-center">${d3_27Badge}</td>
-            <td class="py-2 px-1.5 text-center">${d4_16Badge}</td>
-            <td class="py-2 px-1.5 text-center">${d4_81Badge}</td>
-          `;
-          tbody.appendChild(tr);
-        });
+        allHistoryRows = data.slice().reverse();
+        renderHistoryTable();
       } catch (e) {
         console.error(e);
       }
