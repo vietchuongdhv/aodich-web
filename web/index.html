@@ -185,7 +185,10 @@
           <div class="bg-daoDark-850 p-2.5 rounded-xl border border-gray-800 flex flex-col justify-between">
             <div class="flex items-center justify-between">
               <span class="text-[10px] text-gray-400 font-medium">Song Thủ Lô (STL)</span>
-              <span class="text-[9px] bg-emerald-950/80 text-emerald-300 px-1 rounded font-bold">Chính</span>
+              <div class="flex items-center gap-1">
+                <button onclick="copyTruc1STL()" class="text-[9px] bg-daoDark-800 hover:bg-daoDark-700 border border-gray-700 hover:border-emerald-500 px-1.5 py-0.2 rounded text-gray-300 hover:text-emerald-300 transition-all flex items-center gap-0.5 active:scale-95" title="Copy cặp STL">📋 Copy</button>
+                <span class="text-[9px] bg-emerald-950/80 text-emerald-300 px-1 rounded font-bold">Chính</span>
+              </div>
             </div>
             <div class="text-xl font-black text-daoGold-400 my-1" id="stlDisplay">24 - 26</div>
             <div class="text-[10px] text-emerald-400 font-bold flex items-center justify-between pt-1 border-t border-gray-800/60">
@@ -197,7 +200,10 @@
           <div class="bg-daoDark-850 p-2.5 rounded-xl border border-gray-800 flex flex-col justify-between">
             <div class="flex items-center justify-between">
               <span class="text-[10px] text-gray-400 font-medium">Lô Lót Tam Thủ</span>
-              <span class="text-[9px] bg-cyan-950/80 text-cyan-300 px-1 rounded font-bold">Hộ Thân</span>
+              <div class="flex items-center gap-1">
+                <button onclick="copyTruc1Lot()" class="text-[9px] bg-daoDark-800 hover:bg-daoDark-700 border border-gray-700 hover:border-cyan-500 px-1.5 py-0.2 rounded text-gray-300 hover:text-cyan-300 transition-all flex items-center gap-0.5 active:scale-95" title="Copy số lót">📋 Copy</button>
+                <span class="text-[9px] bg-cyan-950/80 text-cyan-300 px-1 rounded font-bold">Hộ Thân</span>
+              </div>
             </div>
             <div class="text-xl font-black text-cyan-400 my-1" id="lotDisplay">76</div>
             <div class="text-[10px] text-cyan-400 font-bold flex items-center justify-between pt-1 border-t border-gray-800/60">
@@ -208,7 +214,10 @@
         </div>
 
         <div class="text-[10px] text-gray-400 bg-daoDark-900/80 px-2.5 py-1.5 rounded-lg flex items-center justify-between">
-          <span>★ Tam Thủ Lô: <strong class="text-daoGold-400 text-xs" id="tamThuLoFullDisplay">24, 26, 76</strong></span>
+          <div class="flex items-center gap-1.5">
+            <span>★ Tam Thủ Lô: <strong class="text-daoGold-400 text-xs" id="tamThuLoFullDisplay">24, 26, 76</strong></span>
+            <button onclick="copyTruc1TamThu()" class="text-[9px] bg-daoDark-800 hover:bg-daoDark-700 border border-gray-700 hover:border-daoGold-500 px-1.5 py-0.5 rounded text-gray-300 hover:text-daoGold-300 transition-all flex items-center gap-0.5 active:scale-95 font-semibold" title="Copy trọn bộ 3 số Tam Thủ">📋 Copy 3s</button>
+          </div>
           <span class="text-emerald-400 font-semibold">WinRate 61.3% (Alpha 1.09x) | Bỏ Xiên (0 đ)</span>
         </div>
       </section>
@@ -232,7 +241,10 @@
           <div class="bg-daoDark-850 p-2.5 rounded-xl border border-gray-800">
             <div class="flex items-center justify-between mb-1">
               <span class="text-[10px] font-bold text-amber-400 uppercase">🛡️ Dàn Chân Kiềng E42 (Lõi 42 số - 65% Tỷ Lệ Trúng)</span>
-              <span class="text-[10px] font-bold text-daoGold-300" id="e42CostDisplay">Cược 3.000 đ/số (126k)</span>
+              <div class="flex items-center gap-1.5">
+                <button onclick="copyDeE42()" class="text-[9px] bg-daoDark-800 hover:bg-daoDark-700 border border-gray-700 hover:border-amber-500 px-1.5 py-0.5 rounded text-gray-300 hover:text-amber-300 transition-all flex items-center gap-0.5 active:scale-95 font-bold" title="Copy toàn bộ 42 số dàn E42">📋 Copy Dàn E42</button>
+                <span class="text-[10px] font-bold text-daoGold-300" id="e42CostDisplay">Cược 3.000 đ/số (126k)</span>
+              </div>
             </div>
             <div class="text-[10px] text-gray-300 leading-snug line-clamp-2" id="e42Display">
               00, 06, 08, 09, 11, 12, 14, 17, 21, 23, 24, 28, 29, 32, 34, 35, 36, 39, 40, 42, 43, 45, 47, 50, 51, 52, 57, 61, 63, 65, 67, 71, 75, 76, 79, 84, 85, 89, 94, 96, 97, 99
@@ -245,34 +257,47 @@
 
           <!-- Card Vỏ E65 & Dàn Tấn Công E27 -->
           <div class="grid grid-cols-2 gap-2">
-            <div class="bg-daoDark-850 p-2.5 rounded-xl border border-gray-800">
-              <div class="flex items-center justify-between mb-0.5">
-                <span class="text-[9px] text-cyan-400 font-bold uppercase">Vỏ Bảo Hiểm (E65)</span>
-                <span class="text-[9px] text-cyan-300 font-semibold" id="e65CostDisplay">23s x 1k (23k)</span>
+            <div class="bg-daoDark-850 p-2.5 rounded-xl border border-gray-800 flex flex-col justify-between">
+              <div>
+                <div class="flex items-center justify-between mb-0.5">
+                  <span class="text-[9px] text-cyan-400 font-bold uppercase">Vỏ Bảo Hiểm (E65)</span>
+                  <span class="text-[9px] text-cyan-300 font-semibold" id="e65CostDisplay">23s x 1k (23k)</span>
+                </div>
+                <div class="text-[9px] text-gray-400 leading-tight mb-1.5">
+                  23 số biên bao bọc toàn diện, tổng đúng 65 số.
+                </div>
               </div>
-              <div class="text-[9px] text-gray-400 leading-tight">
-                23 số biên bao bọc toàn diện, tổng đúng 65 số.
-              </div>
+              <button onclick="copyDeE65()" class="w-full py-1 rounded bg-daoDark-900 hover:bg-daoDark-800 border border-gray-700 hover:border-cyan-500 text-cyan-300 text-[9px] font-bold flex items-center justify-center gap-1 active:scale-95 transition-all" title="Copy toàn bộ 65 số E65">
+                <span>📋</span><span>Copy Trọn Bộ E65 (65 số)</span>
+              </button>
             </div>
 
-            <div class="bg-daoDark-850 p-2.5 rounded-xl border border-gray-800">
-              <div class="flex items-center justify-between mb-0.5">
-                <span class="text-[9px] text-amber-400 font-bold uppercase">Tấn Công (E27)</span>
-                <span class="text-[9px] text-amber-300 font-semibold" id="e27CostDisplay">+1k (12k)</span>
+            <div class="bg-daoDark-850 p-2.5 rounded-xl border border-gray-800 flex flex-col justify-between">
+              <div>
+                <div class="flex items-center justify-between mb-0.5">
+                  <span class="text-[9px] text-amber-400 font-bold uppercase">Tấn Công (E27)</span>
+                  <span class="text-[9px] text-amber-300 font-semibold" id="e27CostDisplay">+1k (12k)</span>
+                </div>
+                <div class="text-[9px] text-gray-400 leading-tight mb-1.5">
+                  12 số đột phá cược thêm khi thị trường PEAK.
+                </div>
               </div>
-              <div class="text-[9px] text-gray-400 leading-tight">
-                12 số đột phá cược thêm khi thị trường PEAK.
-              </div>
+              <button onclick="copyDeE27()" class="w-full py-1 rounded bg-daoDark-900 hover:bg-daoDark-800 border border-gray-700 hover:border-amber-500 text-amber-300 text-[9px] font-bold flex items-center justify-center gap-1 active:scale-95 transition-all" title="Copy dàn E27">
+                <span>📋</span><span>Copy Dàn E27 (27 số)</span>
+              </button>
             </div>
           </div>
 
           <!-- Quy Nguyên Trận BSM -->
           <div class="bg-daoDark-900/90 p-2.5 rounded-xl border border-amber-600/40 flex items-center justify-between">
-            <div>
-              <div class="text-[9px] text-amber-400 font-bold uppercase" id="bsmFactorTitle">Quy Nguyên Trận [Chẵn-Lẻ] (10 số nén)</div>
-              <div class="text-[10px] font-bold text-amber-200 mt-0.5" id="bsmCoilingDisplay">21, 23, 43, 45, 47, 61, 63, 67, 85, 89</div>
+            <div class="flex-1 mr-2">
+              <div class="flex items-center justify-between">
+                <div class="text-[9px] text-amber-400 font-bold uppercase" id="bsmFactorTitle">Quy Nguyên Trận [Chẵn-Lẻ] (10 số nén)</div>
+                <button onclick="copyDeBsm()" class="text-[9px] bg-daoDark-800 hover:bg-daoDark-700 border border-gray-700 hover:border-amber-500 px-1.5 py-0.2 rounded text-gray-300 hover:text-amber-300 transition-all flex items-center gap-0.5 active:scale-95" title="Copy 10 số nén BSM">📋 Copy 10s</button>
+              </div>
+              <div class="text-[10px] font-bold text-amber-200 mt-0.5 font-mono" id="bsmCoilingDisplay">21, 23, 43, 45, 47, 61, 63, 67, 85, 89</div>
             </div>
-            <div class="text-right">
+            <div class="text-right whitespace-nowrap">
               <span class="text-[9px] bg-amber-950 text-amber-300 px-1 py-0.2 rounded font-bold" id="bsmZVal">Z = 1.28σ</span>
               <div class="text-[9px] text-gray-400 mt-0.5">Bỏ E1/E4 (0 đ)</div>
             </div>
@@ -300,7 +325,10 @@
               <span class="text-[10px] font-bold text-daoGold-300 uppercase">🎯 Dàn 27 Số 3D (Phương Pháp 2 Cột Tổng)</span>
               <span class="text-[9px] bg-daoGold-600/20 text-daoGold-300 px-1 rounded font-bold">Ăn 1:960</span>
             </div>
-            <span class="text-[10px] text-purple-300 font-bold" id="cost27_3DDisplay">27 vé x 1k = 27.000 đ</span>
+            <div class="flex items-center gap-1.5">
+              <button onclick="copy3D_27()" class="text-[9px] bg-daoDark-800 hover:bg-daoDark-700 border border-gray-700 hover:border-daoGold-500 px-2 py-0.5 rounded text-gray-300 hover:text-daoGold-300 transition-all flex items-center gap-0.5 active:scale-95 font-bold" title="Copy trọn bộ 27 số 3D">📋 Copy 27s 3D</button>
+              <span class="text-[10px] text-purple-300 font-bold" id="cost27_3DDisplay">27 vé x 1k = 27.000 đ</span>
+            </div>
           </div>
           <div class="text-[10px] text-gray-200 leading-relaxed font-mono tracking-tight" id="dan3D_27Display">
             046, 057, 139, 146, 237, 239, 291, 293, 294, 328, 384, 385, 473, 475, 594, 655, 657, 684, 694, 746, 784, 837, 839, 873, 875, 921, 928
@@ -318,7 +346,10 @@
               <span class="text-[10px] font-bold text-cyan-300 uppercase">💎 Dàn 81 Số 4D (Quantum Potts C)</span>
               <span class="text-[9px] bg-cyan-950 text-cyan-300 px-1 rounded font-bold">Ăn 1:8.880</span>
             </div>
-            <span class="text-[10px] text-cyan-300 font-bold" id="cost81_4DDisplay">81 vé x 1k = 81.000 đ</span>
+            <div class="flex items-center gap-1.5">
+              <button onclick="copy4D_81()" class="text-[9px] bg-cyan-950 hover:bg-cyan-900 border border-cyan-700 hover:border-cyan-400 px-2 py-0.5 rounded text-cyan-200 hover:text-white transition-all flex items-center gap-0.5 active:scale-95 font-bold" title="Copy đầy đủ 81 số 4D">📋 Copy 81s 4D</button>
+              <span class="text-[10px] text-cyan-300 font-bold" id="cost81_4DDisplay">81 vé x 1k = 81.000 đ</span>
+            </div>
           </div>
           <div class="text-[10px] text-cyan-200/90 leading-relaxed font-mono tracking-tight line-clamp-2" id="dan4D_81Preview">
             0984, 1894, 3246, 3255, 3257, 3267, 3275, 3284, 3285, 3294, 3611, 3612, 3621, 3628, 3637, 3646, 3655, 3657, 3667, 3673, 3675...
@@ -331,11 +362,14 @@
 
         <!-- 3. Dàn 3D 12 Số Tinh Tuyển (Bổ sung khi Peak/Convergent) -->
         <div class="bg-daoDark-900/90 p-2 rounded-xl border border-purple-500/30 flex items-center justify-between">
-          <div>
-            <div class="text-[9px] font-bold text-purple-300 uppercase">⚡ 3D 12s Tinh Tuyển Bổ Sung</div>
+          <div class="flex-1 mr-2">
+            <div class="flex items-center justify-between">
+              <div class="text-[9px] font-bold text-purple-300 uppercase">⚡ 3D 12s Tinh Tuyển Bổ Sung</div>
+              <button onclick="copy3D_12()" class="text-[9px] bg-daoDark-800 hover:bg-daoDark-700 border border-gray-700 hover:border-purple-500 px-1.5 py-0.2 rounded text-gray-300 hover:text-purple-300 transition-all flex items-center gap-0.5 active:scale-95" title="Copy 12 số 3D">📋 Copy 12s</button>
+            </div>
             <div class="text-[10px] text-gray-300 font-mono mt-0.5" id="dan3DDisplay">046, 137, 291, 294, 385, 473, 594, 655, 746, 837, 921, 928</div>
           </div>
-          <div class="text-right">
+          <div class="text-right whitespace-nowrap">
             <span class="text-[10px] font-bold text-purple-300" id="cost3DPerTicket">+2k/vé (24k)</span>
           </div>
         </div>
@@ -1327,8 +1361,72 @@
     function copySingleNumbers(encText) {
       const text = unescape(encText);
       navigator.clipboard.writeText(text).then(() => {
-        showToast('Đã copy dàn số: ' + text.substring(0, 20) + (text.length > 20 ? '...' : ''));
+        showToast('Đã copy dàn số: ' + text.substring(0, 30) + (text.length > 30 ? '...' : ''));
       });
+    }
+
+    function copyTruc1STL() {
+      if (!predictData) return;
+      const text = `${pad2(predictData.btLo)}, ${pad2(predictData.stLo)}`;
+      copySingleNumbers(escape(text));
+    }
+
+    function copyTruc1Lot() {
+      if (!predictData) return;
+      const lotVal = (predictData.tamThuLo && predictData.tamThuLo.length >= 3) ? predictData.tamThuLo[2] : (predictData.tuThuLo ? predictData.tuThuLo[3] : 76);
+      copySingleNumbers(escape(pad2(lotVal)));
+    }
+
+    function copyTruc1TamThu() {
+      if (!predictData || !predictData.tamThuLo) return;
+      const text = predictData.tamThuLo.map(pad2).join(', ');
+      copySingleNumbers(escape(text));
+    }
+
+    function copyDeE42() {
+      if (!predictData) return;
+      const e42 = predictData.e42 || predictData.e50 || [];
+      const text = e42.slice().sort((a,b)=>a-b).map(pad2).join(', ');
+      copySingleNumbers(escape(text));
+    }
+
+    function copyDeE65() {
+      if (!predictData) return;
+      const e65 = predictData.e65 || [];
+      const text = e65.slice().sort((a,b)=>a-b).map(pad2).join(', ');
+      copySingleNumbers(escape(text));
+    }
+
+    function copyDeE27() {
+      if (!predictData) return;
+      const e27 = predictData.e27 || predictData.e25 || [];
+      const text = e27.slice().sort((a,b)=>a-b).map(pad2).join(', ');
+      copySingleNumbers(escape(text));
+    }
+
+    function copyDeBsm() {
+      if (!predictData) return;
+      const bsm = predictData.bsmCoiling || [];
+      const text = bsm.slice().sort((a,b)=>a-b).map(pad2).join(', ');
+      copySingleNumbers(escape(text));
+    }
+
+    function copy3D_27() {
+      if (!predictData || !predictData.dan3D_27) return;
+      const text = predictData.dan3D_27.join(', ');
+      copySingleNumbers(escape(text));
+    }
+
+    function copy4D_81() {
+      if (!predictData || !predictData.dan4D_81) return;
+      const text = predictData.dan4D_81.join(', ');
+      copySingleNumbers(escape(text));
+    }
+
+    function copy3D_12() {
+      if (!predictData || !predictData.dan3D_12) return;
+      const text = predictData.dan3D_12.slice().sort().join(', ');
+      copySingleNumbers(escape(text));
     }
 
     function setupNextDate() {
