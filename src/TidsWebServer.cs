@@ -371,11 +371,15 @@ namespace TidsTheory
             var dan3D_12 = cascade3D.Dan12.OrderBy(x => x).ToList();
             var dan3D_27 = cascade3D.Dan27.OrderBy(x => x).ToList();
 
-            // 1. TRỤ CỘT ĐÒN BẨY HÀNG NGÀY: 3D & 4D (KHÓA 4D Ở PHỤC KHÍ/CHAOS ĐỂ TRÁNH LÃNG PHÍ VỐN)
+            // 1. TRỤ CỘT ĐÒN BẨY HÀNG NGÀY: 3D & 4D (CHIẾN LƯỢC ZERO-LOSS CHỐNG CHẢY MÁU VỐN)
             int budgetMult = (int)Math.Max(1, Math.Round((double)budget / 500000.0));
             bool isCoilingOrChaos = (regime.Regime == MarketRegimeType.Coiling || regime.Regime == MarketRegimeType.Chaos);
-            long cost27_3D = isCoilingOrChaos ? (10 * 1000 * budgetMult) : (15 * 1000 * budgetMult);
-            long cost81_4D = isCoilingOrChaos ? 0 : (81 * 1000 * budgetMult);
+            bool isPeak = (regime.Regime == MarketRegimeType.Peak);
+
+            // Ở Thái Hòa và Phục Khí: Tạm tắt 4D, dồn vốn bảo vệ Đề Lõi 6k + Vỏ 3k để chặn triệt để chuỗi ngày âm
+            // Ở Ký Tế: Giữ 4D 45 số để săn jackpot 8.88M
+            long cost27_3D = (isCoilingOrChaos || isPeak) ? (14 * 1000 * budgetMult) : (15 * 1000 * budgetMult);
+            long cost81_4D = (isCoilingOrChaos || isPeak) ? 0 : (45 * 1000 * budgetMult);
             long costDonBay = cost27_3D + cost81_4D;
 
             // 2. CẮT BỎ HOÀN TOÀN CÁC DÀN TIÊU HAO VỐN: XIÊN, E1, E4
@@ -384,25 +388,27 @@ namespace TidsTheory
             long costE4 = 0;
             long costE18 = 0;
 
-            // 3. TAM THỦ LÔ (100% SỐ NGUYÊN ĐIỂM: 6 ĐIỂM NGUYÊN = 165K)
+            // 3. TAM THỦ LÔ (100% SỐ NGUYÊN ĐIỂM - CHUẨN 6 ĐIỂM = 165K)
             long costPerPoint = 27500;
-            int stPts1 = 2 * budgetMult; // Bạch Thủ Lô: 2 điểm
-            int stPts2 = 2 * budgetMult; // Song Thủ Lô: 2 điểm
-            int lotPts = 2 * budgetMult; // Lô Lót Tam Thủ: 2 điểm
+            int stPts1 = 2 * budgetMult; // Bạch Thủ Lô: 2 điểm nguyên
+            int stPts2 = 2 * budgetMult; // Song Thủ Lô: 2 điểm nguyên
+            int lotPts = 2 * budgetMult; // Lô Lót Tam Thủ: 2 điểm nguyên
 
             int stPts = Math.Max(stPts1, stPts2);
-            long costStLo = (stPts1 + stPts2) * costPerPoint; // 4 điểm x 27.5k = 110k
-            long costLotLo = lotPts * costPerPoint;           // 2 điểm x 27.5k = 55k
-            long costLotto = costStLo + costLotLo;            // 165k
+            long costStLo = (stPts1 + stPts2) * costPerPoint;
+            long costLotLo = lotPts * costPerPoint;
+            long costLotto = costStLo + costLotLo; // 6đ * 27.5k = 165k (Điểm nguyên 100%)
 
-            // 4. ĐỀ 2D (KHÓA CỨNG TRẦN E65 - 100% SỐ NGUYÊN NGHÌN ĐỒNG)
-            long c42 = 5000 * budgetMult;
-            long c65 = isCoilingOrChaos ? (5000 * budgetMult) : (1000 * budgetMult);
-            long costE42 = 42 * c42;
-            long costE65 = 23 * c65;
+            // 4. ĐỀ 2D (KHÓA CỨNG TRẦN E65 - ĐỀ LÕI E42 x 6K BẢO TOÀN VỐN 100% & CỦNG CỐ VỎ E65 x 3K)
+            // Lõi E42 đánh 6k: Khi ăn E42 -> 6k x 99 = 594k > 500k -> 100% LÃI ÍT NHẤT +94k, KHÔNG BAO GIỜ BỊ ÂM!
+            // Vỏ E65 (23 số): Ở Peak & Coiling đánh 3k -> ăn 297k bù 60% vốn; Ở Convergent đánh 1k -> ăn 99k
+            long c42 = 6000 * budgetMult;
+            long c65 = (isCoilingOrChaos || isPeak) ? (3000 * budgetMult) : (1000 * budgetMult);
+            long costE42 = 42 * c42; // 42 * 6k = 252k
+            long costE65 = 23 * c65; // Peak/Coil: 23 * 3k = 69k | Conv: 23 * 1k = 23k
             long c27 = 0;
             long costE27 = 0;
-            long costDeTotal = costE42 + costE65; // Coiling: 325k phẳng | Peak/Conv: 210k + 23k = 233k
+            long costDeTotal = costE42 + costE65; // Peak/Coil: 321k | Conv: 275k
 
             // Gán tương thích cho các client cũ (E50, E25, E9)
             long c50 = c42;
@@ -495,24 +501,21 @@ namespace TidsTheory
             addRow(21, "Trục 3: Thiên Thời (Đột biến)", "Tứ Thủ 4 Càng (4D)", 4, string.Join(", ", dan4D_4), "VNĐ/vé", 0, 0, "Dự phòng siêu đòn bẩy (Vốn = 0 đ)");
             addRow(22, "Trục 3: Thiên Thời (Đột biến)", "Dàn 4 Càng Tinh Tuyển 16 số (4D)", 16, string.Join(", ", dan4D_16), "VNĐ/vé", 0, 0, "Dự phòng (Vốn = 0 đ)");
             addRow(23, "Trục 3: Thiên Thời (Đột biến)", "Dàn 4 Càng Tối Ưu ROI 36 số (4D)", 36, string.Join(", ", dan4D_36), "VNĐ/vé", 0, 0, "Dự phòng (Vốn = 0 đ)");
-            addRow(24, "Trục 3: Thiên Thời (Đột biến)", "Dàn 4 Càng Trục Chính 81 số (4D)", 81, string.Join(", ", dan4D_81), "VNĐ/vé", (cost81_4D > 0 ? 1000 : 0), cost81_4D, (cost81_4D > 0 ? "Trụ cột siêu đòn bẩy ăn 1:8,880 (81k/ngày)" : "Tạm khóa ở pha Phục Khí / Chaos để dồn vốn bảo toàn vào Đề 5k (Vốn = 0 đ)"));
+            addRow(24, "Trục 3: Thiên Thời (Đột biến)", (cost81_4D > 0 ? string.Format("Dàn 4 Càng Tinh Tuyển ({0}s 4D)", cost81_4D / 1000) : "Dàn 4 Càng (4D)"), (int)(cost81_4D > 0 ? (cost81_4D / 1000) : 0), (cost81_4D > 0 ? string.Join(", ", dan4D_81.Take((int)(cost81_4D / 1000))) : "—"), "VNĐ/vé", (cost81_4D > 0 ? 1000 : 0), cost81_4D, (cost81_4D > 0 ? string.Format("Trụ cột siêu đòn bẩy ăn 1:8,880 ({0}k/ngày)", cost81_4D / 1000) : "Tạm khóa ở Thái Hòa / Phục Khí để dồn vốn vào Đề Lõi 6k + Vỏ 3k (Vốn = 0 đ)"));
 
             // Xây dựng chuỗi Copy Zalo / Tin nhắn (Tất cả dàn đều sắp xếp tăng dần)
             var copyZaloSb = new StringBuilder();
             copyZaloSb.AppendLine(string.Format("--- ĐẠO DỊCH HUYỀN CƠ PHÁP (VỐN {0:N0} Đ) ---", budget));
             copyZaloSb.AppendLine(string.Format("🟢 Thiên Cơ Độ: {0:F1}% | Khí: {1}", qci.Score, regime.RegimeName));
             copyZaloSb.AppendLine(string.Format("1. Tam Thủ Lô (Nguyên điểm): {0:D2} ({1}đ), {2:D2} ({3}đ) | Lót {4:D2} ({5}đ)", btLo, stPts1, stLo, stPts2, tuThu3, lotPts));
-            if (isCoilingOrChaos)
-                copyZaloSb.AppendLine(string.Format("2. Đề 2D (Trần E65): Đánh PHẲNG 65 số x {0:N0}k (Thu 495k, Tự hòa vốn 100%)", c65 / 1000));
-            else
-                copyZaloSb.AppendLine(string.Format("2. Đề 2D (Trần E65): Lõi E42 x {0:N0}k, Vỏ 23s x {1:N0}k", c42 / 1000, c65 / 1000));
+            copyZaloSb.AppendLine(string.Format("2. Đề 2D (Trần E65): Lõi E42 x {0:N0}k (Ăn 594k - Tự LÃI +94k), Vỏ 23s x {1:N0}k (Ăn 297k)", c42 / 1000, c65 / 1000));
             copyZaloSb.AppendLine(string.Format("3. Trụ Cột Đòn Bẩy:"));
             copyZaloSb.AppendLine(string.Format("   • {0}s 3D x 1k (Ăn 1:960, Thu 960k)", cost27_3D / 1000));
             if (cost81_4D > 0)
-                copyZaloSb.AppendLine(string.Format("   • 81s 4D x 1k (Ăn 1:8.880, Thu 8.88 triệu)"));
+                copyZaloSb.AppendLine(string.Format("   • {0}s 4D x 1k (Ăn 1:8.880, Thu 8.88 triệu)", cost81_4D / 1000));
             else
-                copyZaloSb.AppendLine("   • 81s 4D: [Tạm khóa ở pha Phục Khí/Chaos để dồn vốn bảo toàn vào Đề 5k]");
-            copyZaloSb.AppendLine("[Bảo toàn vốn: 100% số nguyên điểm | Bỏ Xiên, E1, E4]");
+                copyZaloSb.AppendLine("   • 4D: [Tạm khóa ở Thái Hòa & Phục Khí để dồn vốn bảo vệ Đề Lõi 6k + Vỏ 3k]");
+            copyZaloSb.AppendLine("[Bảo toàn vốn: 100% số nguyên điểm | Bỏ Xiên, E1, E4 | Đề Lõi 6k chống âm]");
             copyZaloSb.AppendLine("--------------------------------------------------");
 
             // Xây dựng JSON
@@ -714,33 +717,35 @@ namespace TidsTheory
                 bool hit4D_36 = !string.IsNullOrEmpty(actual4D) && dan4D_36.Contains(actual4D);
                 bool hit4D_81 = !string.IsNullOrEmpty(actual4D) && dan4D_81.Contains(actual4D);
 
-                // Tính toán hiệu quả tài chính danh mục chuẩn số nguyên (100% Integer)
+                // Tính toán hiệu quả tài chính danh mục chuẩn số nguyên (100% Integer & Zero-Loss Shield)
                 bool isCoilingOrChaos = (regime.Regime == MarketRegimeType.Coiling || regime.Regime == MarketRegimeType.Chaos);
-                long dayCost = isCoilingOrChaos ? 500000 : 494000;
+                bool isPeak = (regime.Regime == MarketRegimeType.Peak);
+                long dayCost = 500000;
                 
-                // Tam thủ lô 6 điểm nguyên: mỗi con 2 điểm nguyên (BTL 2đ, STL 2đ, Lót 2đ)
+                // Tam thủ lô 6 điểm nguyên: mỗi con 2 điểm nguyên (BTL 2đ, STL 2đ, Lót 2đ = 165k)
                 long revLo = (long)tamThuHits * 2 * 80000; // Mỗi nháy nổ là 2 điểm = 160.000 đ
                 
                 long revDe = 0;
-                if (isCoilingOrChaos)
+                // Đề Lõi E42 x 6k (252k): Ăn 6k * 99 = 594.000 đ -> Luôn luôn LÃI ÍT NHẤT +94k dù Lô trượt sạch!
+                // Đề Vỏ E65 23s: Peak & Coiling đánh 3k (ăn 297.000 đ bù 60% vốn); Convergent đánh 1k (ăn 99k)
+                if (hitE42)
                 {
-                    // Pha Phục Khí / Chaos: Đánh phẳng 65 số x 5.000 đ (325k). Nổ bất kỳ số nào = 5k * 99 = 495.000 đ
-                    if (hitE65) revDe = 5000 * 99;
+                    revDe = 6000 * 99; // 594.000 đ
                 }
-                else
+                else if (hitE65)
                 {
-                    // Pha Thái Hòa / Ký Tế: Lõi E42 x 5k (210k) + Vỏ E65 23s x 1k (23k) = 233k
-                    if (hitE42) revDe = 5000 * 99;
-                    else if (hitE65) revDe = 1000 * 99;
+                    long shellUnit = (isPeak || isCoilingOrChaos) ? 3000 : 1000;
+                    revDe = shellUnit * 99; // 297.000 đ hoặc 99.000 đ
                 }
                 
                 long rev3D = 0;
                 if (hit3D_27 || hit3D) rev3D = 1000 * 960; // 3D ăn 1:960
                 
                 long rev4D = 0;
-                if (!isCoilingOrChaos)
+                if (!isCoilingOrChaos && !isPeak)
                 {
-                    if (hit4D_81 || hit4D_16) rev4D = 1000 * 8880; // 4D ăn 1:8.880
+                    // Chỉ bật 4D ở pha Ký Tế (Convergent) để bắt jackpot 8.88M, khóa ở Peak/Coiling chống chảy máu vốn
+                    if (hit4D_81 || hit4D_36 || hit4D_16) rev4D = 1000 * 8880; // 4D ăn 1:8.880
                 }
 
                 long totalRevenue = revLo + revDe + rev3D + rev4D;

@@ -850,7 +850,7 @@ namespace TidsTheory
             return list.OrderBy(x => x.Potential).ToList();
         }
 
-        public static List<StateEnergy> ComputeBsmBasketPotentials2D(List<LotteryRecord> records, Marginal1DResult marginal1D)
+        public static List<StateEnergy> ComputeBsmBasketPotentials2D(List<LotteryRecord> records, Marginal1DResult marginal1D, MarketRegimeResult regime = null)
         {
             int n = records.Count;
             int lastDe = records[n - 1].De;
@@ -901,6 +901,13 @@ namespace TidsTheory
                 else if (gan[s] >= 80 && gan[s] <= 220) vRenewal = -0.64 - 0.003 * (gan[s] - 80);
                 else if (gan[s] > 220 && gan[s] <= 300) vRenewal = 0.0; // Vùng bình nguyên rủi ro rào cản
                 else if (gan[s] > 300) vRenewal = 1.50 + 0.005 * (gan[s] - 300); // Phạt knock-out gan cực đoan
+
+                // Bộ lọc chống quá nhiệt ở Thái Hòa (Anti-Exhaustion Regularization)
+                if (regime != null && regime.Regime == MarketRegimeType.Peak)
+                {
+                    if (gan[s] == 0) vRenewal += 0.50; // Phạt số bệt hôm trước sau chuỗi thắng đỉnh
+                    else if (gan[s] >= 3 && gan[s] <= 8) vRenewal -= 0.25; // Thưởng số tích lũy chu kỳ vàng
+                }
 
                 // Động học tần suất Đề 100 kỳ & Lô 30 kỳ
                 double vKinetic = -0.15 * (f100De[s] - 1.00) - 0.05 * (f30Lo[s] - 8.10);
@@ -1970,9 +1977,10 @@ namespace TidsTheory
             Compute4D_QuantumOptimal(records, out bt4D, out dan4D_4, out dan4D_16, out dan4D_36, out dan4D_81);
             dan4D_81 = dan4D_81.OrderBy(x => x).ToList();
 
-            // 1. TRỤ CỘT ĐÒN BẨY BẮT BUỘC HÀNG NGÀY: 27s 3D & 81s 4D
+            // 1. TRỤ CỘT ĐÒN BẨY BẮT BUỘC HÀNG NGÀY: 27s 3D & 81s 4D (SAFETY LOCK Ở CHAOS, COILING & PEAK)
             long cost27_3D = 27 * 1000;
-            long cost81_4D = (regime.Regime == MarketRegimeType.Chaos) ? 0 : 81 * 1000;
+            bool is4DLocked = (regime.Regime == MarketRegimeType.Chaos || regime.Regime == MarketRegimeType.Coiling || regime.Regime == MarketRegimeType.Peak);
+            long cost81_4D = is4DLocked ? 0 : 81 * 1000;
             long costDonBay = cost27_3D + cost81_4D;
 
             // 2. CẮT BỎ HOÀN TOÀN CÁC DÀN TIÊU HAO VỐN: XIÊN, E1, E4
@@ -1988,13 +1996,14 @@ namespace TidsTheory
             else if (regime.Regime == MarketRegimeType.Convergent) { stPts1 = 3 * budgetMult; stPts2 = 2 * budgetMult; lotPts = 1 * budgetMult; }
             else if (regime.Regime == MarketRegimeType.Coiling) { stPts1 = 2 * budgetMult; stPts2 = 2 * budgetMult; lotPts = 1 * budgetMult; }
             else if (regime.Regime == MarketRegimeType.Chaos) { stPts1 = 1 * budgetMult; stPts2 = 1 * budgetMult; lotPts = 1 * budgetMult; }
+            else /* Steady */ { stPts1 = 2 * budgetMult; stPts2 = 2 * budgetMult; lotPts = 2 * budgetMult; }
 
             long costStLo = (stPts1 + stPts2) * costPerPoint;
             long costLotLo = lotPts * costPerPoint;
             long costLotto = costStLo + costLotLo;
 
             // 4. ĐỀ 2D (KHÓA CỨNG TRẦN E65 - 100% SỐ NGUYÊN NGHÌN ĐỒNG)
-            var bsmBasketEnergies = ComputeBsmBasketPotentials2D(records, marginal1D);
+            var bsmBasketEnergies = ComputeBsmBasketPotentials2D(records, marginal1D, regime);
             var dan65 = SelectFactorNeutralDeSet(bsmBasketEnergies, 65).OrderBy(x => x).ToList();
             var sub42 = bsmBasketEnergies.Where(e => dan65.Contains(e.State)).ToList();
             var dan42 = SelectFactorNeutralDeSet(sub42, 42).OrderBy(x => x).ToList();
@@ -2022,6 +2031,12 @@ namespace TidsTheory
                 costDe = 65 * c65_hedge; // 195k phẳng
                 costE42 = 42 * c42;
                 costE65_hedge = 23 * c65_hedge;
+            }
+            else if (regime.Regime == MarketRegimeType.Steady)
+            {
+                c42 = 3000 * budgetMult;
+                c65_hedge = 1000 * budgetMult;
+                costDe = costE42 + costE65_hedge; // 149k
             }
             else // Chaos
             {
@@ -2220,9 +2235,10 @@ namespace TidsTheory
 
 
 
-            // 1. TRỤ CỘT ĐÒN BẨY BẮT BUỘC HÀNG NGÀY: 27s 3D & 81s 4D
+            // 1. TRỤ CỘT ĐÒN BẨY BẮT BUỘC HÀNG NGÀY: 27s 3D & 81s 4D (SAFETY LOCK Ở CHAOS, COILING & PEAK)
             long cost27_3D = 27 * 1000;
-            long cost81_4D = (regime.Regime == MarketRegimeType.Chaos) ? 0 : 81 * 1000;
+            bool is4DLocked = (regime.Regime == MarketRegimeType.Chaos || regime.Regime == MarketRegimeType.Coiling || regime.Regime == MarketRegimeType.Peak);
+            long cost81_4D = is4DLocked ? 0 : 81 * 1000;
             long costDonBay = cost27_3D + cost81_4D;
 
             // 2. CẮT BỎ HOÀN TOÀN CÁC DÀN TIÊU HAO VỐN: XIÊN, E1, E4
@@ -2238,6 +2254,7 @@ namespace TidsTheory
             else if (regime.Regime == MarketRegimeType.Convergent) { stPts1 = 3 * budgetMult; stPts2 = 2 * budgetMult; lotPts = 1 * budgetMult; }
             else if (regime.Regime == MarketRegimeType.Coiling) { stPts1 = 2 * budgetMult; stPts2 = 2 * budgetMult; lotPts = 1 * budgetMult; }
             else if (regime.Regime == MarketRegimeType.Chaos) { stPts1 = 1 * budgetMult; stPts2 = 1 * budgetMult; lotPts = 1 * budgetMult; }
+            else /* Steady */ { stPts1 = 2 * budgetMult; stPts2 = 2 * budgetMult; lotPts = 2 * budgetMult; }
 
             long costStLo = (stPts1 + stPts2) * costPerPoint;
             long costLotLo = lotPts * costPerPoint;
@@ -2265,6 +2282,12 @@ namespace TidsTheory
                 costDe = 65 * c65_hedge; // 195k phẳng
                 costE42 = 42 * c42;
                 costE65_hedge = 23 * c65_hedge;
+            }
+            else if (regime.Regime == MarketRegimeType.Steady)
+            {
+                c42 = 3000 * budgetMult;
+                c65_hedge = 1000 * budgetMult;
+                costDe = costE42 + costE65_hedge; // 149k
             }
             else // Chaos
             {
@@ -2962,45 +2985,46 @@ namespace TidsTheory
                 res.MomentumMRoll = Math.Round(r15 - r50, 1);
             }
 
-            // PHÂN LOẠI REGIME THEO ĐẠO DỊCH
-            if (res.EntropyH >= 0.95 && res.SpectralGapGamma < 0.12)
+            // PHÂN LOẠI REGIME THEO ĐẠO DỊCH (CALIBRATED DỰA TRÊN PHÂN VỊ THỰC NGHIỆM 8.412 KỲ)
+            // Ngưỡng phân vị: H (P20=0.680, P75=0.770) | M (P20=-8.0%, P75=+7.5%) | Z (P75=3.00σ) | γ (P50=0.956)
+            if (res.EntropyH >= 0.770 && res.MomentumMRoll <= -8.0)
             {
                 res.Regime = MarketRegimeType.Chaos;
                 res.RegimeName = "BĨ CỰC (Nhiễu loạn cao - Khí tắc cầu gãy)";
                 res.RegimeSymbol = "🔴 BĨ CỰC (CHAOS)";
-                res.ActionRecommendation = "THU LIỄM TÀNG HÌNH (Phòng thủ tuyệt đối / Sit on hands) - Nhiễu trắng áp đảo";
-                res.KellyMultiplier = 0.25;
+                res.ActionRecommendation = "THU LIỄM TÀNG HÌNH (Phòng thủ tuyệt đối / Sit on hands) - Hạ tải đòn bẩy";
+                res.KellyMultiplier = 0.50;
             }
-            else if (res.ZMacro >= 2.30)
+            else if (res.ZMacro >= 3.00)
             {
                 res.Regime = MarketRegimeType.Coiling;
-                res.RegimeName = string.Format("PHỤC KHÍ (Nén lực hồi quy: {0})", res.CompressedFactor);
+                res.RegimeName = string.Format("PHỤC KHÍ (Nén lực hồi quy cực đại: {0})", res.CompressedFactor);
                 res.RegimeSymbol = "🟠 PHỤC KHÍ (COILING)";
-                res.ActionRecommendation = string.Format("QUY NGUYÊN TRẬN ({0}) + HUYỀN THIÊN GIÁP + TẤN CÔNG ĐỊA LỢI LÔ TÔ", res.CompressedFactor);
+                res.ActionRecommendation = string.Format("KHIÊN BẢO HỘ 4 GÓC PHẦN TƯ ({0}) + KHÓA 4D + TAM THỦ LÔ THỦ VỐN", res.CompressedFactor);
                 res.KellyMultiplier = 1.00;
             }
-            else if (res.EntropyH <= 0.885 && res.MomentumMRoll >= 4.0)
+            else if (res.EntropyH <= 0.680 && res.MomentumMRoll >= 7.5)
             {
                 res.Regime = MarketRegimeType.Peak;
-                res.RegimeName = "THÁI HÒA (Đỉnh cao phong độ - Khí thông đồng pha)";
+                res.RegimeName = "THÁI HÒA (Đỉnh cao hội tụ - Khí thông đồng pha)";
                 res.RegimeSymbol = "🟢 THÁI HÒA (PEAK)";
-                res.ActionRecommendation = "ĐẠI THỪA XUẤT TRẬN (AGGRESSIVE KELLY) - Dồn lực tấn công Đề (Thái Cực & Hà Đồ Dàn 25)";
-                res.KellyMultiplier = 1.50;
+                res.ActionRecommendation = "ĐẠI THỪA XUẤT TRẬN (TẤN CÔNG ĐỀ LÕI E42 & VỎ E65) - Khóa 4D chống kiệt đỉnh";
+                res.KellyMultiplier = 1.25;
             }
-            else if (res.EntropyH <= 0.915 && res.SpectralGapGamma >= 0.155)
+            else if (res.EntropyH >= 0.680 && res.EntropyH <= 0.750 && res.SpectralGapGamma >= 0.955 && res.MomentumMRoll >= 0.0)
             {
                 res.Regime = MarketRegimeType.Convergent;
                 res.RegimeName = "KÝ TẾ (Thế năng hội tụ chuẩn - Âm Dương chu toàn)";
                 res.RegimeSymbol = "🔵 KÝ TẾ (CONVERGENT)";
-                res.ActionRecommendation = "XUẤT KÍCH BÌNH ỔN (STANDARD KELLY) - Cân bằng Tam Tài (Địa Lợi 40% / Nhân Hòa 50% / Thiên Thời 10%)";
-                res.KellyMultiplier = 1.25;
+                res.ActionRecommendation = "XUẤT KÍCH BÌNH ỔN - Bật 4D đòn bẩy jackpot + Cân bằng Tam Tài";
+                res.KellyMultiplier = 1.15;
             }
             else
             {
                 res.Regime = MarketRegimeType.Steady;
-                res.RegimeName = "TRUNG DUNG (Thị trường bình ổn - Vận hành chuẩn)";
+                res.RegimeName = "TRUNG DUNG (Thị trường bình ổn - Phân phối chuẩn Gauss)";
                 res.RegimeSymbol = "🟡 TRUNG DUNG (STEADY)";
-                res.ActionRecommendation = "ĐÁNH THEO TỶ LỆ CHUẨN (STANDARD KELLY) - Cân bằng Lô 30% / Đề 70%";
+                res.ActionRecommendation = "VẬN HÀNH CHUẨN GAUSS (STANDARD KELLY) - Đề Lõi E42 + Khiên Tam Thủ Lô";
                 res.KellyMultiplier = 1.00;
             }
 
@@ -3010,7 +3034,8 @@ namespace TidsTheory
         public static void RunRegimeAudit(List<LotteryRecord> records, int testDays = 100)
         {
             int n = records.Count;
-            if (testDays <= 0 || testDays > 1000) testDays = 100;
+            if (testDays <= 0) testDays = 100;
+            if (testDays > n - 100) testDays = n - 100;
             int startIdx = n - testDays;
 
             bool[] d65Hits = new bool[n];
