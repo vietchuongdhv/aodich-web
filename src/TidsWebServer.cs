@@ -371,9 +371,11 @@ namespace TidsTheory
             var dan3D_12 = cascade3D.Dan12.OrderBy(x => x).ToList();
             var dan3D_27 = cascade3D.Dan27.OrderBy(x => x).ToList();
 
-            // 1. TRỤ CỘT ĐÒN BẨY BẮT BUỘC HÀNG NGÀY: 27s 3D & 81s 4D
-            long cost27_3D = 27 * 1000;
-            long cost81_4D = (regime.Regime == MarketRegimeType.Chaos) ? 0 : 81 * 1000;
+            // 1. TRỤ CỘT ĐÒN BẨY HÀNG NGÀY: 3D & 4D (KHÓA 4D Ở PHỤC KHÍ/CHAOS ĐỂ TRÁNH LÃNG PHÍ VỐN)
+            int budgetMult = (int)Math.Max(1, Math.Round((double)budget / 500000.0));
+            bool isCoilingOrChaos = (regime.Regime == MarketRegimeType.Coiling || regime.Regime == MarketRegimeType.Chaos);
+            long cost27_3D = isCoilingOrChaos ? (10 * 1000 * budgetMult) : (15 * 1000 * budgetMult);
+            long cost81_4D = isCoilingOrChaos ? 0 : (81 * 1000 * budgetMult);
             long costDonBay = cost27_3D + cost81_4D;
 
             // 2. CẮT BỎ HOÀN TOÀN CÁC DÀN TIÊU HAO VỐN: XIÊN, E1, E4
@@ -382,53 +384,25 @@ namespace TidsTheory
             long costE4 = 0;
             long costE18 = 0;
 
-            // 3. TAM THỦ LÔ (100% SỐ NGUYÊN ĐIỂM)
-            long costPerPoint = 27000;
-            int budgetMult = (int)Math.Max(1, Math.Round((double)budget / 500000.0));
-            int stPts1 = 3 * budgetMult;
-            int stPts2 = 3 * budgetMult;
-            int lotPts = 1 * budgetMult;
-            if (regime.Regime == MarketRegimeType.Peak) { stPts1 = 3 * budgetMult; stPts2 = 3 * budgetMult; lotPts = 1 * budgetMult; }
-            else if (regime.Regime == MarketRegimeType.Convergent) { stPts1 = 3 * budgetMult; stPts2 = 2 * budgetMult; lotPts = 1 * budgetMult; }
-            else if (regime.Regime == MarketRegimeType.Coiling) { stPts1 = 2 * budgetMult; stPts2 = 2 * budgetMult; lotPts = 1 * budgetMult; }
-            else if (regime.Regime == MarketRegimeType.Chaos) { stPts1 = 1 * budgetMult; stPts2 = 1 * budgetMult; lotPts = 1 * budgetMult; }
+            // 3. TAM THỦ LÔ (100% SỐ NGUYÊN ĐIỂM: 6 ĐIỂM NGUYÊN = 165K)
+            long costPerPoint = 27500;
+            int stPts1 = 2 * budgetMult; // Bạch Thủ Lô: 2 điểm
+            int stPts2 = 2 * budgetMult; // Song Thủ Lô: 2 điểm
+            int lotPts = 2 * budgetMult; // Lô Lót Tam Thủ: 2 điểm
 
             int stPts = Math.Max(stPts1, stPts2);
-            long costStLo = (stPts1 + stPts2) * costPerPoint;
-            long costLotLo = lotPts * costPerPoint;
-            long costLotto = costStLo + costLotLo;
+            long costStLo = (stPts1 + stPts2) * costPerPoint; // 4 điểm x 27.5k = 110k
+            long costLotLo = lotPts * costPerPoint;           // 2 điểm x 27.5k = 55k
+            long costLotto = costStLo + costLotLo;            // 165k
 
             // 4. ĐỀ 2D (KHÓA CỨNG TRẦN E65 - 100% SỐ NGUYÊN NGHÌN ĐỒNG)
-            long c42 = 3000 * budgetMult;
+            long c42 = 5000 * budgetMult;
+            long c65 = isCoilingOrChaos ? (5000 * budgetMult) : (1000 * budgetMult);
             long costE42 = 42 * c42;
-            long c65 = 1000 * budgetMult;
             long costE65 = 23 * c65;
             long c27 = 0;
             long costE27 = 0;
-            long costDeTotal = 0;
-
-            if (regime.Regime == MarketRegimeType.Peak)
-            {
-                c27 = 1000 * budgetMult;
-                costE27 = 12 * c27;
-                costDeTotal = costE42 + costE65 + costE27; // 161k
-            }
-            else if (regime.Regime == MarketRegimeType.Convergent || regime.Regime == MarketRegimeType.Coiling)
-            {
-                c42 = 3000 * budgetMult;
-                c65 = 3000 * budgetMult;
-                costDeTotal = 65 * c65; // 195k phẳng
-                costE42 = 42 * c42;
-                costE65 = 23 * c65;
-            }
-            else // Chaos
-            {
-                c42 = 2000 * budgetMult;
-                c65 = 2000 * budgetMult;
-                costDeTotal = 65 * c65; // 130k phẳng
-                costE42 = 42 * c42;
-                costE65 = 23 * c65;
-            }
+            long costDeTotal = costE42 + costE65; // Coiling: 325k phẳng | Peak/Conv: 210k + 23k = 233k
 
             // Gán tương thích cho các client cũ (E50, E25, E9)
             long c50 = c42;
@@ -441,25 +415,14 @@ namespace TidsTheory
             long c4 = 0;
             long c1 = 0;
 
-            // 5. DÀN BỔ SUNG 3D/4D (CHỈ KÍCH HOẠT KHI PEAK/CONVERGENT)
+            // 5. DÀN BỔ SUNG 3D/4D: 0
             long cost3D_12 = 0;
             long cost4D_small = 0;
-            if (regime.Regime == MarketRegimeType.Peak)
-            {
-                cost3D_12 = 12 * 2000 * budgetMult; // 24k
-                cost4D_small = 18 * 1000 * budgetMult; // 18k
-            }
-            else if (regime.Regime == MarketRegimeType.Convergent)
-            {
-                cost3D_12 = 12 * 2000 * budgetMult; // 24k
-                cost4D_small = 11000 * budgetMult;  // 11k
-            }
+            long c3D_base = 0;
+            long c3D_bt = 0;
+            long cost3D = cost27_3D;
 
-            long c3D_base = (cost3D_12 > 0 ? (cost3D_12 / 12) : 0);
-            long c3D_bt = c3D_base;
-            long cost3D = cost27_3D + cost3D_12;
-
-            long actualTotal = costLotto + costDeTotal + costDonBay + cost3D_12 + cost4D_small;
+            long actualTotal = costLotto + costDeTotal + costDonBay;
 
             var tamThuLoList = new List<int> { btLo, stLo, tuThu3 }.OrderBy(x => x).ToList();
             var tuThuLoList = new List<int> { btLo, stLo, tuThu3, tuThu4 }.OrderBy(x => x).ToList();
@@ -527,28 +490,29 @@ namespace TidsTheory
             addRow(16, "Trục 2: Nhân Hòa (Hộ thân)", "Lưỡng Nghi Đồng Quy (E2)", 2, string.Join(", ", e2.Select(x => x.ToString("D2"))), "VNĐ/số", 0, 0, "Đã nằm trong Tứ thủ E4 (Vốn = 0 đ)");
             addRow(17, "Trục 3: Thiên Thời (Đột biến)", "Dàn 3 Càng Tinh Tuyển 12 số (3D)", 12, string.Join(", ", dan3D_12), "VNĐ/vé", c3D_base, cost3D_12, (cost3D_12 > 0 ? "Bổ sung tấn công theo thời khí Peak/Convergent" : "Tắt dàn nhỏ ở Coiling/Chaos (Vốn = 0 đ)"));
             addRow(18, "Trục 3: Thiên Thời (Đột biến)", "Bạch Thủ 3 Càng (3D)", 1, bt3D, "VNĐ/vé", 0, 0, "Đã gộp vốn vào Dàn 27 số (Vốn = 0 đ)");
-            addRow(19, "Trục 3: Thiên Thời (Đột biến)", "Dàn 3 Càng Phổ 27 số (3D)", 27, string.Join(", ", dan3D_27), "VNĐ/vé", 1000, cost27_3D, "Trụ cột đòn bẩy thường trực ăn 1:960 (27k/ngày)");
+            addRow(19, "Trục 3: Thiên Thời (Đột biến)", "Dàn 3 Càng Tinh Tuyển (3D)", (int)(cost27_3D / 1000), string.Join(", ", dan3D_27.Take((int)(cost27_3D / 1000))), "VNĐ/vé", 1000, cost27_3D, string.Format("Trụ cột đòn bẩy ăn 1:960 ({0:N0} đ/ngày)", cost27_3D));
             addRow(20, "Trục 3: Thiên Thời (Đột biến)", "Bạch Thủ 4 Càng (4D)", 1, bt4D, "VNĐ/vé", 0, 0, "Dự phòng siêu đòn bẩy (Vốn = 0 đ)");
             addRow(21, "Trục 3: Thiên Thời (Đột biến)", "Tứ Thủ 4 Càng (4D)", 4, string.Join(", ", dan4D_4), "VNĐ/vé", 0, 0, "Dự phòng siêu đòn bẩy (Vốn = 0 đ)");
             addRow(22, "Trục 3: Thiên Thời (Đột biến)", "Dàn 4 Càng Tinh Tuyển 16 số (4D)", 16, string.Join(", ", dan4D_16), "VNĐ/vé", 0, 0, "Dự phòng (Vốn = 0 đ)");
             addRow(23, "Trục 3: Thiên Thời (Đột biến)", "Dàn 4 Càng Tối Ưu ROI 36 số (4D)", 36, string.Join(", ", dan4D_36), "VNĐ/vé", 0, 0, "Dự phòng (Vốn = 0 đ)");
-            addRow(24, "Trục 3: Thiên Thời (Đột biến)", "Dàn 4 Càng Trục Chính 81 số (4D)", 81, string.Join(", ", dan4D_81), "VNĐ/vé", (cost81_4D > 0 ? 1000 : 0), cost81_4D, (cost81_4D > 0 ? "Trụ cột siêu đòn bẩy thường trực ăn 1:8,880 (81k/ngày)" : "Tạm dừng ở pha Chaos để bảo toàn vốn (Vốn = 0 đ)"));
+            addRow(24, "Trục 3: Thiên Thời (Đột biến)", "Dàn 4 Càng Trục Chính 81 số (4D)", 81, string.Join(", ", dan4D_81), "VNĐ/vé", (cost81_4D > 0 ? 1000 : 0), cost81_4D, (cost81_4D > 0 ? "Trụ cột siêu đòn bẩy ăn 1:8,880 (81k/ngày)" : "Tạm khóa ở pha Phục Khí / Chaos để dồn vốn bảo toàn vào Đề 5k (Vốn = 0 đ)"));
 
             // Xây dựng chuỗi Copy Zalo / Tin nhắn (Tất cả dàn đều sắp xếp tăng dần)
             var copyZaloSb = new StringBuilder();
             copyZaloSb.AppendLine(string.Format("--- ĐẠO DỊCH HUYỀN CƠ PHÁP (VỐN {0:N0} Đ) ---", budget));
             copyZaloSb.AppendLine(string.Format("🟢 Thiên Cơ Độ: {0:F1}% | Khí: {1}", qci.Score, regime.RegimeName));
-            copyZaloSb.AppendLine(string.Format("1. Tam Thủ Lô: {0:D2} ({1}đ), {2:D2} ({3}đ) | Lót {4:D2} ({5}đ)", btLo, stPts1, stLo, stPts2, tuThu3, lotPts));
-            copyZaloSb.AppendLine(string.Format("2. Đề 2D (Trần E65): E42 lõi x {0:N0}k, 23s vỏ x {1:N0}k", c42 / 1000, c65 / 1000));
-            copyZaloSb.AppendLine(string.Format("3. Trụ Cột Đòn Bẩy Thường Trực:"));
-            copyZaloSb.AppendLine(string.Format("   • 27s 3D x 1k (Ăn 1:960, Thu 960k)"));
+            copyZaloSb.AppendLine(string.Format("1. Tam Thủ Lô (Nguyên điểm): {0:D2} ({1}đ), {2:D2} ({3}đ) | Lót {4:D2} ({5}đ)", btLo, stPts1, stLo, stPts2, tuThu3, lotPts));
+            if (isCoilingOrChaos)
+                copyZaloSb.AppendLine(string.Format("2. Đề 2D (Trần E65): Đánh PHẲNG 65 số x {0:N0}k (Thu 495k, Tự hòa vốn 100%)", c65 / 1000));
+            else
+                copyZaloSb.AppendLine(string.Format("2. Đề 2D (Trần E65): Lõi E42 x {0:N0}k, Vỏ 23s x {1:N0}k", c42 / 1000, c65 / 1000));
+            copyZaloSb.AppendLine(string.Format("3. Trụ Cột Đòn Bẩy:"));
+            copyZaloSb.AppendLine(string.Format("   • {0}s 3D x 1k (Ăn 1:960, Thu 960k)", cost27_3D / 1000));
             if (cost81_4D > 0)
                 copyZaloSb.AppendLine(string.Format("   • 81s 4D x 1k (Ăn 1:8.880, Thu 8.88 triệu)"));
             else
-                copyZaloSb.AppendLine(string.Format("   • 81s 4D: [Tạm dừng ở pha Chaos để bảo toàn vốn]"));
-            if (cost3D_12 > 0)
-                copyZaloSb.AppendLine(string.Format("4. Dàn 3D 12s Tinh Tuyển x thêm {0:N0}k", cost3D_12 / (12 * 1000)));
-            copyZaloSb.AppendLine("[Bảo toàn vốn: Xác suất hòa vốn hoặc lãi >= 90% | Bỏ Xiên, E1, E4]");
+                copyZaloSb.AppendLine("   • 81s 4D: [Tạm khóa ở pha Phục Khí/Chaos để dồn vốn bảo toàn vào Đề 5k]");
+            copyZaloSb.AppendLine("[Bảo toàn vốn: 100% số nguyên điểm | Bỏ Xiên, E1, E4]");
             copyZaloSb.AppendLine("--------------------------------------------------");
 
             // Xây dựng JSON
@@ -658,6 +622,7 @@ namespace TidsTheory
 
                 var marginal1D = Program.Compute1DMarginals(past);
                 var deEnergies = Program.ComputeUnifiedPotentials2D(past, marginal1D);
+                var regime = Program.DetectMarketRegime(past, deEnergies, W, marginal1D);
                 var e65 = Program.SelectFactorNeutralDeSet(deEnergies, 65);
                 var e42 = Program.SelectFactorNeutralDeSet(deEnergies, 42);
                 var e27 = Program.SelectFactorNeutralDeSet(deEnergies, 27);
@@ -749,36 +714,47 @@ namespace TidsTheory
                 bool hit4D_36 = !string.IsNullOrEmpty(actual4D) && dan4D_36.Contains(actual4D);
                 bool hit4D_81 = !string.IsNullOrEmpty(actual4D) && dan4D_81.Contains(actual4D);
 
-                // Tính toán hiệu quả tài chính danh mục chuẩn 500k
-                long dayCost = 500000;
-                long revLo = (long)stlHits * 3 * 80000 + (long)lotHits * 1 * 80000;
+                // Tính toán hiệu quả tài chính danh mục chuẩn số nguyên (100% Integer)
+                bool isCoilingOrChaos = (regime.Regime == MarketRegimeType.Coiling || regime.Regime == MarketRegimeType.Chaos);
+                long dayCost = isCoilingOrChaos ? 500000 : 494000;
+                
+                // Tam thủ lô 6 điểm nguyên: mỗi con 2 điểm nguyên (BTL 2đ, STL 2đ, Lót 2đ)
+                long revLo = (long)tamThuHits * 2 * 80000; // Mỗi nháy nổ là 2 điểm = 160.000 đ
+                
                 long revDe = 0;
-                if (hitE42)
+                if (isCoilingOrChaos)
                 {
-                    revDe += 3000 * 99; // Cược E42 3k
-                    if (hitE27) revDe += 1000 * 99; // Lọt vào E27 thêm 1k
-                    revDe += 1000 * 99; // Vỏ E65 1k
+                    // Pha Phục Khí / Chaos: Đánh phẳng 65 số x 5.000 đ (325k). Nổ bất kỳ số nào = 5k * 99 = 495.000 đ
+                    if (hitE65) revDe = 5000 * 99;
                 }
-                else if (hitE65)
+                else
                 {
-                    revDe += 1000 * 99; // Vỏ E65 1k
+                    // Pha Thái Hòa / Ký Tế: Lõi E42 x 5k (210k) + Vỏ E65 23s x 1k (23k) = 233k
+                    if (hitE42) revDe = 5000 * 99;
+                    else if (hitE65) revDe = 1000 * 99;
                 }
+                
                 long rev3D = 0;
-                if (hit3D_27) rev3D += 1000 * 960; // 3D 27s ăn 1:960
-                if (hit3D) rev3D += 2000 * 960; // 3D 12s ăn 1:960
+                if (hit3D_27 || hit3D) rev3D = 1000 * 960; // 3D ăn 1:960
+                
                 long rev4D = 0;
-                if (hit4D_81) rev4D += 1000 * 8880; // 4D 81s ăn 1:8.880
-                if (hit4D_16) rev4D += 1000 * 8880; // 4D 16s/18s ăn 1:8.880
+                if (!isCoilingOrChaos)
+                {
+                    if (hit4D_81 || hit4D_16) rev4D = 1000 * 8880; // 4D ăn 1:8.880
+                }
 
                 long totalRevenue = revLo + revDe + rev3D + rev4D;
                 long netPnl = totalRevenue - dayCost;
                 bool isWin = netPnl >= 0;
-                bool isBreakEven = totalRevenue >= 240000;
+                bool isBreakEven = totalRevenue >= (long)(dayCost * 0.95);
 
                 var sbRow = new StringBuilder();
                 sbRow.Append("{");
                 sbRow.AppendFormat("\"date\": \"{0}\",", actual.Date);
                 sbRow.AppendFormat("\"dayOfWeek\": \"{0}\",", EscapeJson(actual.DayOfWeek));
+                sbRow.AppendFormat("\"regime\": \"{0}\",", EscapeJson(regime.RegimeSymbol));
+                sbRow.AppendFormat("\"regimeName\": \"{0}\",", EscapeJson(regime.RegimeName));
+                sbRow.AppendFormat("\"bsmFactor\": \"{0}\",", EscapeJson(regime.CompressedFactor));
                 sbRow.AppendFormat("\"gdb\": \"{0}\",", actual.Gdb);
                 sbRow.AppendFormat("\"de\": {0},", actual.De);
                 sbRow.AppendFormat("\"actual3D\": \"{0}\",", actual3D);
